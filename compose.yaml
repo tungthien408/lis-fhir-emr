@@ -1,0 +1,67 @@
+
+name: lis-fhir-emr
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?Missing password}
+      POSTGRES_DB: dacn_db
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/dacn_db_init_v2.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/access_roles.sql:/docker-entrypoint-initdb.d/02-roles.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d dacn_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  lis:
+    image: lis-fhir-emr-backend:local
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: ["npm", "run", "start:lis"]
+    environment:
+      HOST: 0.0.0.0
+      LIS_PORT: 3101
+      LIS_DATABASE_URL: postgresql://lis_app:${LIS_DB_PASSWORD}@db:5432/dacn_db
+    ports:
+      - "127.0.0.1:3101:3101"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  middleware:
+    image: lis-fhir-emr-backend:local
+    command: ["npm", "run", "start:middleware"]
+    environment:
+      HOST: 0.0.0.0
+      MIDDLEWARE_PORT: 3102
+      MIDDLEWARE_DATABASE_URL: postgresql://integration_app:${MIDDLEWARE_DB_PASSWORD}@db:5432/dacn_db
+    ports:
+      - "127.0.0.1:3102:3102"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  emr:
+    image: lis-fhir-emr-backend:local
+    command: ["npm", "run", "start:emr"]
+    environment:
+      HOST: 0.0.0.0
+      EMR_PORT: 3103
+      EMR_DATABASE_URL: postgresql://emr_app:${EMR_DB_PASSWORD}@db:5432/dacn_db
+    ports:
+      - "127.0.0.1:3103:3103"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+

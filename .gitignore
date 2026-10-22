@@ -1,0 +1,15 @@
+# Thu muc duoc tao tu dong
+node_modules/
+dist/
+
+# Cau hinh may ca nhan va thong tin bi mat
+.env
+.env.*
+!.env.example
+
+# File tam
+*.log
+.DS_Store
+coverage/
+
+# Bao cao/chung cu thuc nghiem se quy dinh rieng khi trien khai
