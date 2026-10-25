@@ -96,6 +96,10 @@ image Docker cũ, cần build lại image và tạo lại container LIS. File m�
 
 ### Kiểm tra bằng lệnh tự động (trong thư mục `backend/`)
 
+Các lệnh `dev:*`, `start:*`, `smoke` và `db:check` tự đọc file `.env` ở thư mục
+gốc của dự án (`../.env` khi đứng trong `backend/`). Bạn không cần chuyển file
+vào `backend/`. Khi sửa `.env`, hãy khởi động lại dịch vụ để nhận cấu hình mới.
+
 ```bash
 cd backend
 
