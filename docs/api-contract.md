@@ -1,7 +1,7 @@
 # Hợp đồng API V1 — LIS → Middleware → EMR
 
 > **Mục đích:** Thống nhất dữ liệu gửi/nhận để hai thành viên có thể lập trình độc lập.  
-> **Trạng thái:** Hiện **chỉ `/health` và `/ready` đã chạy**. Chín API nghiệp vụ dưới đây là **thiết kế dự kiến**, chưa được kiểm thử end-to-end.
+> **Trạng thái:** Bốn API nghiệp vụ **LIS đã triển khai và kiểm thử HTTP với PostgreSQL** ở SPP-66 A3. `/health` và `/ready` vẫn được giữ. Năm API nghiệp vụ Middleware/EMR vẫn là **thiết kế dự kiến**; dispatcher và luồng trao đổi end-to-end chưa được triển khai/kiểm thử.
 
 ## 1. Quy ước chung
 
@@ -12,19 +12,24 @@
 
 ## 2. Danh sách API
 
-| Dịch vụ | API | Chức năng |
-|---|---|---|
-| LIS | `GET /api/results` | Xem/lọc kết quả xét nghiệm |
-| LIS | `GET /api/results/:resultId` | Xem chi tiết kết quả |
-| LIS | `POST /api/results/:resultId/publish` | Yêu cầu gửi một kết quả |
-| LIS | `GET /api/publish-events/:eventId` | Xem tình trạng gửi |
-| Middleware | `POST /api/exchanges` | Nhận dữ liệu từ LIS |
-| Middleware | `GET /api/exchanges` | Xem/lọc giao dịch |
-| Middleware | `GET /api/exchanges/:exchangeId` | Xem chi tiết và lịch sử giao dịch |
-| EMR | `POST /api/observations` | Lưu kết quả theo FHIR R4 Observation |
-| EMR | `GET /api/lab-results` | Xem/đọc lại kết quả đã lưu |
-| Cả ba | `GET /health` | Kiểm tra HTTP đang chạy (**đã có**) |
-| Cả ba | `GET /ready` | Kiểm tra kết nối, tài khoản và bảng database (**đã có**) |
+| Dịch vụ | API | Chức năng | Trạng thái |
+|---|---|---|---|
+| LIS | `GET /api/results` | Xem/lọc kết quả xét nghiệm | Đã triển khai, kiểm thử A3 |
+| LIS | `GET /api/results/:resultId` | Xem chi tiết kết quả | Đã triển khai, kiểm thử A3 |
+| LIS | `POST /api/results/:resultId/publish` | Lưu yêu cầu gửi một kết quả | Đã triển khai, kiểm thử A3 |
+| LIS | `GET /api/publish-events/:eventId` | Xem tình trạng gửi | Đã triển khai, kiểm thử A3 |
+| Middleware | `POST /api/exchanges` | Nhận dữ liệu từ LIS | Chưa triển khai |
+| Middleware | `GET /api/exchanges` | Xem/lọc giao dịch | Chưa triển khai |
+| Middleware | `GET /api/exchanges/:exchangeId` | Xem chi tiết và lịch sử giao dịch | Chưa triển khai |
+| EMR | `POST /api/observations` | Lưu kết quả theo FHIR R4 Observation | Chưa triển khai |
+| EMR | `GET /api/lab-results` | Xem/đọc lại kết quả đã lưu | Chưa triển khai |
+| Cả ba | `GET /health` | Kiểm tra HTTP đang chạy | Đã có |
+| Cả ba | `GET /ready` | Kiểm tra kết nối, tài khoản và bảng database | Đã có |
+
+LIS có giao diện **Swagger UI tại `/docs/api/`** để thử 4 API trên cùng
+`/health`, `/ready`. File mô tả OpenAPI ở `/docs/api/openapi.json`. Giao diện
+gọi chính server đang mở và không thay đổi hành vi Publish. Cách chuẩn bị dữ
+liệu giả và bấm thử: [hướng dẫn A3](spp-66-a3-review.md#thử-api-bằng-giao-diện-swagger-ui).
 
 ## 3. Luồng gửi kết quả
 
@@ -35,6 +40,9 @@
 - **Lần đầu:** lưu `event_id`, bản chụp dữ liệu (`source_snapshot`), `source_hash`, thời điểm Publish trong một giao dịch LIS; trả **`202`**.
 - **Publish lại cùng kết quả:** trả **`200`** với `event_id` cũ, không tạo sự kiện mới.
 - Không tìm thấy → **`404`**; không đủ điều kiện → **`422`**.
+- Body không bắt buộc; ID ở đường dẫn là ID được xử lý. Body JSON hợp lệ nếu
+  gửi thêm không thay đổi nội dung Publish. JSON hỏng trả `400`, body JSON vượt
+  giới hạn `1mb` hiện có trả `413`; charset/encoding không hỗ trợ trả `415`.
 
 Ví dụ phản hồi:
 
@@ -157,13 +165,83 @@ Các API tra cứu dùng quy ước:
 - `GET /api/publish-events/:eventId`: trả `event_id`, `result_id`, `dispatch_status`, `exchange_id`, số lần gửi và lỗi gần nhất.
 - `GET /api/lab-results`: tra bằng cặp `external_system` + `external_id`, **hoặc** bằng `patient_key` (bộ lọc sai/thiếu → `400`). Hai API danh sách phía LIS/Middleware và chế độ danh sách theo bệnh nhân tại EMR dùng `items`, `limit` (mặc định 20, tối đa 100), `offset` (mặc định 0). ID chi tiết không tồn tại → `404`.
 
-Khi lỗi nghiệp vụ, trả JSON `{"error":{"code":"DUPLICATE_CONFLICT","message":"..."}}`. Mã lỗi dự kiến: `VALIDATION_ERROR`, `RESULT_NOT_READY`, `PATIENT_NOT_LINKED`, `DUPLICATE_CONFLICT`, `INVALID_TEST_CODE`, `INVALID_UNIT`, `VERIFY_MISMATCH`, `DEPENDENCY_UNAVAILABLE`.
+### Phản hồi GET của LIS — đã triển khai ở A3
+
+Trước A3, contract chưa có mẫu JSON chi tiết cho hai API đọc kết quả. A3 bổ sung
+dạng phản hồi sau; đây là dữ liệu nguồn để xem, không phải `source_snapshot` của Publish:
+
+```json
+{
+  "items": [{
+    "result_id": "A3-DEMO-R1",
+    "patient_id": "A3-DEMO-P1",
+    "test_code": "A3-DEMO-T1",
+    "test_name": "Synthetic test",
+    "fluid": "Blood",
+    "category": "Chemistry",
+    "value_num": "3.4000",
+    "unit": "mg/dL",
+    "reference_low": "1.2000",
+    "reference_high": null,
+    "effective_at": "2026-10-22T08:00:00.123456Z",
+    "result_status": "FINAL"
+  }],
+  "limit": 20,
+  "offset": 0
+}
+```
+
+- `GET /api/results/:resultId` trả một object cùng dạng từng phần tử `items`,
+  không có lớp bọc danh sách. Không tìm thấy trả `404`/`NOT_FOUND`.
+- `value_num`, `reference_low`, `reference_high` của API đọc giữ dạng chuỗi
+  PostgreSQL NUMERIC để không làm mất độ chính xác; cận thiếu là `null`.
+  Snapshot Publish vẫn dùng JSON number và kiểm tra độ chính xác theo A2.
+- `effective_at` trả UTC ISO 8601, giữ đủ sáu chữ số phần giây. Với nguồn không
+  có instant ISO hữu hạn trong năm 0001–9999, API đọc trả `null`; Publish sẽ từ
+  chối dữ liệu thời gian không hợp lệ theo A2.
+- Các bộ lọc kết hợp bằng AND. `result_status` chỉ nhận `READY` hoặc `FINAL`.
+  Danh sách sắp theo `result_id` tăng dần trước khi phân trang.
+- `limit` nhận số nguyên 1–100, `offset` là số nguyên không âm không vượt
+  `Number.MAX_SAFE_INTEGER`. Query phải biểu diễn bằng chữ số, không dùng dấu,
+  số thập phân, số mũ hoặc khoảng trắng. Không truyền thì dùng 20/0.
+- Tham số không hỗ trợ, tham số lặp, dạng mảng/object hoặc bộ lọc trống trả
+  `400`/`VALIDATION_ERROR`. ID kết quả là chuỗi không trống, không có ký tự điều
+  khiển; không bắt buộc theo định dạng UUID hoặc tiền tố của dataset.
+
+`GET /api/publish-events/:eventId` trả:
+
+```json
+{
+  "event_id": "00000000-0000-4000-8000-000000000001",
+  "result_id": "A3-DEMO-R1",
+  "dispatch_status": "PENDING",
+  "exchange_id": null,
+  "dispatch_attempt_count": 0,
+  "last_error_code": null,
+  "last_error_message": null
+}
+```
+
+UUID phải có dạng `8-4-4-4-12`, không phân biệt chữ hoa/thường; sai định dạng trả
+`400`, UUID hợp lệ nhưng không tồn tại trả `404`/`NOT_FOUND`. Trạng thái và số
+lần gửi lấy từ sự kiện đã lưu. Khi có lỗi gần nhất, API trả mã lỗi và thông báo
+chung `The latest dispatch attempt failed.` thay vì nội dung chẩn đoán thô.
+Mã lỗi lưu không đúng dạng chữ hoa/số/gạch dưới (tối đa 64 ký tự, bắt đầu bằng
+chữ) được trình bày là `DISPATCH_ERROR`; không sửa bản ghi gốc.
+
+Khi lỗi nghiệp vụ, trả JSON `{"error":{"code":"DUPLICATE_CONFLICT","message":"..."}}`. Mã lỗi: `VALIDATION_ERROR`, `RESULT_NOT_READY`, `PATIENT_NOT_LINKED`, `DUPLICATE_CONFLICT`, `INVALID_TEST_CODE`, `INVALID_UNIT`, `VERIFY_MISMATCH`, `DEPENDENCY_UNAVAILABLE`; LIS A3 dùng thêm `NOT_FOUND` cho `404` vì bản dự thảo chưa chốt mã cho trường hợp này.
+
+Các lỗi khi gọi Service/Repository từ API LIS trả `503`/`DEPENDENCY_UNAVAILABLE`
+với thông báo chung, không có SQL, stack trace hoặc thông tin kết nối. Chi tiết
+triển khai và ví dụ chạy thử: [SPP-66 A3](spp-66-a3-review.md).
 
 | HTTP | Ý nghĩa | Tự thử lại? |
 |---|---|---|
 | `400` | JSON/tham số không đúng | Không |
 | `404` | Không tìm thấy bản ghi theo ID | Không |
 | `409` | Trùng mã nhưng xung đột dữ liệu | Không |
+| `413` | Body JSON vượt giới hạn dung lượng | Không |
+| `415` | Charset/encoding của body không được hỗ trợ | Không |
 | `422` | Dữ liệu không hợp lệ/chưa `FINAL`/sai bệnh nhân | Không |
 | `503` hoặc lỗi `5xx` tạm thời | Service/database tạm thời không sẵn sàng | Có, có giới hạn |
 

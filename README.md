@@ -2,7 +2,7 @@
 
 Đồ án thử nghiệm trao đổi kết quả xét nghiệm từ **LIS** sang **EMR** thông qua **Middleware**, hướng tới chuẩn **HL7 FHIR R4**.
 
-**Trạng thái hiện tại:** Đã khởi chạy 3 dịch vụ backend và kết nối PostgreSQL qua Docker Compose. **Chưa triển khai** luồng gửi kết quả xét nghiệm, chuyển đổi FHIR và kiểm thử nghiệp vụ.
+**Trạng thái hiện tại:** Đã có 3 dịch vụ backend và kết nối PostgreSQL qua Docker Compose. LIS đã triển khai và kiểm thử 4 API xem/lọc kết quả, xem chi tiết, Publish và tra sự kiện Publish (SPP-66 A1–A3). **Chưa triển khai** dispatcher, API nghiệp vụ Middleware/EMR, chuyển đổi FHIR hoặc trao đổi end-to-end. Xem [hướng dẫn A3](docs/spp-66-a3-review.md).
 
 ---
 
@@ -79,6 +79,21 @@ docker compose ps
 | **Middleware** | [localhost:3102/health](http://127.0.0.1:3102/health) | [localhost:3102/ready](http://127.0.0.1:3102/ready) |
 | **EMR** | [localhost:3103/health](http://127.0.0.1:3103/health) | [localhost:3103/ready](http://127.0.0.1:3103/ready) |
 
+### Thử API bằng giao diện Swagger UI
+
+Khi LIS đang chạy, mở [localhost:3101/docs/api/](http://127.0.0.1:3101/docs/api/).
+Nếu chạy theo hướng dẫn A3 trên cổng test `33101`, mở
+[localhost:33101/docs/api/](http://127.0.0.1:33101/docs/api/).
+
+Chọn API → **Try it out** → nhập thông tin → **Execute**. Trang có 4 API LIS
+và `/health`, `/ready`. Để thử Publish với dữ liệu giả, làm theo
+[hướng dẫn Swagger UI ở A3](docs/spp-66-a3-review.md#thử-api-bằng-giao-diện-swagger-ui).
+Trang không tự tạo dữ liệu; nút Execute gọi thật vào server LIS đang mở.
+
+Nếu backend đã chạy từ trước khi thêm Swagger, hãy khởi động lại. Nếu dùng
+image Docker cũ, cần build lại image và tạo lại container LIS. File mô tả API
+được cung cấp tại `/docs/api/openapi.json` trên cùng server.
+
 ### Kiểm tra bằng lệnh tự động (trong thư mục `backend/`)
 
 ```bash
@@ -91,9 +106,15 @@ npm ci
 npm run smoke      # Kiểm tra cả 3 dịch vụ có đang chạy hay không
 npm run db:check   # Kiểm tra cả 3 dịch vụ đã kết nối đúng database chưa
 npm run check      # Kiểm tra cú pháp TypeScript
+npm run build      # Biên dịch backend
 ```
 
 Kết quả mong đợi: `smoke` và `db:check` đều thông báo **3 PASS**.
+
+Kiểm thử nghiệp vụ LIS dùng PostgreSQL Docker riêng với dữ liệu giả, không dùng
+database của dự án. Làm theo [hướng dẫn A3](docs/spp-66-a3-review.md) để chạy
+`npm test` và thử các HTTP API. `smoke` chỉ kiểm tra `/health`, không thay thế
+kiểm thử nghiệp vụ hoặc chứng minh đã trao đổi kết quả sang EMR.
 
 ### Khởi chạy giao diện Frontend (tùy chọn)
 

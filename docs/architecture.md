@@ -36,13 +36,13 @@ backend/src/
 Mỗi dịch vụ sẽ gồm các file với vai trò rõ ràng:
 
 - `main.ts`: Khởi động dịch vụ và mở cổng HTTP.
-- `controller.ts`: Tiếp nhận HTTP request và trả kết quả phản hồi (hiện có `/health` và `/ready`).
+- `controller.ts`: Tiếp nhận HTTP request và trả kết quả. LIS đã có 4 API nghiệp vụ ở A3 cùng `/health`, `/ready`; Middleware/EMR hiện chỉ có `/health`, `/ready`.
 - `db.ts`: Cấu hình kết nối PostgreSQL riêng cho dịch vụ (gọi qua hàm chung tại `common/database.ts`).
 - `schema.ts`: Khai báo bảng bằng TypeScript với Drizzle ORM để thao tác dữ liệu.
-- `service.ts` *(sẽ thêm khi code nghiệp vụ)*: Viết logic xử lý chính (kiểm tra điều kiện, chuyển đổi dữ liệu).
-- `repository.ts` *(sẽ thêm khi code nghiệp vụ)*: Viết các câu lệnh đọc/ghi database qua Drizzle.
-- `dispatcher.ts` *(phía LIS)*: Tự động quét các kết quả đã duyệt để gửi sang Middleware.
-- `worker.ts` *(phía Middleware)*: Quét giao dịch chờ xử lý, chuyển sang FHIR, gửi sang EMR và đối chiếu kết quả.
+- `service.ts`: Viết logic xử lý chính. LIS đã có Service Publish ở A2; Service nghiệp vụ Middleware/EMR chưa triển khai.
+- `repository.ts`: Viết các câu lệnh đọc/ghi database qua Drizzle. LIS đã có Repository ở A1 và boundary đọc/kiểm tra/lưu Publish ở A2.
+- `dispatcher.ts` *(phía LIS, chưa triển khai)*: Gửi các sự kiện Publish đã lưu sang Middleware.
+- `worker.ts` *(phía Middleware, chưa triển khai)*: Quét giao dịch chờ xử lý, chuyển sang FHIR, gửi sang EMR và đối chiếu kết quả.
 
 > **Quy tắc tạo file:** Chỉ tạo file khi thực sự bắt đầu làm tính năng đó, không cần tạo sẵn các file rỗng nếu chưa dùng.
 
@@ -59,6 +59,10 @@ Mỗi dịch vụ sẽ gồm các file với vai trò rõ ràng:
 ---
 
 ## 4. Các luồng xử lý chính trong đồ án
+
+Hiện đã triển khai phần LIS đọc dữ liệu và lưu yêu cầu Publish. Các bước gửi
+liên dịch vụ, FHIR, xác minh và đánh giá bên dưới vẫn là thiết kế; chưa có kiểm
+thử end-to-end. Xem [hướng dẫn A3](spp-66-a3-review.md) để biết phần đã kiểm thử.
 
 - **Lưu trước khi gửi (Outbox tại LIS):** Khi bác sĩ duyệt (Publish) kết quả xét nghiệm, LIS lưu sự kiện vào bảng `publish_events` trước. Tiến trình gửi (`dispatcher.ts`) sẽ tự động đọc bảng này để gửi sang Middleware, tránh việc mất dữ liệu khi mạng bị lỗi.
 - **Xác minh 2 bước (Middleware):** Middleware nhận dữ liệu, chuyển sang FHIR Observation rồi gửi sang EMR. Sau khi gửi, Middleware phải gọi đọc lại kết quả từ EMR để đối soát. Khi EMR lưu đúng và đủ thì Middleware mới đánh dấu là `DELIVERED`.
