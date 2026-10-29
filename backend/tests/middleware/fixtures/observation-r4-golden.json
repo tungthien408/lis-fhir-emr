@@ -1,0 +1,29 @@
+{
+  "resourceType": "Observation",
+  "identifier": [
+    { "system": "https://example.org/lis/result", "value": "B4A-SYNTHETIC-R1" }
+  ],
+  "status": "final",
+  "category": [
+    {
+      "coding": [
+        { "system": "http://terminology.hl7.org/CodeSystem/observation-category", "code": "laboratory" }
+      ]
+    }
+  ],
+  "code": {
+    "coding": [
+      { "system": "https://example.org/lis/test-code", "code": "50971", "display": "Potassium" }
+    ],
+    "text": "Potassium / Blood / Chemistry"
+  },
+  "subject": {
+    "type": "Patient",
+    "identifier": { "system": "https://example.org/lis/patient", "value": "B4A-SYNTHETIC-P1" }
+  },
+  "effectiveDateTime": "2180-06-03T12:00:00.123456Z",
+  "valueQuantity": { "value": 3.4, "unit": "mEq/L" },
+  "referenceRange": [
+    { "low": { "value": 3.3, "unit": "mEq/L" }, "high": { "value": 5.1, "unit": "mEq/L" } }
+  ]
+}

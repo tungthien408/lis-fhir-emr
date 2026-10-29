@@ -1,0 +1,82 @@
+{
+  "generated_by": "Actual backend/src/lis/canonical-json.ts canonicalJson + hashCanonicalJson",
+  "fixtures": [
+    {
+      "name": "publish-snapshot",
+      "input": {
+        "result_id": "B2-GOLDEN-R1",
+        "patient_id": "B2-SYNTHETIC-P1",
+        "test_code": "B2-TEST",
+        "test_name": "Synthetic potassium",
+        "fluid": "Blood",
+        "category": "Chemistry",
+        "value_num": 3.4,
+        "unit": "mEq/L",
+        "reference_low": null,
+        "reference_high": 5.1,
+        "effective_at": "2180-06-03T12:00:00.123456Z",
+        "result_status": "FINAL"
+      },
+      "canonical": "{\"category\":\"Chemistry\",\"effective_at\":\"2180-06-03T12:00:00.123456Z\",\"fluid\":\"Blood\",\"patient_id\":\"B2-SYNTHETIC-P1\",\"reference_high\":5.1,\"reference_low\":null,\"result_id\":\"B2-GOLDEN-R1\",\"result_status\":\"FINAL\",\"test_code\":\"B2-TEST\",\"test_name\":\"Synthetic potassium\",\"unit\":\"mEq/L\",\"value_num\":3.4}",
+      "sha256": "66d4bb0e7270c1f2983f90de625361cb26dc4c06e65247a1c2627031a9c1bd1d"
+    },
+    {
+      "name": "numeric-and-time-edges",
+      "input": {
+        "result_id": "B2-GOLDEN-R1",
+        "patient_id": "B2-SYNTHETIC-P1",
+        "test_code": "B2-TEST",
+        "test_name": "Synthetic potassium",
+        "fluid": "Blood",
+        "category": "Chemistry",
+        "value_num": 5e-324,
+        "unit": "mEq/L",
+        "reference_low": -1e+308,
+        "reference_high": 1.7976931348623157e+308,
+        "effective_at": "0004-02-29T00:00:00.000001Z",
+        "result_status": "FINAL"
+      },
+      "canonical": "{\"category\":\"Chemistry\",\"effective_at\":\"0004-02-29T00:00:00.000001Z\",\"fluid\":\"Blood\",\"patient_id\":\"B2-SYNTHETIC-P1\",\"reference_high\":1.7976931348623157e+308,\"reference_low\":-1e+308,\"result_id\":\"B2-GOLDEN-R1\",\"result_status\":\"FINAL\",\"test_code\":\"B2-TEST\",\"test_name\":\"Synthetic potassium\",\"unit\":\"mEq/L\",\"value_num\":5e-324}",
+      "sha256": "2e1f10a2a573abc33924a2ae72f00da9eb22aefbd7a4854ec34ce0cba78a8526"
+    },
+    {
+      "name": "nested-keys-unicode-arrays",
+      "input": {
+        "2": "two",
+        "10": "ten",
+        "z": {
+          "": "BMP",
+          "😀": "pair",
+          "á": "Tiếng Việt"
+        },
+        "a": [
+          {
+            "z": null,
+            "a": true
+          },
+          [
+            3,
+            1,
+            2
+          ],
+          "quote\" slash\\ newline\n"
+        ]
+      },
+      "canonical": "{\"10\":\"ten\",\"2\":\"two\",\"a\":[{\"a\":true,\"z\":null},[3,1,2],\"quote\\\" slash\\\\ newline\\n\"],\"z\":{\"á\":\"Tiếng Việt\",\"😀\":\"pair\",\"\":\"BMP\"}}",
+      "sha256": "e2c04eabbf48108c41767c18f775a08072ba46c8c86e3aede7d02c7b7630d51d"
+    },
+    {
+      "name": "number-json-semantics",
+      "input": [
+        0,
+        1e-7,
+        1e+21,
+        3.4,
+        1.7976931348623157e+308,
+        5e-324
+      ],
+      "canonical": "[0,1e-7,1e+21,3.4,1.7976931348623157e+308,5e-324]",
+      "sha256": "a5ca83419645b4b5eea1e29b38a1bf7c8e157188f78f08bf9eaafc90879a5842"
+    }
+  ]
+}
