@@ -1,7 +1,7 @@
 # Hợp đồng API V1 — LIS → Middleware → EMR
 
 > **Mục đích:** Thống nhất dữ liệu gửi/nhận để hai thành viên có thể lập trình độc lập.  
-> **Trạng thái:** Bốn API nghiệp vụ **LIS đã triển khai và kiểm thử HTTP với PostgreSQL** ở SPP-66 A3. `/health` và `/ready` vẫn được giữ. Năm API nghiệp vụ Middleware/EMR vẫn là **thiết kế dự kiến**; dispatcher và luồng trao đổi end-to-end chưa được triển khai/kiểm thử.
+> **Trạng thái:** Bốn API nghiệp vụ **LIS** (A3) và ba API nghiệp vụ **Middleware** (B3) đã triển khai, kiểm thử với PostgreSQL. Mapper B4A đã nối vào **Worker B4B**: nhận việc, gửi HTTP, đọc lại và đối chiếu; đã kiểm thử với PostgreSQL thật và **EMR giả lập**. Hai API nghiệp vụ **EMR chưa triển khai**, nên tích hợp EMR thật và nghiệm thu end-to-end vẫn bị chặn. Dispatcher và ACK tự động phía LIS cũng chưa có. `/health` và `/ready` giữ nguyên.
 
 ## 1. Quy ước chung
 
@@ -18,9 +18,9 @@
 | LIS | `GET /api/results/:resultId` | Xem chi tiết kết quả | Đã triển khai, kiểm thử A3 |
 | LIS | `POST /api/results/:resultId/publish` | Lưu yêu cầu gửi một kết quả | Đã triển khai, kiểm thử A3 |
 | LIS | `GET /api/publish-events/:eventId` | Xem tình trạng gửi | Đã triển khai, kiểm thử A3 |
-| Middleware | `POST /api/exchanges` | Nhận dữ liệu từ LIS | Chưa triển khai |
-| Middleware | `GET /api/exchanges` | Xem/lọc giao dịch | Chưa triển khai |
-| Middleware | `GET /api/exchanges/:exchangeId` | Xem chi tiết và lịch sử giao dịch | Chưa triển khai |
+| Middleware | `POST /api/exchanges` | Nhận dữ liệu từ LIS | Đã triển khai, kiểm thử B3 |
+| Middleware | `GET /api/exchanges` | Xem/lọc giao dịch | Đã triển khai, kiểm thử B3 |
+| Middleware | `GET /api/exchanges/:exchangeId` | Xem chi tiết và lịch sử giao dịch | Đã triển khai, kiểm thử B3 |
 | EMR | `POST /api/observations` | Lưu kết quả theo FHIR R4 Observation | Chưa triển khai |
 | EMR | `GET /api/lab-results` | Xem/đọc lại kết quả đã lưu | Chưa triển khai |
 | Cả ba | `GET /health` | Kiểm tra HTTP đang chạy | Đã có |
@@ -85,10 +85,26 @@ Ví dụ phản hồi:
 
 - Middleware kiểm tra định dạng, ID và hash; **chỉ trả `202` sau khi lưu giao dịch**.
 - Phản hồi `202` gồm: `accepted`, `event_id`, `exchange_id`, `source_system`, `source_result_id`, `source_hash`. LIS chỉ ghi **`ACK`** khi phản hồi khớp toàn bộ ID và hash đã gửi.
-- Gửi lại **cùng ID + cùng nội dung** → trả `exchange_id` cũ. Cùng `event_id` hoặc `(source_system, source_result_id)` nhưng dữ liệu/sự kiện khác → **`409`**.
+- Gửi lại **cùng ID + cùng nội dung** → vẫn trả **`202`**, sáu trường như lần đầu và `exchange_id` cũ; không đổi trạng thái, payload, counters hoặc lịch sử. Cùng `event_id` hoặc `(source_system, source_result_id)` nhưng dữ liệu/sự kiện khác → **`409`**.
 - Nếu gửi lại do lỗi mạng, **giữ nguyên** `event_id`, snapshot và hash; không lấy lại dữ liệu nguồn đã thay đổi.
 
+B1–B3 lưu **toàn bộ envelope** trên vào `source_payload` dạng JSONB, không chỉ
+snapshot. So sánh retry gồm cả hai định danh, hash và toàn bộ envelope; thứ tự
+key object không ảnh hưởng nhưng chuỗi timestamp khác cách viết vẫn là nội dung
+khác. B2 kiểm tra/tính lại hash trước khi gọi Repository; xem [chi tiết B2](spp-66-b2-review.md).
+`202` chỉ xác nhận Middleware đã lưu, chưa ghi ACK thay LIS và chưa giao EMR.
+
 ### Bước 3 — Middleware gửi sang EMR
+
+B4A đã có `mapObservation(source_snapshot)` chuyển snapshot đã kiểm tra sang
+Observation theo MR01–MR09, mapping version nội bộ `lis-observation-v1`.
+Hàm không đọc/ghi database hoặc gửi HTTP. Worker B4B chạy riêng, lấy snapshot đã
+lưu qua Repository rồi gọi Mapper; API nhận chỉ lưu và trả ACK như B3.
+Khi thiếu cả hai cận thì bỏ `referenceRange`; thiếu fluid/category thì bỏ phần
+đó khỏi `code.text`. Giá trị không hợp lệ/không biểu diễn được trả lỗi có kiểu,
+không tự sửa nguồn. Chi tiết và JSON đầy đủ: [hướng dẫn B4A](spp-66-b4a-review.md).
+Worker đã triển khai phần gửi/đọc lại dưới đây và kiểm thử với EMR giả lập;
+phía EMR thật vẫn chưa có endpoint để kiểm thử tích hợp.
 
 `POST /api/observations`: Middleware chuyển dữ liệu thành **một FHIR R4 Observation** rồi gửi EMR. Ví dụ rút gọn:
 
@@ -146,6 +162,45 @@ Middleware gọi `GET /api/lab-results` với **cả** `external_system` và `ex
 - Khóa chống trùng: Middleware dùng `event_id` và `(source_system, source_result_id)`; EMR dùng `(external_system, external_id)`. Không dùng `patient_id + test_code` vì một bệnh nhân có thể xét nghiệm nhiều lần.
 - Namespace mẫu: `https://example.org/lis/result`, `https://example.org/lis/patient`, `https://example.org/lis/test-code`. Mã xét nghiệm hiện là mã cục bộ, **không mặc định là LOINC**.
 - `source_hash`: SHA-256 của JSON snapshot với khóa object sắp theo từ điển, mảng giữ nguyên thứ tự, không thêm khoảng trắng; hai bên cần thống nhất cách biểu diễn số và thời gian trước khi tính. **So sánh cả hash lẫn nội dung**, không chỉ dựa vào hash.
+
+### Dạng JSON đọc lại từ EMR — bổ sung hợp đồng ở B4B
+
+Trước B4B, contract chỉ nêu `{"items": [...]}` và MR01–MR09, chưa chốt tên/kiểu
+trường của từng item. B4B dùng các tên snake_case tương ứng schema EMR hiện có
+và bổ sung yêu cầu dưới đây để có thể kiểm tra đầy đủ. **Đây là hợp đồng cho
+EMR sẽ triển khai**, chưa phải xác nhận hành vi của EMR thật; cần đối chiếu với
+thành viên làm EMR trước nghiệm thu. Không thay đổi bảng hoặc cột SQL.
+
+`GET /api/lab-results?external_system=...&external_id=...` phải trả `200`,
+`Content-Type: application/json`, với `items` chứa mọi kết quả của đúng cặp ID
+(không che kết quả trùng bằng phân trang). Chế độ này không yêu cầu `limit/offset`.
+
+| Trường trong mỗi item | Kiểu / yêu cầu |
+|---|---|
+| `target_id`, `patient_key` | UUID, khớp phản hồi POST đã lưu; so UUID không phân biệt chữ hoa/thường |
+| `external_system`, `external_id` | Chuỗi, khớp chính xác `Observation.identifier[0]` |
+| `analyte_system`, `analyte_code`, `analyte_display` | Chuỗi, khớp `code.coding[0].system/code/display` |
+| `analyte_context` | Chuỗi, khớp `code.text` |
+| `quantity` | **Chuỗi số thập phân** từ NUMERIC; ví dụ `"3.4000"`. Không ép sang JS number trước khi trả |
+| `unit_text` | Chuỗi đơn vị nguyên gốc |
+| `low`, `high` | Chuỗi số thập phân, hoặc **`null` rõ ràng** khi không có cận |
+| `effective_at` | ISO 8601 đầy đủ kèm múi giờ, giữ độ chính xác PostgreSQL (đến microsecond) |
+| `clinical_status` | `"final"` |
+| `fhir_json` | Object Observation nguyên gốc đã lưu, gồm subject identifier và nhóm laboratory |
+
+Worker so sánh số theo chữ số và số mũ, nên `"3.4000"` bằng `3.4` nhưng
+`"3.400000000000000000001"` không bằng `3.4`; không làm tròn. Chuỗi số tối đa
+4096 ký tự, không có khoảng trắng. So thời gian theo
+instant và giữ **toàn bộ phần lẻ giây**: đổi múi giờ được chấp nhận, mất một
+microsecond không được chấp nhận. Các số trong `fhir_json` giữ kiểu JSON number
+như Observation đã gửi; các cột NUMERIC đọc lại dùng chuỗi như bảng trên.
+
+`fhir_json` phải giữ nguyên Observation theo giá trị JSON (thứ tự key không quan
+trọng, `effectiveDateTime` được viết bằng múi giờ tương đương). B4B chưa cho phép
+EMR thêm `id/meta` hay đổi cấu trúc FHIR trong trường này. Các cột chỉ chứng minh
+một phần MR02/MR09; cần cả FHIR lưu lại để kiểm tra `subject.identifier` và
+nhóm `laboratory`. Worker không truy cập `patient_links`; xác minh liên kết
+người bệnh độc lập vẫn thuộc bước nghiệm thu/evaluator sau này.
 
 ## 5. Trạng thái, tra cứu và lỗi
 
@@ -229,7 +284,96 @@ chung `The latest dispatch attempt failed.` thay vì nội dung chẩn đoán th
 Mã lỗi lưu không đúng dạng chữ hoa/số/gạch dưới (tối đa 64 ký tự, bắt đầu bằng
 chữ) được trình bày là `DISPATCH_ERROR`; không sửa bản ghi gốc.
 
-Khi lỗi nghiệp vụ, trả JSON `{"error":{"code":"DUPLICATE_CONFLICT","message":"..."}}`. Mã lỗi: `VALIDATION_ERROR`, `RESULT_NOT_READY`, `PATIENT_NOT_LINKED`, `DUPLICATE_CONFLICT`, `INVALID_TEST_CODE`, `INVALID_UNIT`, `VERIFY_MISMATCH`, `DEPENDENCY_UNAVAILABLE`; LIS A3 dùng thêm `NOT_FOUND` cho `404` vì bản dự thảo chưa chốt mã cho trường hợp này.
+### Phản hồi Middleware — đã triển khai ở B3
+
+Trước B3, contract chưa chốt JSON cho từng phần tử danh sách/chi tiết và event.
+B3 bổ sung quy ước sau; không thay đổi định danh hoặc quy tắc idempotency.
+
+`POST /api/exchanges` nhận `Content-Type: application/json`. Thiếu/sai media type
+trả `415`; JSON hỏng hoặc thiếu/sai kiểu trường/UUID/hash format/thời gian trả
+`400`; hash không khớp hoặc dữ liệu nghiệp vụ không hợp lệ trả `422`. Giới hạn
+JSON hiện có vẫn là `1mb` (`413` khi vượt); charset/encoding không hỗ trợ trả
+`415`; body nén bị hỏng trả `400`. Các lỗi này dùng error envelope bên dưới. Body rỗng với media type JSON
+trả `400`. Phản hồi thành công chỉ có sáu trường:
+
+```json
+{
+  "accepted": true,
+  "event_id": "00000000-0000-4000-8000-000000000001",
+  "exchange_id": "00000000-0000-4000-8000-000000000002",
+  "source_system": "lis-demo",
+  "source_result_id": "B2-GOLDEN-R1",
+  "source_hash": "66d4bb0e7270c1f2983f90de625361cb26dc4c06e65247a1c2627031a9c1bd1d"
+}
+```
+
+`GET /api/exchanges` trả `{ "items": [...], "limit": 20, "offset": 0 }`.
+Mỗi item gồm:
+
+```json
+{
+  "exchange_id": "00000000-0000-4000-8000-000000000002",
+  "event_id": "00000000-0000-4000-8000-000000000001",
+  "source_system": "lis-demo",
+  "source_result_id": "B2-GOLDEN-R1",
+  "source_hash": "66d4bb0e7270c1f2983f90de625361cb26dc4c06e65247a1c2627031a9c1bd1d",
+  "status": "RECEIVED",
+  "retry_phase": null,
+  "send_attempt_count": 0,
+  "verify_attempt_count": 0,
+  "published_at": "2026-10-22T09:00:00.000Z",
+  "received_at": "2026-10-26T02:00:00.000Z",
+  "next_retry_at": null,
+  "completed_at": null
+}
+```
+
+- Chỉ hỗ trợ `status`, `source_result_id`, `limit`, `offset`; các bộ lọc kết hợp
+  bằng AND. `status` nhận đúng một trong bảy trạng thái Middleware ở bảng trên.
+- `source_result_id` là chuỗi không trống, không có ký tự điều khiển; không tự
+  trim hoặc đổi chữ hoa/thường trước khi tra. Không lọc bằng patient ID.
+- `limit` nguyên 1–100, mặc định 20; `offset` nguyên 0–`Number.MAX_SAFE_INTEGER`,
+  mặc định 0. Query chỉ gồm chữ số cho hai trường này, không nhận dấu, số thập
+  phân, số mũ hoặc khoảng trắng. Sắp theo `received_at DESC, exchange_id ASC`.
+- Query không hỗ trợ, bị lặp, dạng array/object hoặc bộ lọc trống trả
+  `400`/`VALIDATION_ERROR`. Không có kết quả trả `items: []`.
+
+`GET /api/exchanges/:exchangeId` trả một object gồm **toàn bộ trường của item**
+cộng các trường sau:
+
+| Trường | Nội dung |
+|---|---|
+| `source_payload` | Toàn bộ envelope JSON đã lưu |
+| `fhir_payload` | JSON đã lưu, hoặc `null` nếu chưa có; B3 không tạo FHIR |
+| `payload_hash`, `mapping_version` | Giá trị đã lưu hoặc `null` |
+| `validated_at`, `mapping_started_at`, `transformed_at`, `first_sent_at`, `target_stored_at`, `verified_at` | Mốc thời gian đã lưu hoặc `null` |
+| `events` | Mảng event đã lưu, có dạng dưới đây; rỗng trả `[]` |
+
+```json
+{
+  "log_event_id": "00000000-0000-4000-8000-000000000003",
+  "exchange_id": "00000000-0000-4000-8000-000000000002",
+  "event_type": "RECEIVED",
+  "old_status": null,
+  "new_status": "RECEIVED",
+  "occurred_at": "2026-10-26T02:00:00.000Z",
+  "attempt_id": null
+}
+```
+
+Lịch sử sắp theo `occurred_at ASC, log_event_id ASC`. Không trả JSON chẩn đoán
+thô `exchange_events.detail`, lease/token nội bộ hoặc response/error body của
+attempt. Tất cả trạng thái, counters và events lấy từ dữ liệu đã lưu.
+Timestamp cột được trả UTC ISO 8601 qua `Date` hiện có, đến millisecond;
+chuỗi trong `source_payload` giữ nguyên độ chính xác gốc.
+
+`exchangeId` phải là UUID `8-4-4-4-12`, không phân biệt chữ hoa/thường:
+sai định dạng trả `400`, hợp lệ nhưng không tồn tại trả `404`/`NOT_FOUND`.
+POST và GET chi tiết không hỗ trợ query parameter, có query trả `400`.
+Lỗi database trên ba API trả `503`/`DEPENDENCY_UNAVAILABLE`, không lộ lỗi driver.
+Hướng dẫn thử bằng `curl` và kết quả test: [SPP-66 B3](spp-66-b3-review.md).
+
+Khi lỗi nghiệp vụ, trả JSON `{"error":{"code":"DUPLICATE_CONFLICT","message":"..."}}`. Mã lỗi: `VALIDATION_ERROR`, `RESULT_NOT_READY`, `PATIENT_NOT_LINKED`, `DUPLICATE_CONFLICT`, `INVALID_TEST_CODE`, `INVALID_UNIT`, `VERIFY_MISMATCH`, `DEPENDENCY_UNAVAILABLE`; LIS A3 và Middleware B3 dùng `NOT_FOUND` cho `404` vì bản dự thảo trước A3 chưa chốt mã cho trường hợp này.
 
 Các lỗi khi gọi Service/Repository từ API LIS trả `503`/`DEPENDENCY_UNAVAILABLE`
 với thông báo chung, không có SQL, stack trace hoặc thông tin kết nối. Chi tiết
@@ -241,12 +385,25 @@ triển khai và ví dụ chạy thử: [SPP-66 A3](spp-66-a3-review.md).
 | `404` | Không tìm thấy bản ghi theo ID | Không |
 | `409` | Trùng mã nhưng xung đột dữ liệu | Không |
 | `413` | Body JSON vượt giới hạn dung lượng | Không |
-| `415` | Charset/encoding của body không được hỗ trợ | Không |
+| `415` | Media type/charset/encoding của body không được hỗ trợ | Không |
 | `422` | Dữ liệu không hợp lệ/chưa `FINAL`/sai bệnh nhân | Không |
 | `503` hoặc lỗi `5xx` tạm thời | Service/database tạm thời không sẵn sàng | Có, có giới hạn |
 
 - Timeout hoặc mất phản hồi **không có nghĩa dữ liệu chưa lưu**; gửi lại phải giữ nguyên ID. Lưu lịch sử mỗi lần thử.
 - Tham số thử nghiệm ban đầu (còn có thể thay đổi): **1 lần đầu + tối đa 3 lần thử lại**, chờ **2/4/8 giây**, timeout **3 giây**. Khi đang đọc lại, `RETRY_WAIT` thuộc giai đoạn `VERIFY`; nếu gửi chưa xong thì thuộc `SEND`.
+- B4B áp dụng ngân sách trên **riêng cho SEND và VERIFY**, cấu hình bằng biến
+  môi trường. Timeout/mất kết nối, HTTP `408`, `429`, `5xx` được thử lại có giới
+  hạn. POST `409/422` → `REJECTED`; lỗi HTTP khác hoặc phản hồi thành công sai
+  hợp đồng → `FAILED`. GET đọc được nhưng rỗng, nhiều hơn một item hoặc sai dữ
+  liệu → `FAILED` + `VERIFY_MISMATCH`, không thử gửi lại. POST thành công sai
+  định danh/UUID/result không được coi là xác nhận lưu.
+- Worker lưu xác nhận POST đã kiểm tra trong `exchange_attempts.response_body`
+  cùng lần commit chuyển sang `VERIFYING`. Sau khi khởi động lại, dùng xác nhận
+  này để đối chiếu `patient_key/target_id`; không đoán ID và không gửi lại khi
+  đã xác nhận lưu. Ghi trạng thái/attempt/event luôn kiểm tra lease còn hạn.
+- `completed_at` **chỉ có ở DELIVERED**, cùng `verified_at`; `FAILED/REJECTED`
+  phải để `completed_at = null` theo `exchange_completed_chk`. Chi tiết cách
+  chạy, phục hồi và các mốc lịch sử: [hướng dẫn B4B](spp-66-b4b-review.md).
 - `/health` kiểm tra HTTP; `/ready` kiểm tra database. `/ready` trả `200` **không chứng minh** kết quả xét nghiệm đã được trao đổi.
 
 ## 6. Trước khi bắt đầu code nghiệp vụ

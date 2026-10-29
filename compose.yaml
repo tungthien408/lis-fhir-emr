@@ -49,6 +49,22 @@ services:
       db:
         condition: service_healthy
 
+  # Opt-in only: EMR business endpoints must exist before real delivery testing.
+  middleware-worker:
+    image: lis-fhir-emr-backend:local
+    profiles: ["worker"]
+    command: ["npm", "run", "start:middleware-worker"]
+    environment:
+      MIDDLEWARE_DATABASE_URL: postgresql://integration_app:${MIDDLEWARE_DB_PASSWORD}@db:5432/dacn_db
+      EMR_BASE_URL: ${WORKER_EMR_BASE_URL:-http://emr:3103}
+      MIDDLEWARE_WORKER_HTTP_TIMEOUT_MS: ${MIDDLEWARE_WORKER_HTTP_TIMEOUT_MS:-3000}
+      MIDDLEWARE_WORKER_LEASE_MS: ${MIDDLEWARE_WORKER_LEASE_MS:-15000}
+      MIDDLEWARE_WORKER_POLL_MS: ${MIDDLEWARE_WORKER_POLL_MS:-1000}
+      MIDDLEWARE_WORKER_RETRY_DELAYS_MS: ${MIDDLEWARE_WORKER_RETRY_DELAYS_MS-2000,4000,8000}
+    depends_on:
+      db:
+        condition: service_healthy
+
   emr:
     image: lis-fhir-emr-backend:local
     command: ["npm", "run", "start:emr"]
