@@ -1,0 +1,14 @@
+{
+  "result_id": "B4A-SYNTHETIC-R1",
+  "patient_id": "B4A-SYNTHETIC-P1",
+  "test_code": "50971",
+  "test_name": "Potassium",
+  "fluid": "Blood",
+  "category": "Chemistry",
+  "value_num": 3.4,
+  "unit": "mEq/L",
+  "reference_low": 3.3,
+  "reference_high": 5.1,
+  "effective_at": "2180-06-03T12:00:00.123456Z",
+  "result_status": "FINAL"
+}
