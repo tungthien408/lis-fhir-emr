@@ -1,7 +1,7 @@
 # Hợp đồng API V1 — LIS → Middleware → EMR
 
 > **Mục đích:** Thống nhất dữ liệu gửi/nhận để hai thành viên có thể lập trình độc lập.  
-> **Trạng thái:** Bốn API nghiệp vụ **LIS** (A3) và ba API nghiệp vụ **Middleware** (B3) đã triển khai, kiểm thử với PostgreSQL. Mapper B4A đã nối vào **Worker B4B**: nhận việc, gửi HTTP, đọc lại và đối chiếu; đã kiểm thử với PostgreSQL thật và **EMR giả lập**. Hai API nghiệp vụ **EMR chưa triển khai**, nên tích hợp EMR thật và nghiệm thu end-to-end vẫn bị chặn. Dispatcher và ACK tự động phía LIS cũng chưa có. `/health` và `/ready` giữ nguyên.
+> **Trạng thái:** Các API LIS (A3), Middleware (B3), EMR (C3) và Dispatcher D2 đã triển khai. **D3 đã kiểm thử toàn luồng backend thật: LIS Publish → Dispatcher → Middleware → Worker/Mapper → EMR → đọc lại → DELIVERED**, với PostgreSQL cô lập và dữ liệu giả có đáp án riêng. Xem [review D3](spp-66-d3-review.md) cho bằng chứng, cách chạy và giới hạn. Các bộ [C4](spp-66-c4-review.md), [D2](spp-66-d2-review.md) và B4B được giữ riêng. Chưa kiểm thử bộ MIMIC/SPP-65 chính thức, chưa làm D4, frontend hoặc evaluator. `/health` và `/ready` giữ nguyên.
 
 ## 1. Quy ước chung
 
@@ -21,8 +21,8 @@
 | Middleware | `POST /api/exchanges` | Nhận dữ liệu từ LIS | Đã triển khai, kiểm thử B3 |
 | Middleware | `GET /api/exchanges` | Xem/lọc giao dịch | Đã triển khai, kiểm thử B3 |
 | Middleware | `GET /api/exchanges/:exchangeId` | Xem chi tiết và lịch sử giao dịch | Đã triển khai, kiểm thử B3 |
-| EMR | `POST /api/observations` | Lưu kết quả theo FHIR R4 Observation | Chưa triển khai |
-| EMR | `GET /api/lab-results` | Xem/đọc lại kết quả đã lưu | Chưa triển khai |
+| EMR | `POST /api/observations` | Lưu kết quả theo FHIR R4 Observation | Đã triển khai C3; kiểm thử tích hợp Worker thật C4 |
+| EMR | `GET /api/lab-results` | Xem/đọc lại kết quả đã lưu | Đã triển khai C3; kiểm thử tích hợp Worker thật C4 |
 | Cả ba | `GET /health` | Kiểm tra HTTP đang chạy | Đã có |
 | Cả ba | `GET /ready` | Kiểm tra kết nối, tài khoản và bảng database | Đã có |
 
@@ -94,6 +94,16 @@ key object không ảnh hưởng nhưng chuỗi timestamp khác cách viết v�
 khác. B2 kiểm tra/tính lại hash trước khi gọi Repository; xem [chi tiết B2](spp-66-b2-review.md).
 `202` chỉ xác nhận Middleware đã lưu, chưa ghi ACK thay LIS và chưa giao EMR.
 
+Dispatcher D2 chạy riêng, gửi sáu trường trên từ outbox qua HTTP, không đọc lại
+`lis.results`. Chỉ ghi ACK sau khi kiểm tra đầy đủ receipt và Repository D1
+commit. Timeout/mất kết nối, `408/429/5xx` → thử lại có giới hạn; hết lượt →
+`FAILED`. `409` và các `4xx` còn lại → `BLOCKED`; `202` sai JSON/UUID/định danh/hash
+hoặc mã HTTP ngoài hợp đồng → `FAILED`. Đây là chính sách LIS bổ sung ở D2;
+không thay đổi trạng thái Middleware. Lịch thử mặc định 2/4/8 giây, tổng 4 lượt.
+Chi tiết cấu hình, phục hồi lease và giới hạn kiểm thử: [review D2](spp-66-d2-review.md).
+D3 đã kiểm thử Dispatcher với Middleware thật, kể cả mất phản hồi sau khi lưu,
+hai Dispatcher cạnh tranh và khởi động lại; xem [review D3](spp-66-d3-review.md).
+
 ### Bước 3 — Middleware gửi sang EMR
 
 B4A đã có `mapObservation(source_snapshot)` chuyển snapshot đã kiểm tra sang
@@ -103,8 +113,11 @@ lưu qua Repository rồi gọi Mapper; API nhận chỉ lưu và trả ACK như
 Khi thiếu cả hai cận thì bỏ `referenceRange`; thiếu fluid/category thì bỏ phần
 đó khỏi `code.text`. Giá trị không hợp lệ/không biểu diễn được trả lỗi có kiểu,
 không tự sửa nguồn. Chi tiết và JSON đầy đủ: [hướng dẫn B4A](spp-66-b4a-review.md).
-Worker đã triển khai phần gửi/đọc lại dưới đây và kiểm thử với EMR giả lập;
-phía EMR thật vẫn chưa có endpoint để kiểm thử tích hợp.
+Worker đã triển khai phần gửi/đọc lại dưới đây. C3 triển khai hai endpoint EMR;
+C4 đã chạy Worker/Mapper thật với hai endpoint này qua HTTP và PostgreSQL cô
+lập, kiểm tra dữ liệu độc lập, `verifyReadBack`, trạng thái `DELIVERED` và audit.
+Các test EMR giả lập của B4B được giữ nguyên. D3 bổ sung toàn luồng từ LIS Publish
+và Dispatcher với dữ liệu giả; chưa phải nghiệm thu bằng dataset SPP-65.
 
 `POST /api/observations`: Middleware chuyển dữ liệu thành **một FHIR R4 Observation** rồi gửi EMR. Ví dụ rút gọn:
 
@@ -167,9 +180,10 @@ Middleware gọi `GET /api/lab-results` với **cả** `external_system` và `ex
 
 Trước B4B, contract chỉ nêu `{"items": [...]}` và MR01–MR09, chưa chốt tên/kiểu
 trường của từng item. B4B dùng các tên snake_case tương ứng schema EMR hiện có
-và bổ sung yêu cầu dưới đây để có thể kiểm tra đầy đủ. **Đây là hợp đồng cho
-EMR sẽ triển khai**, chưa phải xác nhận hành vi của EMR thật; cần đối chiếu với
-thành viên làm EMR trước nghiệm thu. Không thay đổi bảng hoặc cột SQL.
+và bổ sung yêu cầu dưới đây để có thể kiểm tra đầy đủ. **C3 đã triển khai và
+kiểm thử hợp đồng này trên HTTP + PostgreSQL EMR thật**. C4 tiếp tục xác nhận
+Worker thật gửi, đọc lại và lưu `DELIVERED` theo hợp đồng này. Nghiệm thu toàn
+luồng LIS vẫn là bước riêng. Không thay đổi bảng hoặc cột SQL.
 
 `GET /api/lab-results?external_system=...&external_id=...` phải trả `200`,
 `Content-Type: application/json`, với `items` chứa mọi kết quả của đúng cặp ID
@@ -373,7 +387,76 @@ POST và GET chi tiết không hỗ trợ query parameter, có query trả `400`
 Lỗi database trên ba API trả `503`/`DEPENDENCY_UNAVAILABLE`, không lộ lỗi driver.
 Hướng dẫn thử bằng `curl` và kết quả test: [SPP-66 B3](spp-66-b3-review.md).
 
-Khi lỗi nghiệp vụ, trả JSON `{"error":{"code":"DUPLICATE_CONFLICT","message":"..."}}`. Mã lỗi: `VALIDATION_ERROR`, `RESULT_NOT_READY`, `PATIENT_NOT_LINKED`, `DUPLICATE_CONFLICT`, `INVALID_TEST_CODE`, `INVALID_UNIT`, `VERIFY_MISMATCH`, `DEPENDENCY_UNAVAILABLE`; LIS A3 và Middleware B3 dùng `NOT_FOUND` cho `404` vì bản dự thảo trước A3 chưa chốt mã cho trường hợp này.
+### Phản hồi EMR — đã triển khai ở C3
+
+`POST /api/observations` yêu cầu `Content-Type: application/fhir+json`, không
+nhận query parameter. Parser đọc JSON trực tiếp, giới hạn `1mb`; các endpoint
+JSON khác vẫn nhận `application/json`. Body phải là một Observation thuộc tập
+FHIR dự án đã kiểm tra tại C2, không phải Bundle hoặc một validator FHIR tổng quát.
+
+- `201`/`STORED` chỉ trả sau khi transaction commit; retry giống hệt trả
+  `200`/`ALREADY_EXISTS`, cùng `target_id` và `patient_key`.
+- Cùng cặp định danh nhưng nội dung hoặc liên kết người bệnh khác trả
+  `409`/`DUPLICATE_CONFLICT`; không ghi đè.
+- Observation sai/không hỗ trợ, body JSON rỗng hoặc sai kiểu trả
+  `422`/`VALIDATION_ERROR`; thiếu liên kết trả `422`/`PATIENT_NOT_LINKED`.
+- Query sai hoặc JSON hỏng trả `400`/`VALIDATION_ERROR`; vượt `1mb` trả `413`.
+  Thiếu/sai media type, charset không hỗ trợ hoặc Content-Encoding khác
+  `identity` trả `415`/`VALIDATION_ERROR`. Body nén không được hỗ trợ.
+- Lỗi database trả `503`/`DEPENDENCY_UNAVAILABLE`, không trả SQL, thông tin
+  kết nối, stack trace hay nội dung bệnh nhân trong thông báo lỗi.
+
+Thành công chỉ trả năm trường:
+
+```json
+{
+  "result": "STORED",
+  "external_system": "https://example.org/lis/result",
+  "external_id": "B4A-SYNTHETIC-R1",
+  "target_id": "00000000-0000-4000-8000-000000000066",
+  "patient_key": "00000000-0000-4000-8000-000000000067"
+}
+```
+
+`GET /api/lab-results` hỗ trợ đúng hai chế độ:
+
+- Cặp `external_system` + `external_id`: trả `{ "items": [...] }`, không phân
+  trang hoặc gộp kết quả. Không có kết quả trả `{ "items": [] }`. Không kết hợp
+  với `patient_key`, `limit` hoặc `offset`.
+- `patient_key`: UUID dạng `8-4-4-4-12`; tùy chọn `limit` (1–100, mặc định 20)
+  và `offset` (0–`Number.MAX_SAFE_INTEGER`, mặc định 0). Hai tham số phân trang
+  chỉ nhận chữ số. Trả `{ "items": [...], "limit": 20, "offset": 0 }`, sắp theo
+  `effective_at DESC, target_id ASC` trước phân trang.
+
+Thiếu bộ lọc, chỉ có một nửa cặp định danh, trộn hai chế độ, tham số không hỗ
+trợ/lặp/dạng array hoặc object, giá trị rỗng, ký tự điều khiển hoặc mã hóa query
+hỏng đều trả `400`/`VALIDATION_ERROR`. Giữ nguyên khoảng trắng và chữ hoa/thường
+trong định danh hợp lệ khi tra cứu. Lỗi database ở cả hai chế độ trả `503`.
+Item trả dữ liệu Repository đã lưu như mục 4, cộng `received_at`, `stored_at`
+đầy đủ microsecond. Không ép NUMERIC thành number hoặc timestamp thành `Date`.
+
+Ví dụ tại thư mục gốc repo, sau khi đã có liên kết người bệnh giả
+`https://example.org/lis/patient` + `B4A-SYNTHETIC-P1` trong EMR:
+
+```bash
+curl -i http://127.0.0.1:3103/api/observations \
+  -H 'Content-Type: application/fhir+json' \
+  --data-binary @backend/tests/middleware/fixtures/observation-r4-golden.json
+
+curl -G http://127.0.0.1:3103/api/lab-results \
+  --data-urlencode 'external_system=https://example.org/lis/result' \
+  --data-urlencode 'external_id=B4A-SYNTHETIC-R1'
+
+# Thay patient_key bằng UUID EMR nhận từ POST.
+curl -G http://127.0.0.1:3103/api/lab-results \
+  --data-urlencode 'patient_key=00000000-0000-4000-8000-000000000067' \
+  --data-urlencode 'limit=20' --data-urlencode 'offset=0'
+```
+
+Cách tạo fixture, ví dụ phản hồi GET, giải thích Controller bằng tiếng Việt và
+kết quả test thực tế: [SPP-66 C3](spp-66-c3-review.md).
+
+Khi lỗi nghiệp vụ, trả JSON `{"error":{"code":"DUPLICATE_CONFLICT","message":"..."}}`. Mã lỗi: `VALIDATION_ERROR`, `RESULT_NOT_READY`, `PATIENT_NOT_LINKED`, `DUPLICATE_CONFLICT`, `INVALID_TEST_CODE`, `INVALID_UNIT`, `VERIFY_MISMATCH`, `DEPENDENCY_UNAVAILABLE`; LIS A3, Middleware B3 và EMR C3 dùng `NOT_FOUND` cho `404` vì bản dự thảo trước A3 chưa chốt mã cho trường hợp này.
 
 Các lỗi khi gọi Service/Repository từ API LIS trả `503`/`DEPENDENCY_UNAVAILABLE`
 với thông báo chung, không có SQL, stack trace hoặc thông tin kết nối. Chi tiết

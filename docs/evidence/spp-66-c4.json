@@ -1,0 +1,5463 @@
+{
+  "completed": true,
+  "environment": {
+    "node": "v26.12.0",
+    "postgres": "17.11 (Debian 17.11-1.pgdg13+2)",
+    "fixture_sha256": "4c25a29952fc599d684984ba1a72e4bbdae715a3b52502fbb5e612773d66839f",
+    "provenance": "C4 synthetic fixtures; no SPP-65 dataset",
+    "emr": "real Controller/Service/Repository",
+    "worker": "real Worker/Mapper/Repository",
+    "transport": "localhost HTTP",
+    "fault_injection": "targeted SQL on scenario-owned EMR rows before real GET; HTTP responses are never fabricated",
+    "readiness": {
+      "lis": {
+        "status": 200,
+        "body": {
+          "service": "lis",
+          "status": "ready",
+          "schema": "lis",
+          "database": "dacn_db",
+          "role": "lis_app"
+        }
+      },
+      "middleware": {
+        "status": 200,
+        "body": {
+          "service": "middleware",
+          "status": "ready",
+          "schema": "integration",
+          "database": "dacn_db",
+          "role": "integration_app"
+        }
+      },
+      "emr": {
+        "status": 200,
+        "body": {
+          "service": "emr",
+          "status": "ready",
+          "schema": "emr",
+          "database": "dacn_db",
+          "role": "emr_app"
+        }
+      }
+    },
+    "readiness_command": {
+      "command": "node ../scripts/db-check.mjs",
+      "exit_code": 0,
+      "output": "PASS lis         schema=lis role=lis_app\nPASS middleware  schema=integration role=integration_app\nPASS emr         schema=emr role=emr_app\n\nOK: 3 service ket noi duoc PostgreSQL va nhin thay du bang. Chua test nghiep vu!\n"
+    }
+  },
+  "scenarios": [
+    {
+      "case_id": "C4-01/05/06/07-both",
+      "outcome": "PASS",
+      "fixture": "both",
+      "exchange_id": "f4d7cc61-2b77-4971-8a20-6c5ad62b7c37",
+      "expected_columns": {
+        "external_system": "https://example.org/lis/result",
+        "external_id": "C4-SYNTHETIC-R-270460d1-1190-49c7-ae0d-4f99dbd24f03",
+        "analyte_system": "https://example.org/lis/test-code",
+        "analyte_code": "C4-LOCAL-TEST",
+        "analyte_display": "C4 synthetic analyte",
+        "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+        "quantity": "0.30000000000000004",
+        "unit_text": "mg/dL",
+        "low": "0.1",
+        "high": "0.9",
+        "effective_at": "2026-10-29T08:00:00.123456Z",
+        "clinical_status": "final",
+        "patient_key": "af1a78a0-f901-41b1-8147-90bd8ed3a8ad"
+      },
+      "expected_fhir": {
+        "resourceType": "Observation",
+        "identifier": [
+          {
+            "system": "https://example.org/lis/result",
+            "value": "C4-SYNTHETIC-R-270460d1-1190-49c7-ae0d-4f99dbd24f03"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://example.org/lis/test-code",
+              "code": "C4-LOCAL-TEST",
+              "display": "C4 synthetic analyte"
+            }
+          ],
+          "text": "C4 synthetic analyte / Blood / Chemistry"
+        },
+        "subject": {
+          "type": "Patient",
+          "identifier": {
+            "system": "https://example.org/lis/patient",
+            "value": "C4-SYNTHETIC-P-270460d1-1190-49c7-ae0d-4f99dbd24f03"
+          }
+        },
+        "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+        "valueQuantity": {
+          "value": 0.30000000000000004,
+          "unit": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 0.1,
+              "unit": "mg/dL"
+            },
+            "high": {
+              "value": 0.9,
+              "unit": "mg/dL"
+            }
+          }
+        ]
+      },
+      "actual_rows": [
+        {
+          "target_id": "13a42df7-fe30-4005-aad4-7fb33f9fdfde",
+          "patient_key": "af1a78a0-f901-41b1-8147-90bd8ed3a8ad",
+          "external_system": "https://example.org/lis/result",
+          "external_id": "C4-SYNTHETIC-R-270460d1-1190-49c7-ae0d-4f99dbd24f03",
+          "analyte_system": "https://example.org/lis/test-code",
+          "analyte_code": "C4-LOCAL-TEST",
+          "analyte_display": "C4 synthetic analyte",
+          "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+          "quantity": "0.30000000000000004",
+          "unit_text": "mg/dL",
+          "low": "0.1",
+          "high": "0.9",
+          "effective_at": "2026-10-29T08:00:00.123456Z",
+          "clinical_status": "final",
+          "fhir_json": {
+            "code": {
+              "text": "C4 synthetic analyte / Blood / Chemistry",
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "system": "https://example.org/lis/test-code",
+                  "display": "C4 synthetic analyte"
+                }
+              ]
+            },
+            "status": "final",
+            "subject": {
+              "type": "Patient",
+              "identifier": {
+                "value": "C4-SYNTHETIC-P-270460d1-1190-49c7-ae0d-4f99dbd24f03",
+                "system": "https://example.org/lis/patient"
+              }
+            },
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "identifier": [
+              {
+                "value": "C4-SYNTHETIC-R-270460d1-1190-49c7-ae0d-4f99dbd24f03",
+                "system": "https://example.org/lis/result"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            },
+            "referenceRange": [
+              {
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                },
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                }
+              }
+            ],
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+          },
+          "received_at": "2026-10-29T16:55:13.428056Z",
+          "stored_at": "2026-10-29T16:55:13.428056Z"
+        }
+      ],
+      "http": [
+        {
+          "method": "POST",
+          "path": "/api/observations",
+          "query": {},
+          "content_type": "application/fhir+json",
+          "request_body": {
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "display": "C4 synthetic analyte",
+                  "system": "https://example.org/lis/test-code"
+                }
+              ],
+              "text": "C4 synthetic analyte / Blood / Chemistry"
+            },
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+            "identifier": [
+              {
+                "system": "https://example.org/lis/result",
+                "value": "C4-SYNTHETIC-R-270460d1-1190-49c7-ae0d-4f99dbd24f03"
+              }
+            ],
+            "referenceRange": [
+              {
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                },
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                }
+              }
+            ],
+            "resourceType": "Observation",
+            "status": "final",
+            "subject": {
+              "identifier": {
+                "system": "https://example.org/lis/patient",
+                "value": "C4-SYNTHETIC-P-270460d1-1190-49c7-ae0d-4f99dbd24f03"
+              },
+              "type": "Patient"
+            },
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            }
+          },
+          "status": 201,
+          "response_body": {
+            "result": "STORED",
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-270460d1-1190-49c7-ae0d-4f99dbd24f03",
+            "target_id": "13a42df7-fe30-4005-aad4-7fb33f9fdfde",
+            "patient_key": "af1a78a0-f901-41b1-8147-90bd8ed3a8ad"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/lab-results",
+          "query": {
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-270460d1-1190-49c7-ae0d-4f99dbd24f03"
+          },
+          "content_type": null,
+          "request_body": null,
+          "status": 200,
+          "response_body": {
+            "items": [
+              {
+                "target_id": "13a42df7-fe30-4005-aad4-7fb33f9fdfde",
+                "patient_key": "af1a78a0-f901-41b1-8147-90bd8ed3a8ad",
+                "external_system": "https://example.org/lis/result",
+                "external_id": "C4-SYNTHETIC-R-270460d1-1190-49c7-ae0d-4f99dbd24f03",
+                "analyte_system": "https://example.org/lis/test-code",
+                "analyte_code": "C4-LOCAL-TEST",
+                "analyte_display": "C4 synthetic analyte",
+                "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+                "quantity": "0.30000000000000004",
+                "unit_text": "mg/dL",
+                "low": "0.1",
+                "high": "0.9",
+                "effective_at": "2026-10-29T08:00:00.123456Z",
+                "clinical_status": "final",
+                "fhir_json": {
+                  "code": {
+                    "text": "C4 synthetic analyte / Blood / Chemistry",
+                    "coding": [
+                      {
+                        "code": "C4-LOCAL-TEST",
+                        "system": "https://example.org/lis/test-code",
+                        "display": "C4 synthetic analyte"
+                      }
+                    ]
+                  },
+                  "status": "final",
+                  "subject": {
+                    "type": "Patient",
+                    "identifier": {
+                      "value": "C4-SYNTHETIC-P-270460d1-1190-49c7-ae0d-4f99dbd24f03",
+                      "system": "https://example.org/lis/patient"
+                    }
+                  },
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "laboratory",
+                          "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "identifier": [
+                    {
+                      "value": "C4-SYNTHETIC-R-270460d1-1190-49c7-ae0d-4f99dbd24f03",
+                      "system": "https://example.org/lis/result"
+                    }
+                  ],
+                  "resourceType": "Observation",
+                  "valueQuantity": {
+                    "unit": "mg/dL",
+                    "value": 0.30000000000000004
+                  },
+                  "referenceRange": [
+                    {
+                      "low": {
+                        "unit": "mg/dL",
+                        "value": 0.1
+                      },
+                      "high": {
+                        "unit": "mg/dL",
+                        "value": 0.9
+                      }
+                    }
+                  ],
+                  "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+                },
+                "received_at": "2026-10-29T16:55:13.428056Z",
+                "stored_at": "2026-10-29T16:55:13.428056Z"
+              }
+            ]
+          }
+        }
+      ],
+      "status": "DELIVERED",
+      "verified_at": "2026-10-29T16:55:13.451Z",
+      "completed_at": "2026-10-29T16:55:13.451Z",
+      "attempts": [
+        {
+          "attempt_id": "84d8b202-1743-48f0-bbf4-bb91820f6373",
+          "phase": "SEND",
+          "attempt_no": 1,
+          "http_status": 201,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:13.414Z",
+          "ended_at": "2026-10-29T16:55:13.439Z",
+          "response_body": {
+            "result": "STORED",
+            "target_id": "13a42df7-fe30-4005-aad4-7fb33f9fdfde",
+            "external_id": "C4-SYNTHETIC-R-270460d1-1190-49c7-ae0d-4f99dbd24f03",
+            "patient_key": "af1a78a0-f901-41b1-8147-90bd8ed3a8ad",
+            "external_system": "https://example.org/lis/result"
+          }
+        },
+        {
+          "attempt_id": "43dd3243-69e4-4040-9658-92e4f9cf81e3",
+          "phase": "VERIFY",
+          "attempt_no": 1,
+          "http_status": 200,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:13.445Z",
+          "ended_at": "2026-10-29T16:55:13.451Z",
+          "response_body": {
+            "outcome": "delivered"
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "RECEIVED",
+          "old_status": null,
+          "new_status": "RECEIVED",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "CLAIMED",
+          "old_status": "RECEIVED",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "VALIDATED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "TRANSFORMED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "SENT",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": "84d8b202-1743-48f0-bbf4-bb91820f6373",
+          "detail": {
+            "phase": "SEND",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "TARGET_STORED",
+          "old_status": "PROCESSING",
+          "new_status": "VERIFYING",
+          "attempt_id": "84d8b202-1743-48f0-bbf4-bb91820f6373",
+          "detail": {
+            "code": null,
+            "phase": "SEND",
+            "outcome": "stored"
+          }
+        },
+        {
+          "type": "VERIFY_STARTED",
+          "old_status": "VERIFYING",
+          "new_status": "VERIFYING",
+          "attempt_id": "43dd3243-69e4-4040-9658-92e4f9cf81e3",
+          "detail": {
+            "phase": "VERIFY",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "DELIVERED",
+          "old_status": "VERIFYING",
+          "new_status": "DELIVERED",
+          "attempt_id": "43dd3243-69e4-4040-9658-92e4f9cf81e3",
+          "detail": {
+            "code": null,
+            "phase": "VERIFY",
+            "outcome": "delivered"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "C4-01/05/06/07-low",
+      "outcome": "PASS",
+      "fixture": "low",
+      "exchange_id": "9778f9f0-3f45-40be-877a-10c990cfbe46",
+      "expected_columns": {
+        "external_system": "https://example.org/lis/result",
+        "external_id": "C4-SYNTHETIC-R-70fc6f74-6288-43f8-9b83-85b3e2f3b920",
+        "analyte_system": "https://example.org/lis/test-code",
+        "analyte_code": "C4-LOCAL-TEST",
+        "analyte_display": "C4 synthetic analyte",
+        "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+        "quantity": "9007199254740991",
+        "unit_text": "mg/dL",
+        "low": "9007199254740990",
+        "high": null,
+        "effective_at": "2026-10-29T08:00:00.000001Z",
+        "clinical_status": "final",
+        "patient_key": "fb4d84c7-f360-441f-b935-aacef225b6a9"
+      },
+      "expected_fhir": {
+        "resourceType": "Observation",
+        "identifier": [
+          {
+            "system": "https://example.org/lis/result",
+            "value": "C4-SYNTHETIC-R-70fc6f74-6288-43f8-9b83-85b3e2f3b920"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://example.org/lis/test-code",
+              "code": "C4-LOCAL-TEST",
+              "display": "C4 synthetic analyte"
+            }
+          ],
+          "text": "C4 synthetic analyte / Blood / Chemistry"
+        },
+        "subject": {
+          "type": "Patient",
+          "identifier": {
+            "system": "https://example.org/lis/patient",
+            "value": "C4-SYNTHETIC-P-70fc6f74-6288-43f8-9b83-85b3e2f3b920"
+          }
+        },
+        "effectiveDateTime": "2026-10-29T15:00:00.000001+07:00",
+        "valueQuantity": {
+          "value": 9007199254740991,
+          "unit": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 9007199254740990,
+              "unit": "mg/dL"
+            }
+          }
+        ]
+      },
+      "actual_rows": [
+        {
+          "target_id": "b37a469f-609e-4c8f-948f-9f6ea7726600",
+          "patient_key": "fb4d84c7-f360-441f-b935-aacef225b6a9",
+          "external_system": "https://example.org/lis/result",
+          "external_id": "C4-SYNTHETIC-R-70fc6f74-6288-43f8-9b83-85b3e2f3b920",
+          "analyte_system": "https://example.org/lis/test-code",
+          "analyte_code": "C4-LOCAL-TEST",
+          "analyte_display": "C4 synthetic analyte",
+          "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+          "quantity": "9007199254740991",
+          "unit_text": "mg/dL",
+          "low": "9007199254740990",
+          "high": null,
+          "effective_at": "2026-10-29T08:00:00.000001Z",
+          "clinical_status": "final",
+          "fhir_json": {
+            "code": {
+              "text": "C4 synthetic analyte / Blood / Chemistry",
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "system": "https://example.org/lis/test-code",
+                  "display": "C4 synthetic analyte"
+                }
+              ]
+            },
+            "status": "final",
+            "subject": {
+              "type": "Patient",
+              "identifier": {
+                "value": "C4-SYNTHETIC-P-70fc6f74-6288-43f8-9b83-85b3e2f3b920",
+                "system": "https://example.org/lis/patient"
+              }
+            },
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "identifier": [
+              {
+                "value": "C4-SYNTHETIC-R-70fc6f74-6288-43f8-9b83-85b3e2f3b920",
+                "system": "https://example.org/lis/result"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 9007199254740991
+            },
+            "referenceRange": [
+              {
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 9007199254740990
+                }
+              }
+            ],
+            "effectiveDateTime": "2026-10-29T15:00:00.000001+07:00"
+          },
+          "received_at": "2026-10-29T16:55:13.538118Z",
+          "stored_at": "2026-10-29T16:55:13.538118Z"
+        }
+      ],
+      "http": [
+        {
+          "method": "POST",
+          "path": "/api/observations",
+          "query": {},
+          "content_type": "application/fhir+json",
+          "request_body": {
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "display": "C4 synthetic analyte",
+                  "system": "https://example.org/lis/test-code"
+                }
+              ],
+              "text": "C4 synthetic analyte / Blood / Chemistry"
+            },
+            "effectiveDateTime": "2026-10-29T15:00:00.000001+07:00",
+            "identifier": [
+              {
+                "system": "https://example.org/lis/result",
+                "value": "C4-SYNTHETIC-R-70fc6f74-6288-43f8-9b83-85b3e2f3b920"
+              }
+            ],
+            "referenceRange": [
+              {
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 9007199254740990
+                }
+              }
+            ],
+            "resourceType": "Observation",
+            "status": "final",
+            "subject": {
+              "identifier": {
+                "system": "https://example.org/lis/patient",
+                "value": "C4-SYNTHETIC-P-70fc6f74-6288-43f8-9b83-85b3e2f3b920"
+              },
+              "type": "Patient"
+            },
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 9007199254740991
+            }
+          },
+          "status": 201,
+          "response_body": {
+            "result": "STORED",
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-70fc6f74-6288-43f8-9b83-85b3e2f3b920",
+            "target_id": "b37a469f-609e-4c8f-948f-9f6ea7726600",
+            "patient_key": "fb4d84c7-f360-441f-b935-aacef225b6a9"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/lab-results",
+          "query": {
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-70fc6f74-6288-43f8-9b83-85b3e2f3b920"
+          },
+          "content_type": null,
+          "request_body": null,
+          "status": 200,
+          "response_body": {
+            "items": [
+              {
+                "target_id": "b37a469f-609e-4c8f-948f-9f6ea7726600",
+                "patient_key": "fb4d84c7-f360-441f-b935-aacef225b6a9",
+                "external_system": "https://example.org/lis/result",
+                "external_id": "C4-SYNTHETIC-R-70fc6f74-6288-43f8-9b83-85b3e2f3b920",
+                "analyte_system": "https://example.org/lis/test-code",
+                "analyte_code": "C4-LOCAL-TEST",
+                "analyte_display": "C4 synthetic analyte",
+                "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+                "quantity": "9007199254740991",
+                "unit_text": "mg/dL",
+                "low": "9007199254740990",
+                "high": null,
+                "effective_at": "2026-10-29T08:00:00.000001Z",
+                "clinical_status": "final",
+                "fhir_json": {
+                  "code": {
+                    "text": "C4 synthetic analyte / Blood / Chemistry",
+                    "coding": [
+                      {
+                        "code": "C4-LOCAL-TEST",
+                        "system": "https://example.org/lis/test-code",
+                        "display": "C4 synthetic analyte"
+                      }
+                    ]
+                  },
+                  "status": "final",
+                  "subject": {
+                    "type": "Patient",
+                    "identifier": {
+                      "value": "C4-SYNTHETIC-P-70fc6f74-6288-43f8-9b83-85b3e2f3b920",
+                      "system": "https://example.org/lis/patient"
+                    }
+                  },
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "laboratory",
+                          "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "identifier": [
+                    {
+                      "value": "C4-SYNTHETIC-R-70fc6f74-6288-43f8-9b83-85b3e2f3b920",
+                      "system": "https://example.org/lis/result"
+                    }
+                  ],
+                  "resourceType": "Observation",
+                  "valueQuantity": {
+                    "unit": "mg/dL",
+                    "value": 9007199254740991
+                  },
+                  "referenceRange": [
+                    {
+                      "low": {
+                        "unit": "mg/dL",
+                        "value": 9007199254740990
+                      }
+                    }
+                  ],
+                  "effectiveDateTime": "2026-10-29T15:00:00.000001+07:00"
+                },
+                "received_at": "2026-10-29T16:55:13.538118Z",
+                "stored_at": "2026-10-29T16:55:13.538118Z"
+              }
+            ]
+          }
+        }
+      ],
+      "status": "DELIVERED",
+      "verified_at": "2026-10-29T16:55:13.571Z",
+      "completed_at": "2026-10-29T16:55:13.571Z",
+      "attempts": [
+        {
+          "attempt_id": "61924b77-6f4e-4dcf-b0a0-e689e7c09118",
+          "phase": "SEND",
+          "attempt_no": 1,
+          "http_status": 201,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:13.530Z",
+          "ended_at": "2026-10-29T16:55:13.548Z",
+          "response_body": {
+            "result": "STORED",
+            "target_id": "b37a469f-609e-4c8f-948f-9f6ea7726600",
+            "external_id": "C4-SYNTHETIC-R-70fc6f74-6288-43f8-9b83-85b3e2f3b920",
+            "patient_key": "fb4d84c7-f360-441f-b935-aacef225b6a9",
+            "external_system": "https://example.org/lis/result"
+          }
+        },
+        {
+          "attempt_id": "af795dcb-d495-45a4-bc7e-828eaa1bd60c",
+          "phase": "VERIFY",
+          "attempt_no": 1,
+          "http_status": 200,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:13.560Z",
+          "ended_at": "2026-10-29T16:55:13.570Z",
+          "response_body": {
+            "outcome": "delivered"
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "RECEIVED",
+          "old_status": null,
+          "new_status": "RECEIVED",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "CLAIMED",
+          "old_status": "RECEIVED",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "VALIDATED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "TRANSFORMED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "SENT",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": "61924b77-6f4e-4dcf-b0a0-e689e7c09118",
+          "detail": {
+            "phase": "SEND",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "TARGET_STORED",
+          "old_status": "PROCESSING",
+          "new_status": "VERIFYING",
+          "attempt_id": "61924b77-6f4e-4dcf-b0a0-e689e7c09118",
+          "detail": {
+            "code": null,
+            "phase": "SEND",
+            "outcome": "stored"
+          }
+        },
+        {
+          "type": "VERIFY_STARTED",
+          "old_status": "VERIFYING",
+          "new_status": "VERIFYING",
+          "attempt_id": "af795dcb-d495-45a4-bc7e-828eaa1bd60c",
+          "detail": {
+            "phase": "VERIFY",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "DELIVERED",
+          "old_status": "VERIFYING",
+          "new_status": "DELIVERED",
+          "attempt_id": "af795dcb-d495-45a4-bc7e-828eaa1bd60c",
+          "detail": {
+            "code": null,
+            "phase": "VERIFY",
+            "outcome": "delivered"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "C4-01/05/06/07-high",
+      "outcome": "PASS",
+      "fixture": "high",
+      "exchange_id": "8c6a09d5-2067-4a02-aab5-e1d211c49c0f",
+      "expected_columns": {
+        "external_system": "https://example.org/lis/result",
+        "external_id": "C4-SYNTHETIC-R-96cf8206-dd04-4105-9532-7ad94a48672a",
+        "analyte_system": "https://example.org/lis/test-code",
+        "analyte_code": "C4-LOCAL-TEST",
+        "analyte_display": "C4 synthetic analyte",
+        "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+        "quantity": "0.000000123456789",
+        "unit_text": "mg/dL",
+        "low": null,
+        "high": "0.0000002",
+        "effective_at": "2026-10-29T08:00:00.999999Z",
+        "clinical_status": "final",
+        "patient_key": "061db1e2-9c12-4ac7-b2c3-7ef7565c4270"
+      },
+      "expected_fhir": {
+        "resourceType": "Observation",
+        "identifier": [
+          {
+            "system": "https://example.org/lis/result",
+            "value": "C4-SYNTHETIC-R-96cf8206-dd04-4105-9532-7ad94a48672a"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://example.org/lis/test-code",
+              "code": "C4-LOCAL-TEST",
+              "display": "C4 synthetic analyte"
+            }
+          ],
+          "text": "C4 synthetic analyte / Blood / Chemistry"
+        },
+        "subject": {
+          "type": "Patient",
+          "identifier": {
+            "system": "https://example.org/lis/patient",
+            "value": "C4-SYNTHETIC-P-96cf8206-dd04-4105-9532-7ad94a48672a"
+          }
+        },
+        "effectiveDateTime": "2026-10-29T15:00:00.999999+07:00",
+        "valueQuantity": {
+          "value": 1.23456789e-7,
+          "unit": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "high": {
+              "value": 2e-7,
+              "unit": "mg/dL"
+            }
+          }
+        ]
+      },
+      "actual_rows": [
+        {
+          "target_id": "8a80c764-444d-429f-b16a-bb057c654661",
+          "patient_key": "061db1e2-9c12-4ac7-b2c3-7ef7565c4270",
+          "external_system": "https://example.org/lis/result",
+          "external_id": "C4-SYNTHETIC-R-96cf8206-dd04-4105-9532-7ad94a48672a",
+          "analyte_system": "https://example.org/lis/test-code",
+          "analyte_code": "C4-LOCAL-TEST",
+          "analyte_display": "C4 synthetic analyte",
+          "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+          "quantity": "0.000000123456789",
+          "unit_text": "mg/dL",
+          "low": null,
+          "high": "0.0000002",
+          "effective_at": "2026-10-29T08:00:00.999999Z",
+          "clinical_status": "final",
+          "fhir_json": {
+            "code": {
+              "text": "C4 synthetic analyte / Blood / Chemistry",
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "system": "https://example.org/lis/test-code",
+                  "display": "C4 synthetic analyte"
+                }
+              ]
+            },
+            "status": "final",
+            "subject": {
+              "type": "Patient",
+              "identifier": {
+                "value": "C4-SYNTHETIC-P-96cf8206-dd04-4105-9532-7ad94a48672a",
+                "system": "https://example.org/lis/patient"
+              }
+            },
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "identifier": [
+              {
+                "value": "C4-SYNTHETIC-R-96cf8206-dd04-4105-9532-7ad94a48672a",
+                "system": "https://example.org/lis/result"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 1.23456789e-7
+            },
+            "referenceRange": [
+              {
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 2e-7
+                }
+              }
+            ],
+            "effectiveDateTime": "2026-10-29T15:00:00.999999+07:00"
+          },
+          "received_at": "2026-10-29T16:55:13.634090Z",
+          "stored_at": "2026-10-29T16:55:13.634090Z"
+        }
+      ],
+      "http": [
+        {
+          "method": "POST",
+          "path": "/api/observations",
+          "query": {},
+          "content_type": "application/fhir+json",
+          "request_body": {
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "display": "C4 synthetic analyte",
+                  "system": "https://example.org/lis/test-code"
+                }
+              ],
+              "text": "C4 synthetic analyte / Blood / Chemistry"
+            },
+            "effectiveDateTime": "2026-10-29T15:00:00.999999+07:00",
+            "identifier": [
+              {
+                "system": "https://example.org/lis/result",
+                "value": "C4-SYNTHETIC-R-96cf8206-dd04-4105-9532-7ad94a48672a"
+              }
+            ],
+            "referenceRange": [
+              {
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 2e-7
+                }
+              }
+            ],
+            "resourceType": "Observation",
+            "status": "final",
+            "subject": {
+              "identifier": {
+                "system": "https://example.org/lis/patient",
+                "value": "C4-SYNTHETIC-P-96cf8206-dd04-4105-9532-7ad94a48672a"
+              },
+              "type": "Patient"
+            },
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 1.23456789e-7
+            }
+          },
+          "status": 201,
+          "response_body": {
+            "result": "STORED",
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-96cf8206-dd04-4105-9532-7ad94a48672a",
+            "target_id": "8a80c764-444d-429f-b16a-bb057c654661",
+            "patient_key": "061db1e2-9c12-4ac7-b2c3-7ef7565c4270"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/lab-results",
+          "query": {
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-96cf8206-dd04-4105-9532-7ad94a48672a"
+          },
+          "content_type": null,
+          "request_body": null,
+          "status": 200,
+          "response_body": {
+            "items": [
+              {
+                "target_id": "8a80c764-444d-429f-b16a-bb057c654661",
+                "patient_key": "061db1e2-9c12-4ac7-b2c3-7ef7565c4270",
+                "external_system": "https://example.org/lis/result",
+                "external_id": "C4-SYNTHETIC-R-96cf8206-dd04-4105-9532-7ad94a48672a",
+                "analyte_system": "https://example.org/lis/test-code",
+                "analyte_code": "C4-LOCAL-TEST",
+                "analyte_display": "C4 synthetic analyte",
+                "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+                "quantity": "0.000000123456789",
+                "unit_text": "mg/dL",
+                "low": null,
+                "high": "0.0000002",
+                "effective_at": "2026-10-29T08:00:00.999999Z",
+                "clinical_status": "final",
+                "fhir_json": {
+                  "code": {
+                    "text": "C4 synthetic analyte / Blood / Chemistry",
+                    "coding": [
+                      {
+                        "code": "C4-LOCAL-TEST",
+                        "system": "https://example.org/lis/test-code",
+                        "display": "C4 synthetic analyte"
+                      }
+                    ]
+                  },
+                  "status": "final",
+                  "subject": {
+                    "type": "Patient",
+                    "identifier": {
+                      "value": "C4-SYNTHETIC-P-96cf8206-dd04-4105-9532-7ad94a48672a",
+                      "system": "https://example.org/lis/patient"
+                    }
+                  },
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "laboratory",
+                          "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "identifier": [
+                    {
+                      "value": "C4-SYNTHETIC-R-96cf8206-dd04-4105-9532-7ad94a48672a",
+                      "system": "https://example.org/lis/result"
+                    }
+                  ],
+                  "resourceType": "Observation",
+                  "valueQuantity": {
+                    "unit": "mg/dL",
+                    "value": 1.23456789e-7
+                  },
+                  "referenceRange": [
+                    {
+                      "high": {
+                        "unit": "mg/dL",
+                        "value": 2e-7
+                      }
+                    }
+                  ],
+                  "effectiveDateTime": "2026-10-29T15:00:00.999999+07:00"
+                },
+                "received_at": "2026-10-29T16:55:13.634090Z",
+                "stored_at": "2026-10-29T16:55:13.634090Z"
+              }
+            ]
+          }
+        }
+      ],
+      "status": "DELIVERED",
+      "verified_at": "2026-10-29T16:55:13.646Z",
+      "completed_at": "2026-10-29T16:55:13.646Z",
+      "attempts": [
+        {
+          "attempt_id": "b2d1e64a-f272-4e68-954d-4a18c085af09",
+          "phase": "SEND",
+          "attempt_no": 1,
+          "http_status": 201,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:13.630Z",
+          "ended_at": "2026-10-29T16:55:13.638Z",
+          "response_body": {
+            "result": "STORED",
+            "target_id": "8a80c764-444d-429f-b16a-bb057c654661",
+            "external_id": "C4-SYNTHETIC-R-96cf8206-dd04-4105-9532-7ad94a48672a",
+            "patient_key": "061db1e2-9c12-4ac7-b2c3-7ef7565c4270",
+            "external_system": "https://example.org/lis/result"
+          }
+        },
+        {
+          "attempt_id": "a25e7a29-bb7b-4eae-89f7-92df9bf7e7fe",
+          "phase": "VERIFY",
+          "attempt_no": 1,
+          "http_status": 200,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:13.642Z",
+          "ended_at": "2026-10-29T16:55:13.646Z",
+          "response_body": {
+            "outcome": "delivered"
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "RECEIVED",
+          "old_status": null,
+          "new_status": "RECEIVED",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "CLAIMED",
+          "old_status": "RECEIVED",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "VALIDATED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "TRANSFORMED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "SENT",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": "b2d1e64a-f272-4e68-954d-4a18c085af09",
+          "detail": {
+            "phase": "SEND",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "TARGET_STORED",
+          "old_status": "PROCESSING",
+          "new_status": "VERIFYING",
+          "attempt_id": "b2d1e64a-f272-4e68-954d-4a18c085af09",
+          "detail": {
+            "code": null,
+            "phase": "SEND",
+            "outcome": "stored"
+          }
+        },
+        {
+          "type": "VERIFY_STARTED",
+          "old_status": "VERIFYING",
+          "new_status": "VERIFYING",
+          "attempt_id": "a25e7a29-bb7b-4eae-89f7-92df9bf7e7fe",
+          "detail": {
+            "phase": "VERIFY",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "DELIVERED",
+          "old_status": "VERIFYING",
+          "new_status": "DELIVERED",
+          "attempt_id": "a25e7a29-bb7b-4eae-89f7-92df9bf7e7fe",
+          "detail": {
+            "code": null,
+            "phase": "VERIFY",
+            "outcome": "delivered"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "C4-01/05/06/07-none",
+      "outcome": "PASS",
+      "fixture": "none",
+      "exchange_id": "5a533112-2eb4-45da-8b76-b6698d6379e6",
+      "expected_columns": {
+        "external_system": "https://example.org/lis/result",
+        "external_id": "C4-SYNTHETIC-R-3c2fb2fa-5f33-452f-beff-44748687eed9",
+        "analyte_system": "https://example.org/lis/test-code",
+        "analyte_code": "C4-LOCAL-TEST",
+        "analyte_display": "C4 synthetic analyte",
+        "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+        "quantity": "-12345.6789012345",
+        "unit_text": "mg/dL",
+        "low": null,
+        "high": null,
+        "effective_at": "2026-10-29T08:00:00.654321Z",
+        "clinical_status": "final",
+        "patient_key": "166c5786-ad9e-49fb-88ee-be438783b832"
+      },
+      "expected_fhir": {
+        "resourceType": "Observation",
+        "identifier": [
+          {
+            "system": "https://example.org/lis/result",
+            "value": "C4-SYNTHETIC-R-3c2fb2fa-5f33-452f-beff-44748687eed9"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://example.org/lis/test-code",
+              "code": "C4-LOCAL-TEST",
+              "display": "C4 synthetic analyte"
+            }
+          ],
+          "text": "C4 synthetic analyte / Blood / Chemistry"
+        },
+        "subject": {
+          "type": "Patient",
+          "identifier": {
+            "system": "https://example.org/lis/patient",
+            "value": "C4-SYNTHETIC-P-3c2fb2fa-5f33-452f-beff-44748687eed9"
+          }
+        },
+        "effectiveDateTime": "2026-10-29T15:00:00.654321+07:00",
+        "valueQuantity": {
+          "value": -12345.6789012345,
+          "unit": "mg/dL"
+        }
+      },
+      "actual_rows": [
+        {
+          "target_id": "cdf69bb1-61dc-4fdf-99fb-abb5807ed492",
+          "patient_key": "166c5786-ad9e-49fb-88ee-be438783b832",
+          "external_system": "https://example.org/lis/result",
+          "external_id": "C4-SYNTHETIC-R-3c2fb2fa-5f33-452f-beff-44748687eed9",
+          "analyte_system": "https://example.org/lis/test-code",
+          "analyte_code": "C4-LOCAL-TEST",
+          "analyte_display": "C4 synthetic analyte",
+          "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+          "quantity": "-12345.6789012345",
+          "unit_text": "mg/dL",
+          "low": null,
+          "high": null,
+          "effective_at": "2026-10-29T08:00:00.654321Z",
+          "clinical_status": "final",
+          "fhir_json": {
+            "code": {
+              "text": "C4 synthetic analyte / Blood / Chemistry",
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "system": "https://example.org/lis/test-code",
+                  "display": "C4 synthetic analyte"
+                }
+              ]
+            },
+            "status": "final",
+            "subject": {
+              "type": "Patient",
+              "identifier": {
+                "value": "C4-SYNTHETIC-P-3c2fb2fa-5f33-452f-beff-44748687eed9",
+                "system": "https://example.org/lis/patient"
+              }
+            },
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "identifier": [
+              {
+                "value": "C4-SYNTHETIC-R-3c2fb2fa-5f33-452f-beff-44748687eed9",
+                "system": "https://example.org/lis/result"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": -12345.6789012345
+            },
+            "effectiveDateTime": "2026-10-29T15:00:00.654321+07:00"
+          },
+          "received_at": "2026-10-29T16:55:13.677461Z",
+          "stored_at": "2026-10-29T16:55:13.677462Z"
+        }
+      ],
+      "http": [
+        {
+          "method": "POST",
+          "path": "/api/observations",
+          "query": {},
+          "content_type": "application/fhir+json",
+          "request_body": {
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "display": "C4 synthetic analyte",
+                  "system": "https://example.org/lis/test-code"
+                }
+              ],
+              "text": "C4 synthetic analyte / Blood / Chemistry"
+            },
+            "effectiveDateTime": "2026-10-29T15:00:00.654321+07:00",
+            "identifier": [
+              {
+                "system": "https://example.org/lis/result",
+                "value": "C4-SYNTHETIC-R-3c2fb2fa-5f33-452f-beff-44748687eed9"
+              }
+            ],
+            "resourceType": "Observation",
+            "status": "final",
+            "subject": {
+              "identifier": {
+                "system": "https://example.org/lis/patient",
+                "value": "C4-SYNTHETIC-P-3c2fb2fa-5f33-452f-beff-44748687eed9"
+              },
+              "type": "Patient"
+            },
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": -12345.6789012345
+            }
+          },
+          "status": 201,
+          "response_body": {
+            "result": "STORED",
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-3c2fb2fa-5f33-452f-beff-44748687eed9",
+            "target_id": "cdf69bb1-61dc-4fdf-99fb-abb5807ed492",
+            "patient_key": "166c5786-ad9e-49fb-88ee-be438783b832"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/lab-results",
+          "query": {
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-3c2fb2fa-5f33-452f-beff-44748687eed9"
+          },
+          "content_type": null,
+          "request_body": null,
+          "status": 200,
+          "response_body": {
+            "items": [
+              {
+                "target_id": "cdf69bb1-61dc-4fdf-99fb-abb5807ed492",
+                "patient_key": "166c5786-ad9e-49fb-88ee-be438783b832",
+                "external_system": "https://example.org/lis/result",
+                "external_id": "C4-SYNTHETIC-R-3c2fb2fa-5f33-452f-beff-44748687eed9",
+                "analyte_system": "https://example.org/lis/test-code",
+                "analyte_code": "C4-LOCAL-TEST",
+                "analyte_display": "C4 synthetic analyte",
+                "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+                "quantity": "-12345.6789012345",
+                "unit_text": "mg/dL",
+                "low": null,
+                "high": null,
+                "effective_at": "2026-10-29T08:00:00.654321Z",
+                "clinical_status": "final",
+                "fhir_json": {
+                  "code": {
+                    "text": "C4 synthetic analyte / Blood / Chemistry",
+                    "coding": [
+                      {
+                        "code": "C4-LOCAL-TEST",
+                        "system": "https://example.org/lis/test-code",
+                        "display": "C4 synthetic analyte"
+                      }
+                    ]
+                  },
+                  "status": "final",
+                  "subject": {
+                    "type": "Patient",
+                    "identifier": {
+                      "value": "C4-SYNTHETIC-P-3c2fb2fa-5f33-452f-beff-44748687eed9",
+                      "system": "https://example.org/lis/patient"
+                    }
+                  },
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "laboratory",
+                          "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "identifier": [
+                    {
+                      "value": "C4-SYNTHETIC-R-3c2fb2fa-5f33-452f-beff-44748687eed9",
+                      "system": "https://example.org/lis/result"
+                    }
+                  ],
+                  "resourceType": "Observation",
+                  "valueQuantity": {
+                    "unit": "mg/dL",
+                    "value": -12345.6789012345
+                  },
+                  "effectiveDateTime": "2026-10-29T15:00:00.654321+07:00"
+                },
+                "received_at": "2026-10-29T16:55:13.677461Z",
+                "stored_at": "2026-10-29T16:55:13.677462Z"
+              }
+            ]
+          }
+        }
+      ],
+      "status": "DELIVERED",
+      "verified_at": "2026-10-29T16:55:13.689Z",
+      "completed_at": "2026-10-29T16:55:13.689Z",
+      "attempts": [
+        {
+          "attempt_id": "c71071fc-ad15-41fe-8d7d-e13ab48c1dae",
+          "phase": "SEND",
+          "attempt_no": 1,
+          "http_status": 201,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:13.673Z",
+          "ended_at": "2026-10-29T16:55:13.680Z",
+          "response_body": {
+            "result": "STORED",
+            "target_id": "cdf69bb1-61dc-4fdf-99fb-abb5807ed492",
+            "external_id": "C4-SYNTHETIC-R-3c2fb2fa-5f33-452f-beff-44748687eed9",
+            "patient_key": "166c5786-ad9e-49fb-88ee-be438783b832",
+            "external_system": "https://example.org/lis/result"
+          }
+        },
+        {
+          "attempt_id": "3f150f0a-dc58-4b32-bf94-36280978ff31",
+          "phase": "VERIFY",
+          "attempt_no": 1,
+          "http_status": 200,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:13.684Z",
+          "ended_at": "2026-10-29T16:55:13.689Z",
+          "response_body": {
+            "outcome": "delivered"
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "RECEIVED",
+          "old_status": null,
+          "new_status": "RECEIVED",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "CLAIMED",
+          "old_status": "RECEIVED",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "VALIDATED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "TRANSFORMED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "SENT",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": "c71071fc-ad15-41fe-8d7d-e13ab48c1dae",
+          "detail": {
+            "phase": "SEND",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "TARGET_STORED",
+          "old_status": "PROCESSING",
+          "new_status": "VERIFYING",
+          "attempt_id": "c71071fc-ad15-41fe-8d7d-e13ab48c1dae",
+          "detail": {
+            "code": null,
+            "phase": "SEND",
+            "outcome": "stored"
+          }
+        },
+        {
+          "type": "VERIFY_STARTED",
+          "old_status": "VERIFYING",
+          "new_status": "VERIFYING",
+          "attempt_id": "3f150f0a-dc58-4b32-bf94-36280978ff31",
+          "detail": {
+            "phase": "VERIFY",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "DELIVERED",
+          "old_status": "VERIFYING",
+          "new_status": "DELIVERED",
+          "attempt_id": "3f150f0a-dc58-4b32-bf94-36280978ff31",
+          "detail": {
+            "code": null,
+            "phase": "VERIFY",
+            "outcome": "delivered"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "C4-02",
+      "outcome": "PASS",
+      "fixture": "both",
+      "exchange_id": "a6c7a84b-0ddc-47d9-bbcf-1ffe621a57fb",
+      "expected_columns": {
+        "external_system": "https://example.org/lis/result",
+        "external_id": "C4-SYNTHETIC-R-a862379c-0825-40c6-8059-7c6c05d16cc7",
+        "analyte_system": "https://example.org/lis/test-code",
+        "analyte_code": "C4-LOCAL-TEST",
+        "analyte_display": "C4 synthetic analyte",
+        "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+        "quantity": "0.30000000000000004",
+        "unit_text": "mg/dL",
+        "low": "0.1",
+        "high": "0.9",
+        "effective_at": "2026-10-29T08:00:00.123456Z",
+        "clinical_status": "final",
+        "patient_key": "8ea14393-e462-41b9-b1c1-317464d6c0fe"
+      },
+      "expected_fhir": {
+        "resourceType": "Observation",
+        "identifier": [
+          {
+            "system": "https://example.org/lis/result",
+            "value": "C4-SYNTHETIC-R-a862379c-0825-40c6-8059-7c6c05d16cc7"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://example.org/lis/test-code",
+              "code": "C4-LOCAL-TEST",
+              "display": "C4 synthetic analyte"
+            }
+          ],
+          "text": "C4 synthetic analyte / Blood / Chemistry"
+        },
+        "subject": {
+          "type": "Patient",
+          "identifier": {
+            "system": "https://example.org/lis/patient",
+            "value": "C4-SYNTHETIC-P-a862379c-0825-40c6-8059-7c6c05d16cc7"
+          }
+        },
+        "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+        "valueQuantity": {
+          "value": 0.30000000000000004,
+          "unit": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 0.1,
+              "unit": "mg/dL"
+            },
+            "high": {
+              "value": 0.9,
+              "unit": "mg/dL"
+            }
+          }
+        ]
+      },
+      "actual_rows": [
+        {
+          "target_id": "36198273-9056-4abc-9db4-330bf615de88",
+          "patient_key": "8ea14393-e462-41b9-b1c1-317464d6c0fe",
+          "external_system": "https://example.org/lis/result",
+          "external_id": "C4-SYNTHETIC-R-a862379c-0825-40c6-8059-7c6c05d16cc7",
+          "analyte_system": "https://example.org/lis/test-code",
+          "analyte_code": "C4-LOCAL-TEST",
+          "analyte_display": "C4 synthetic analyte",
+          "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+          "quantity": "0.30000000000000004",
+          "unit_text": "mg/dL",
+          "low": "0.1",
+          "high": "0.9",
+          "effective_at": "2026-10-29T08:00:00.123456Z",
+          "clinical_status": "final",
+          "fhir_json": {
+            "code": {
+              "text": "C4 synthetic analyte / Blood / Chemistry",
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "system": "https://example.org/lis/test-code",
+                  "display": "C4 synthetic analyte"
+                }
+              ]
+            },
+            "status": "final",
+            "subject": {
+              "type": "Patient",
+              "identifier": {
+                "value": "C4-SYNTHETIC-P-a862379c-0825-40c6-8059-7c6c05d16cc7",
+                "system": "https://example.org/lis/patient"
+              }
+            },
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "identifier": [
+              {
+                "value": "C4-SYNTHETIC-R-a862379c-0825-40c6-8059-7c6c05d16cc7",
+                "system": "https://example.org/lis/result"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            },
+            "referenceRange": [
+              {
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                },
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                }
+              }
+            ],
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+          },
+          "received_at": "2026-10-29T16:55:13.716182Z",
+          "stored_at": "2026-10-29T16:55:13.716182Z"
+        }
+      ],
+      "http": [
+        {
+          "method": "POST",
+          "path": "/api/observations",
+          "query": {},
+          "content_type": "application/fhir+json",
+          "request_body": {
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "display": "C4 synthetic analyte",
+                  "system": "https://example.org/lis/test-code"
+                }
+              ],
+              "text": "C4 synthetic analyte / Blood / Chemistry"
+            },
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+            "identifier": [
+              {
+                "system": "https://example.org/lis/result",
+                "value": "C4-SYNTHETIC-R-a862379c-0825-40c6-8059-7c6c05d16cc7"
+              }
+            ],
+            "referenceRange": [
+              {
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                },
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                }
+              }
+            ],
+            "resourceType": "Observation",
+            "status": "final",
+            "subject": {
+              "identifier": {
+                "system": "https://example.org/lis/patient",
+                "value": "C4-SYNTHETIC-P-a862379c-0825-40c6-8059-7c6c05d16cc7"
+              },
+              "type": "Patient"
+            },
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            }
+          },
+          "status": 200,
+          "response_body": {
+            "result": "ALREADY_EXISTS",
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-a862379c-0825-40c6-8059-7c6c05d16cc7",
+            "target_id": "36198273-9056-4abc-9db4-330bf615de88",
+            "patient_key": "8ea14393-e462-41b9-b1c1-317464d6c0fe"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/lab-results",
+          "query": {
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-a862379c-0825-40c6-8059-7c6c05d16cc7"
+          },
+          "content_type": null,
+          "request_body": null,
+          "status": 200,
+          "response_body": {
+            "items": [
+              {
+                "target_id": "36198273-9056-4abc-9db4-330bf615de88",
+                "patient_key": "8ea14393-e462-41b9-b1c1-317464d6c0fe",
+                "external_system": "https://example.org/lis/result",
+                "external_id": "C4-SYNTHETIC-R-a862379c-0825-40c6-8059-7c6c05d16cc7",
+                "analyte_system": "https://example.org/lis/test-code",
+                "analyte_code": "C4-LOCAL-TEST",
+                "analyte_display": "C4 synthetic analyte",
+                "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+                "quantity": "0.30000000000000004",
+                "unit_text": "mg/dL",
+                "low": "0.1",
+                "high": "0.9",
+                "effective_at": "2026-10-29T08:00:00.123456Z",
+                "clinical_status": "final",
+                "fhir_json": {
+                  "code": {
+                    "text": "C4 synthetic analyte / Blood / Chemistry",
+                    "coding": [
+                      {
+                        "code": "C4-LOCAL-TEST",
+                        "system": "https://example.org/lis/test-code",
+                        "display": "C4 synthetic analyte"
+                      }
+                    ]
+                  },
+                  "status": "final",
+                  "subject": {
+                    "type": "Patient",
+                    "identifier": {
+                      "value": "C4-SYNTHETIC-P-a862379c-0825-40c6-8059-7c6c05d16cc7",
+                      "system": "https://example.org/lis/patient"
+                    }
+                  },
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "laboratory",
+                          "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "identifier": [
+                    {
+                      "value": "C4-SYNTHETIC-R-a862379c-0825-40c6-8059-7c6c05d16cc7",
+                      "system": "https://example.org/lis/result"
+                    }
+                  ],
+                  "resourceType": "Observation",
+                  "valueQuantity": {
+                    "unit": "mg/dL",
+                    "value": 0.30000000000000004
+                  },
+                  "referenceRange": [
+                    {
+                      "low": {
+                        "unit": "mg/dL",
+                        "value": 0.1
+                      },
+                      "high": {
+                        "unit": "mg/dL",
+                        "value": 0.9
+                      }
+                    }
+                  ],
+                  "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+                },
+                "received_at": "2026-10-29T16:55:13.716182Z",
+                "stored_at": "2026-10-29T16:55:13.716182Z"
+              }
+            ]
+          }
+        }
+      ],
+      "status": "DELIVERED",
+      "verified_at": "2026-10-29T16:55:13.763Z",
+      "completed_at": "2026-10-29T16:55:13.763Z",
+      "attempts": [
+        {
+          "attempt_id": "0ca1ae48-d147-4e46-9487-aeccbe4bfd50",
+          "phase": "SEND",
+          "attempt_no": 1,
+          "http_status": 200,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:13.729Z",
+          "ended_at": "2026-10-29T16:55:13.739Z",
+          "response_body": {
+            "result": "ALREADY_EXISTS",
+            "target_id": "36198273-9056-4abc-9db4-330bf615de88",
+            "external_id": "C4-SYNTHETIC-R-a862379c-0825-40c6-8059-7c6c05d16cc7",
+            "patient_key": "8ea14393-e462-41b9-b1c1-317464d6c0fe",
+            "external_system": "https://example.org/lis/result"
+          }
+        },
+        {
+          "attempt_id": "25ddc123-3a2b-46ea-b701-e932ee5c80cd",
+          "phase": "VERIFY",
+          "attempt_no": 1,
+          "http_status": 200,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:13.752Z",
+          "ended_at": "2026-10-29T16:55:13.761Z",
+          "response_body": {
+            "outcome": "delivered"
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "RECEIVED",
+          "old_status": null,
+          "new_status": "RECEIVED",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "CLAIMED",
+          "old_status": "RECEIVED",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "VALIDATED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "TRANSFORMED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "SENT",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": "0ca1ae48-d147-4e46-9487-aeccbe4bfd50",
+          "detail": {
+            "phase": "SEND",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "TARGET_STORED",
+          "old_status": "PROCESSING",
+          "new_status": "VERIFYING",
+          "attempt_id": "0ca1ae48-d147-4e46-9487-aeccbe4bfd50",
+          "detail": {
+            "code": null,
+            "phase": "SEND",
+            "outcome": "stored"
+          }
+        },
+        {
+          "type": "VERIFY_STARTED",
+          "old_status": "VERIFYING",
+          "new_status": "VERIFYING",
+          "attempt_id": "25ddc123-3a2b-46ea-b701-e932ee5c80cd",
+          "detail": {
+            "phase": "VERIFY",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "DELIVERED",
+          "old_status": "VERIFYING",
+          "new_status": "DELIVERED",
+          "attempt_id": "25ddc123-3a2b-46ea-b701-e932ee5c80cd",
+          "detail": {
+            "code": null,
+            "phase": "VERIFY",
+            "outcome": "delivered"
+          }
+        }
+      ],
+      "prior_post": {
+        "status": 201,
+        "body": {
+          "result": "STORED",
+          "external_system": "https://example.org/lis/result",
+          "external_id": "C4-SYNTHETIC-R-a862379c-0825-40c6-8059-7c6c05d16cc7",
+          "target_id": "36198273-9056-4abc-9db4-330bf615de88",
+          "patient_key": "8ea14393-e462-41b9-b1c1-317464d6c0fe"
+        }
+      }
+    },
+    {
+      "case_id": "C4-03",
+      "outcome": "PASS",
+      "fixture": "both",
+      "exchange_id": "d13ab313-5ec8-4b23-9ca1-1bcd90a2a20b",
+      "expected_columns": {
+        "external_system": "https://example.org/lis/result",
+        "external_id": "C4-SYNTHETIC-R-c27f8400-a2f4-48d2-8b47-ffbb84cbbd41",
+        "analyte_system": "https://example.org/lis/test-code",
+        "analyte_code": "C4-LOCAL-TEST",
+        "analyte_display": "C4 synthetic analyte",
+        "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+        "quantity": "0.30000000000000004",
+        "unit_text": "mg/dL",
+        "low": "0.1",
+        "high": "0.9",
+        "effective_at": "2026-10-29T08:00:00.123456Z",
+        "clinical_status": "final",
+        "patient_key": "1321db91-0185-4ba9-8c98-91326c76118d"
+      },
+      "expected_fhir": {
+        "resourceType": "Observation",
+        "identifier": [
+          {
+            "system": "https://example.org/lis/result",
+            "value": "C4-SYNTHETIC-R-c27f8400-a2f4-48d2-8b47-ffbb84cbbd41"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://example.org/lis/test-code",
+              "code": "C4-LOCAL-TEST",
+              "display": "C4 synthetic analyte"
+            }
+          ],
+          "text": "C4 synthetic analyte / Blood / Chemistry"
+        },
+        "subject": {
+          "type": "Patient",
+          "identifier": {
+            "system": "https://example.org/lis/patient",
+            "value": "C4-SYNTHETIC-P-c27f8400-a2f4-48d2-8b47-ffbb84cbbd41"
+          }
+        },
+        "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+        "valueQuantity": {
+          "value": 0.30000000000000004,
+          "unit": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 0.1,
+              "unit": "mg/dL"
+            },
+            "high": {
+              "value": 0.9,
+              "unit": "mg/dL"
+            }
+          }
+        ]
+      },
+      "actual_rows": [],
+      "http": [
+        {
+          "method": "POST",
+          "path": "/api/observations",
+          "query": {},
+          "content_type": "application/fhir+json",
+          "request_body": {
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "display": "C4 synthetic analyte",
+                  "system": "https://example.org/lis/test-code"
+                }
+              ],
+              "text": "C4 synthetic analyte / Blood / Chemistry"
+            },
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+            "identifier": [
+              {
+                "system": "https://example.org/lis/result",
+                "value": "C4-SYNTHETIC-R-c27f8400-a2f4-48d2-8b47-ffbb84cbbd41"
+              }
+            ],
+            "referenceRange": [
+              {
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                },
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                }
+              }
+            ],
+            "resourceType": "Observation",
+            "status": "final",
+            "subject": {
+              "identifier": {
+                "system": "https://example.org/lis/patient",
+                "value": "C4-SYNTHETIC-P-c27f8400-a2f4-48d2-8b47-ffbb84cbbd41"
+              },
+              "type": "Patient"
+            },
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            }
+          },
+          "status": 422,
+          "response_body": {
+            "error": {
+              "code": "PATIENT_NOT_LINKED",
+              "message": "No valid EMR patient link was found"
+            }
+          }
+        }
+      ],
+      "status": "REJECTED",
+      "verified_at": null,
+      "completed_at": null,
+      "attempts": [
+        {
+          "attempt_id": "d1b832f0-ed90-410d-881b-a04a9e3424ab",
+          "phase": "SEND",
+          "attempt_no": 1,
+          "http_status": 422,
+          "error_code": "REMOTE_VALIDATION_ERROR",
+          "started_at": "2026-10-29T16:55:13.826Z",
+          "ended_at": "2026-10-29T16:55:13.839Z",
+          "response_body": {
+            "outcome": "terminal"
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "RECEIVED",
+          "old_status": null,
+          "new_status": "RECEIVED",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "CLAIMED",
+          "old_status": "RECEIVED",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "VALIDATED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "TRANSFORMED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "SENT",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": "d1b832f0-ed90-410d-881b-a04a9e3424ab",
+          "detail": {
+            "phase": "SEND",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "REJECTED",
+          "old_status": "PROCESSING",
+          "new_status": "REJECTED",
+          "attempt_id": "d1b832f0-ed90-410d-881b-a04a9e3424ab",
+          "detail": {
+            "code": "REMOTE_VALIDATION_ERROR",
+            "phase": "SEND",
+            "outcome": "terminal"
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "C4-04",
+      "outcome": "PASS",
+      "fixture": "both",
+      "exchange_id": "3f4c38f9-0532-43c6-b8d6-94859e8f73ba",
+      "expected_columns": {
+        "external_system": "https://example.org/lis/result",
+        "external_id": "C4-SYNTHETIC-R-4c93f763-28eb-4c03-9d60-b8000433a585",
+        "analyte_system": "https://example.org/lis/test-code",
+        "analyte_code": "C4-LOCAL-TEST",
+        "analyte_display": "C4 synthetic analyte",
+        "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+        "quantity": "0.30000000000000004",
+        "unit_text": "mg/dL",
+        "low": "0.1",
+        "high": "0.9",
+        "effective_at": "2026-10-29T08:00:00.123456Z",
+        "clinical_status": "final",
+        "patient_key": "9d7e5a18-6e3b-4165-aa19-d9e3deb96c1c"
+      },
+      "expected_fhir": {
+        "resourceType": "Observation",
+        "identifier": [
+          {
+            "system": "https://example.org/lis/result",
+            "value": "C4-SYNTHETIC-R-4c93f763-28eb-4c03-9d60-b8000433a585"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://example.org/lis/test-code",
+              "code": "C4-LOCAL-TEST",
+              "display": "C4 synthetic analyte"
+            }
+          ],
+          "text": "C4 synthetic analyte / Blood / Chemistry"
+        },
+        "subject": {
+          "type": "Patient",
+          "identifier": {
+            "system": "https://example.org/lis/patient",
+            "value": "C4-SYNTHETIC-P-4c93f763-28eb-4c03-9d60-b8000433a585"
+          }
+        },
+        "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+        "valueQuantity": {
+          "value": 0.30000000000000004,
+          "unit": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 0.1,
+              "unit": "mg/dL"
+            },
+            "high": {
+              "value": 0.9,
+              "unit": "mg/dL"
+            }
+          }
+        ]
+      },
+      "actual_rows": [
+        {
+          "target_id": "ffd5f187-c0f0-4820-9dcb-af45e0c72b3a",
+          "patient_key": "9d7e5a18-6e3b-4165-aa19-d9e3deb96c1c",
+          "external_system": "https://example.org/lis/result",
+          "external_id": "C4-SYNTHETIC-R-4c93f763-28eb-4c03-9d60-b8000433a585",
+          "analyte_system": "https://example.org/lis/test-code",
+          "analyte_code": "C4-LOCAL-TEST",
+          "analyte_display": "C4 synthetic analyte",
+          "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+          "quantity": "0.8",
+          "unit_text": "mg/dL",
+          "low": "0.1",
+          "high": "0.9",
+          "effective_at": "2026-10-29T08:00:00.123456Z",
+          "clinical_status": "final",
+          "fhir_json": {
+            "code": {
+              "text": "C4 synthetic analyte / Blood / Chemistry",
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "system": "https://example.org/lis/test-code",
+                  "display": "C4 synthetic analyte"
+                }
+              ]
+            },
+            "status": "final",
+            "subject": {
+              "type": "Patient",
+              "identifier": {
+                "value": "C4-SYNTHETIC-P-4c93f763-28eb-4c03-9d60-b8000433a585",
+                "system": "https://example.org/lis/patient"
+              }
+            },
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "identifier": [
+              {
+                "value": "C4-SYNTHETIC-R-4c93f763-28eb-4c03-9d60-b8000433a585",
+                "system": "https://example.org/lis/result"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.8
+            },
+            "referenceRange": [
+              {
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                },
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                }
+              }
+            ],
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+          },
+          "received_at": "2026-10-29T16:55:13.879650Z",
+          "stored_at": "2026-10-29T16:55:13.879650Z"
+        }
+      ],
+      "http": [
+        {
+          "method": "POST",
+          "path": "/api/observations",
+          "query": {},
+          "content_type": "application/fhir+json",
+          "request_body": {
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "display": "C4 synthetic analyte",
+                  "system": "https://example.org/lis/test-code"
+                }
+              ],
+              "text": "C4 synthetic analyte / Blood / Chemistry"
+            },
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+            "identifier": [
+              {
+                "system": "https://example.org/lis/result",
+                "value": "C4-SYNTHETIC-R-4c93f763-28eb-4c03-9d60-b8000433a585"
+              }
+            ],
+            "referenceRange": [
+              {
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                },
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                }
+              }
+            ],
+            "resourceType": "Observation",
+            "status": "final",
+            "subject": {
+              "identifier": {
+                "system": "https://example.org/lis/patient",
+                "value": "C4-SYNTHETIC-P-4c93f763-28eb-4c03-9d60-b8000433a585"
+              },
+              "type": "Patient"
+            },
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            }
+          },
+          "status": 409,
+          "response_body": {
+            "error": {
+              "code": "DUPLICATE_CONFLICT",
+              "message": "The source key already has different content or patient linkage"
+            }
+          }
+        }
+      ],
+      "status": "REJECTED",
+      "verified_at": null,
+      "completed_at": null,
+      "attempts": [
+        {
+          "attempt_id": "470a6e89-3763-486c-b09a-f6c48fbe94fb",
+          "phase": "SEND",
+          "attempt_no": 1,
+          "http_status": 409,
+          "error_code": "DUPLICATE_CONFLICT",
+          "started_at": "2026-10-29T16:55:13.896Z",
+          "ended_at": "2026-10-29T16:55:13.906Z",
+          "response_body": {
+            "outcome": "terminal"
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "RECEIVED",
+          "old_status": null,
+          "new_status": "RECEIVED",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "CLAIMED",
+          "old_status": "RECEIVED",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "VALIDATED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "TRANSFORMED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "SENT",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": "470a6e89-3763-486c-b09a-f6c48fbe94fb",
+          "detail": {
+            "phase": "SEND",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "REJECTED",
+          "old_status": "PROCESSING",
+          "new_status": "REJECTED",
+          "attempt_id": "470a6e89-3763-486c-b09a-f6c48fbe94fb",
+          "detail": {
+            "code": "DUPLICATE_CONFLICT",
+            "phase": "SEND",
+            "outcome": "terminal"
+          }
+        }
+      ],
+      "original_rows": [
+        {
+          "target_id": "ffd5f187-c0f0-4820-9dcb-af45e0c72b3a",
+          "patient_key": "9d7e5a18-6e3b-4165-aa19-d9e3deb96c1c",
+          "external_system": "https://example.org/lis/result",
+          "external_id": "C4-SYNTHETIC-R-4c93f763-28eb-4c03-9d60-b8000433a585",
+          "analyte_system": "https://example.org/lis/test-code",
+          "analyte_code": "C4-LOCAL-TEST",
+          "analyte_display": "C4 synthetic analyte",
+          "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+          "quantity": "0.8",
+          "unit_text": "mg/dL",
+          "low": "0.1",
+          "high": "0.9",
+          "effective_at": "2026-10-29T08:00:00.123456Z",
+          "clinical_status": "final",
+          "fhir_json": {
+            "code": {
+              "text": "C4 synthetic analyte / Blood / Chemistry",
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "system": "https://example.org/lis/test-code",
+                  "display": "C4 synthetic analyte"
+                }
+              ]
+            },
+            "status": "final",
+            "subject": {
+              "type": "Patient",
+              "identifier": {
+                "value": "C4-SYNTHETIC-P-4c93f763-28eb-4c03-9d60-b8000433a585",
+                "system": "https://example.org/lis/patient"
+              }
+            },
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "identifier": [
+              {
+                "value": "C4-SYNTHETIC-R-4c93f763-28eb-4c03-9d60-b8000433a585",
+                "system": "https://example.org/lis/result"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.8
+            },
+            "referenceRange": [
+              {
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                },
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                }
+              }
+            ],
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+          },
+          "received_at": "2026-10-29T16:55:13.879650Z",
+          "stored_at": "2026-10-29T16:55:13.879650Z"
+        }
+      ]
+    },
+    {
+      "case_id": "C4-08-quantity",
+      "outcome": "PASS",
+      "fixture": "both",
+      "exchange_id": "2ce2e70c-2b65-492b-a34b-2898eeb5643b",
+      "expected_columns": {
+        "external_system": "https://example.org/lis/result",
+        "external_id": "C4-SYNTHETIC-R-563cba2a-b370-447d-a2a3-60e17b31d603",
+        "analyte_system": "https://example.org/lis/test-code",
+        "analyte_code": "C4-LOCAL-TEST",
+        "analyte_display": "C4 synthetic analyte",
+        "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+        "quantity": "0.30000000000000004",
+        "unit_text": "mg/dL",
+        "low": "0.1",
+        "high": "0.9",
+        "effective_at": "2026-10-29T08:00:00.123456Z",
+        "clinical_status": "final",
+        "patient_key": "9d745d9b-31d5-422f-a326-6cf4df7faada"
+      },
+      "expected_fhir": {
+        "resourceType": "Observation",
+        "identifier": [
+          {
+            "system": "https://example.org/lis/result",
+            "value": "C4-SYNTHETIC-R-563cba2a-b370-447d-a2a3-60e17b31d603"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://example.org/lis/test-code",
+              "code": "C4-LOCAL-TEST",
+              "display": "C4 synthetic analyte"
+            }
+          ],
+          "text": "C4 synthetic analyte / Blood / Chemistry"
+        },
+        "subject": {
+          "type": "Patient",
+          "identifier": {
+            "system": "https://example.org/lis/patient",
+            "value": "C4-SYNTHETIC-P-563cba2a-b370-447d-a2a3-60e17b31d603"
+          }
+        },
+        "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+        "valueQuantity": {
+          "value": 0.30000000000000004,
+          "unit": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 0.1,
+              "unit": "mg/dL"
+            },
+            "high": {
+              "value": 0.9,
+              "unit": "mg/dL"
+            }
+          }
+        ]
+      },
+      "actual_rows": [
+        {
+          "target_id": "f6284c58-447f-4e2e-b85c-e1bcb6e797f6",
+          "patient_key": "9d745d9b-31d5-422f-a326-6cf4df7faada",
+          "external_system": "https://example.org/lis/result",
+          "external_id": "C4-SYNTHETIC-R-563cba2a-b370-447d-a2a3-60e17b31d603",
+          "analyte_system": "https://example.org/lis/test-code",
+          "analyte_code": "C4-LOCAL-TEST",
+          "analyte_display": "C4 synthetic analyte",
+          "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+          "quantity": "0.300000000000000040001",
+          "unit_text": "mg/dL",
+          "low": "0.1",
+          "high": "0.9",
+          "effective_at": "2026-10-29T08:00:00.123456Z",
+          "clinical_status": "final",
+          "fhir_json": {
+            "code": {
+              "text": "C4 synthetic analyte / Blood / Chemistry",
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "system": "https://example.org/lis/test-code",
+                  "display": "C4 synthetic analyte"
+                }
+              ]
+            },
+            "status": "final",
+            "subject": {
+              "type": "Patient",
+              "identifier": {
+                "value": "C4-SYNTHETIC-P-563cba2a-b370-447d-a2a3-60e17b31d603",
+                "system": "https://example.org/lis/patient"
+              }
+            },
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "identifier": [
+              {
+                "value": "C4-SYNTHETIC-R-563cba2a-b370-447d-a2a3-60e17b31d603",
+                "system": "https://example.org/lis/result"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            },
+            "referenceRange": [
+              {
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                },
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                }
+              }
+            ],
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+          },
+          "received_at": "2026-10-29T16:55:13.959064Z",
+          "stored_at": "2026-10-29T16:55:13.959064Z"
+        }
+      ],
+      "http": [
+        {
+          "method": "POST",
+          "path": "/api/observations",
+          "query": {},
+          "content_type": "application/fhir+json",
+          "request_body": {
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "display": "C4 synthetic analyte",
+                  "system": "https://example.org/lis/test-code"
+                }
+              ],
+              "text": "C4 synthetic analyte / Blood / Chemistry"
+            },
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+            "identifier": [
+              {
+                "system": "https://example.org/lis/result",
+                "value": "C4-SYNTHETIC-R-563cba2a-b370-447d-a2a3-60e17b31d603"
+              }
+            ],
+            "referenceRange": [
+              {
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                },
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                }
+              }
+            ],
+            "resourceType": "Observation",
+            "status": "final",
+            "subject": {
+              "identifier": {
+                "system": "https://example.org/lis/patient",
+                "value": "C4-SYNTHETIC-P-563cba2a-b370-447d-a2a3-60e17b31d603"
+              },
+              "type": "Patient"
+            },
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            }
+          },
+          "status": 201,
+          "response_body": {
+            "result": "STORED",
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-563cba2a-b370-447d-a2a3-60e17b31d603",
+            "target_id": "f6284c58-447f-4e2e-b85c-e1bcb6e797f6",
+            "patient_key": "9d745d9b-31d5-422f-a326-6cf4df7faada"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/lab-results",
+          "query": {
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-563cba2a-b370-447d-a2a3-60e17b31d603"
+          },
+          "content_type": null,
+          "request_body": null,
+          "status": 200,
+          "response_body": {
+            "items": [
+              {
+                "target_id": "f6284c58-447f-4e2e-b85c-e1bcb6e797f6",
+                "patient_key": "9d745d9b-31d5-422f-a326-6cf4df7faada",
+                "external_system": "https://example.org/lis/result",
+                "external_id": "C4-SYNTHETIC-R-563cba2a-b370-447d-a2a3-60e17b31d603",
+                "analyte_system": "https://example.org/lis/test-code",
+                "analyte_code": "C4-LOCAL-TEST",
+                "analyte_display": "C4 synthetic analyte",
+                "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+                "quantity": "0.300000000000000040001",
+                "unit_text": "mg/dL",
+                "low": "0.1",
+                "high": "0.9",
+                "effective_at": "2026-10-29T08:00:00.123456Z",
+                "clinical_status": "final",
+                "fhir_json": {
+                  "code": {
+                    "text": "C4 synthetic analyte / Blood / Chemistry",
+                    "coding": [
+                      {
+                        "code": "C4-LOCAL-TEST",
+                        "system": "https://example.org/lis/test-code",
+                        "display": "C4 synthetic analyte"
+                      }
+                    ]
+                  },
+                  "status": "final",
+                  "subject": {
+                    "type": "Patient",
+                    "identifier": {
+                      "value": "C4-SYNTHETIC-P-563cba2a-b370-447d-a2a3-60e17b31d603",
+                      "system": "https://example.org/lis/patient"
+                    }
+                  },
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "laboratory",
+                          "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "identifier": [
+                    {
+                      "value": "C4-SYNTHETIC-R-563cba2a-b370-447d-a2a3-60e17b31d603",
+                      "system": "https://example.org/lis/result"
+                    }
+                  ],
+                  "resourceType": "Observation",
+                  "valueQuantity": {
+                    "unit": "mg/dL",
+                    "value": 0.30000000000000004
+                  },
+                  "referenceRange": [
+                    {
+                      "low": {
+                        "unit": "mg/dL",
+                        "value": 0.1
+                      },
+                      "high": {
+                        "unit": "mg/dL",
+                        "value": 0.9
+                      }
+                    }
+                  ],
+                  "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+                },
+                "received_at": "2026-10-29T16:55:13.959064Z",
+                "stored_at": "2026-10-29T16:55:13.959064Z"
+              }
+            ]
+          }
+        }
+      ],
+      "status": "FAILED",
+      "verified_at": null,
+      "completed_at": null,
+      "attempts": [
+        {
+          "attempt_id": "ff1e6ede-7b54-4987-b873-ed5fd440a7f1",
+          "phase": "SEND",
+          "attempt_no": 1,
+          "http_status": 201,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:13.954Z",
+          "ended_at": "2026-10-29T16:55:13.962Z",
+          "response_body": {
+            "result": "STORED",
+            "target_id": "f6284c58-447f-4e2e-b85c-e1bcb6e797f6",
+            "external_id": "C4-SYNTHETIC-R-563cba2a-b370-447d-a2a3-60e17b31d603",
+            "patient_key": "9d745d9b-31d5-422f-a326-6cf4df7faada",
+            "external_system": "https://example.org/lis/result"
+          }
+        },
+        {
+          "attempt_id": "4f920b70-b3e6-44d3-899f-b3c3aba34ec4",
+          "phase": "VERIFY",
+          "attempt_no": 1,
+          "http_status": 200,
+          "error_code": "VERIFY_MISMATCH",
+          "started_at": "2026-10-29T16:55:13.966Z",
+          "ended_at": "2026-10-29T16:55:13.974Z",
+          "response_body": {
+            "outcome": "terminal"
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "RECEIVED",
+          "old_status": null,
+          "new_status": "RECEIVED",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "CLAIMED",
+          "old_status": "RECEIVED",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "VALIDATED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "TRANSFORMED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "SENT",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": "ff1e6ede-7b54-4987-b873-ed5fd440a7f1",
+          "detail": {
+            "phase": "SEND",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "TARGET_STORED",
+          "old_status": "PROCESSING",
+          "new_status": "VERIFYING",
+          "attempt_id": "ff1e6ede-7b54-4987-b873-ed5fd440a7f1",
+          "detail": {
+            "code": null,
+            "phase": "SEND",
+            "outcome": "stored"
+          }
+        },
+        {
+          "type": "VERIFY_STARTED",
+          "old_status": "VERIFYING",
+          "new_status": "VERIFYING",
+          "attempt_id": "4f920b70-b3e6-44d3-899f-b3c3aba34ec4",
+          "detail": {
+            "phase": "VERIFY",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "VERIFY_MISMATCH",
+          "old_status": "VERIFYING",
+          "new_status": "FAILED",
+          "attempt_id": "4f920b70-b3e6-44d3-899f-b3c3aba34ec4",
+          "detail": {
+            "code": "VERIFY_MISMATCH",
+            "phase": "VERIFY",
+            "fields": [
+              "quantity"
+            ],
+            "outcome": "terminal"
+          }
+        }
+      ],
+      "injected_fault": "quantity"
+    },
+    {
+      "case_id": "C4-08-effective_at",
+      "outcome": "PASS",
+      "fixture": "both",
+      "exchange_id": "ac804737-8827-4bfe-ad64-4c957b88bce9",
+      "expected_columns": {
+        "external_system": "https://example.org/lis/result",
+        "external_id": "C4-SYNTHETIC-R-13c77c9a-a724-4cc9-a32b-b66e4518d074",
+        "analyte_system": "https://example.org/lis/test-code",
+        "analyte_code": "C4-LOCAL-TEST",
+        "analyte_display": "C4 synthetic analyte",
+        "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+        "quantity": "0.30000000000000004",
+        "unit_text": "mg/dL",
+        "low": "0.1",
+        "high": "0.9",
+        "effective_at": "2026-10-29T08:00:00.123456Z",
+        "clinical_status": "final",
+        "patient_key": "fd9ba872-c386-4fc1-b802-de89ed092bc8"
+      },
+      "expected_fhir": {
+        "resourceType": "Observation",
+        "identifier": [
+          {
+            "system": "https://example.org/lis/result",
+            "value": "C4-SYNTHETIC-R-13c77c9a-a724-4cc9-a32b-b66e4518d074"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://example.org/lis/test-code",
+              "code": "C4-LOCAL-TEST",
+              "display": "C4 synthetic analyte"
+            }
+          ],
+          "text": "C4 synthetic analyte / Blood / Chemistry"
+        },
+        "subject": {
+          "type": "Patient",
+          "identifier": {
+            "system": "https://example.org/lis/patient",
+            "value": "C4-SYNTHETIC-P-13c77c9a-a724-4cc9-a32b-b66e4518d074"
+          }
+        },
+        "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+        "valueQuantity": {
+          "value": 0.30000000000000004,
+          "unit": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 0.1,
+              "unit": "mg/dL"
+            },
+            "high": {
+              "value": 0.9,
+              "unit": "mg/dL"
+            }
+          }
+        ]
+      },
+      "actual_rows": [
+        {
+          "target_id": "c2d94f0f-4c10-41b0-9ef1-9592ccfd2ce6",
+          "patient_key": "fd9ba872-c386-4fc1-b802-de89ed092bc8",
+          "external_system": "https://example.org/lis/result",
+          "external_id": "C4-SYNTHETIC-R-13c77c9a-a724-4cc9-a32b-b66e4518d074",
+          "analyte_system": "https://example.org/lis/test-code",
+          "analyte_code": "C4-LOCAL-TEST",
+          "analyte_display": "C4 synthetic analyte",
+          "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+          "quantity": "0.30000000000000004",
+          "unit_text": "mg/dL",
+          "low": "0.1",
+          "high": "0.9",
+          "effective_at": "2026-10-29T08:00:00.123457Z",
+          "clinical_status": "final",
+          "fhir_json": {
+            "code": {
+              "text": "C4 synthetic analyte / Blood / Chemistry",
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "system": "https://example.org/lis/test-code",
+                  "display": "C4 synthetic analyte"
+                }
+              ]
+            },
+            "status": "final",
+            "subject": {
+              "type": "Patient",
+              "identifier": {
+                "value": "C4-SYNTHETIC-P-13c77c9a-a724-4cc9-a32b-b66e4518d074",
+                "system": "https://example.org/lis/patient"
+              }
+            },
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "identifier": [
+              {
+                "value": "C4-SYNTHETIC-R-13c77c9a-a724-4cc9-a32b-b66e4518d074",
+                "system": "https://example.org/lis/result"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            },
+            "referenceRange": [
+              {
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                },
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                }
+              }
+            ],
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+          },
+          "received_at": "2026-10-29T16:55:14.023004Z",
+          "stored_at": "2026-10-29T16:55:14.023004Z"
+        }
+      ],
+      "http": [
+        {
+          "method": "POST",
+          "path": "/api/observations",
+          "query": {},
+          "content_type": "application/fhir+json",
+          "request_body": {
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "display": "C4 synthetic analyte",
+                  "system": "https://example.org/lis/test-code"
+                }
+              ],
+              "text": "C4 synthetic analyte / Blood / Chemistry"
+            },
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+            "identifier": [
+              {
+                "system": "https://example.org/lis/result",
+                "value": "C4-SYNTHETIC-R-13c77c9a-a724-4cc9-a32b-b66e4518d074"
+              }
+            ],
+            "referenceRange": [
+              {
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                },
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                }
+              }
+            ],
+            "resourceType": "Observation",
+            "status": "final",
+            "subject": {
+              "identifier": {
+                "system": "https://example.org/lis/patient",
+                "value": "C4-SYNTHETIC-P-13c77c9a-a724-4cc9-a32b-b66e4518d074"
+              },
+              "type": "Patient"
+            },
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            }
+          },
+          "status": 201,
+          "response_body": {
+            "result": "STORED",
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-13c77c9a-a724-4cc9-a32b-b66e4518d074",
+            "target_id": "c2d94f0f-4c10-41b0-9ef1-9592ccfd2ce6",
+            "patient_key": "fd9ba872-c386-4fc1-b802-de89ed092bc8"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/lab-results",
+          "query": {
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-13c77c9a-a724-4cc9-a32b-b66e4518d074"
+          },
+          "content_type": null,
+          "request_body": null,
+          "status": 200,
+          "response_body": {
+            "items": [
+              {
+                "target_id": "c2d94f0f-4c10-41b0-9ef1-9592ccfd2ce6",
+                "patient_key": "fd9ba872-c386-4fc1-b802-de89ed092bc8",
+                "external_system": "https://example.org/lis/result",
+                "external_id": "C4-SYNTHETIC-R-13c77c9a-a724-4cc9-a32b-b66e4518d074",
+                "analyte_system": "https://example.org/lis/test-code",
+                "analyte_code": "C4-LOCAL-TEST",
+                "analyte_display": "C4 synthetic analyte",
+                "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+                "quantity": "0.30000000000000004",
+                "unit_text": "mg/dL",
+                "low": "0.1",
+                "high": "0.9",
+                "effective_at": "2026-10-29T08:00:00.123457Z",
+                "clinical_status": "final",
+                "fhir_json": {
+                  "code": {
+                    "text": "C4 synthetic analyte / Blood / Chemistry",
+                    "coding": [
+                      {
+                        "code": "C4-LOCAL-TEST",
+                        "system": "https://example.org/lis/test-code",
+                        "display": "C4 synthetic analyte"
+                      }
+                    ]
+                  },
+                  "status": "final",
+                  "subject": {
+                    "type": "Patient",
+                    "identifier": {
+                      "value": "C4-SYNTHETIC-P-13c77c9a-a724-4cc9-a32b-b66e4518d074",
+                      "system": "https://example.org/lis/patient"
+                    }
+                  },
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "laboratory",
+                          "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "identifier": [
+                    {
+                      "value": "C4-SYNTHETIC-R-13c77c9a-a724-4cc9-a32b-b66e4518d074",
+                      "system": "https://example.org/lis/result"
+                    }
+                  ],
+                  "resourceType": "Observation",
+                  "valueQuantity": {
+                    "unit": "mg/dL",
+                    "value": 0.30000000000000004
+                  },
+                  "referenceRange": [
+                    {
+                      "low": {
+                        "unit": "mg/dL",
+                        "value": 0.1
+                      },
+                      "high": {
+                        "unit": "mg/dL",
+                        "value": 0.9
+                      }
+                    }
+                  ],
+                  "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+                },
+                "received_at": "2026-10-29T16:55:14.023004Z",
+                "stored_at": "2026-10-29T16:55:14.023004Z"
+              }
+            ]
+          }
+        }
+      ],
+      "status": "FAILED",
+      "verified_at": null,
+      "completed_at": null,
+      "attempts": [
+        {
+          "attempt_id": "0993e08e-e9a9-40e4-a899-3654e80add31",
+          "phase": "SEND",
+          "attempt_no": 1,
+          "http_status": 201,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:14.017Z",
+          "ended_at": "2026-10-29T16:55:14.027Z",
+          "response_body": {
+            "result": "STORED",
+            "target_id": "c2d94f0f-4c10-41b0-9ef1-9592ccfd2ce6",
+            "external_id": "C4-SYNTHETIC-R-13c77c9a-a724-4cc9-a32b-b66e4518d074",
+            "patient_key": "fd9ba872-c386-4fc1-b802-de89ed092bc8",
+            "external_system": "https://example.org/lis/result"
+          }
+        },
+        {
+          "attempt_id": "9d18265b-4a8b-48fe-91ce-57ec52298203",
+          "phase": "VERIFY",
+          "attempt_no": 1,
+          "http_status": 200,
+          "error_code": "VERIFY_MISMATCH",
+          "started_at": "2026-10-29T16:55:14.038Z",
+          "ended_at": "2026-10-29T16:55:14.050Z",
+          "response_body": {
+            "outcome": "terminal"
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "RECEIVED",
+          "old_status": null,
+          "new_status": "RECEIVED",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "CLAIMED",
+          "old_status": "RECEIVED",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "VALIDATED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "TRANSFORMED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "SENT",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": "0993e08e-e9a9-40e4-a899-3654e80add31",
+          "detail": {
+            "phase": "SEND",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "TARGET_STORED",
+          "old_status": "PROCESSING",
+          "new_status": "VERIFYING",
+          "attempt_id": "0993e08e-e9a9-40e4-a899-3654e80add31",
+          "detail": {
+            "code": null,
+            "phase": "SEND",
+            "outcome": "stored"
+          }
+        },
+        {
+          "type": "VERIFY_STARTED",
+          "old_status": "VERIFYING",
+          "new_status": "VERIFYING",
+          "attempt_id": "9d18265b-4a8b-48fe-91ce-57ec52298203",
+          "detail": {
+            "phase": "VERIFY",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "VERIFY_MISMATCH",
+          "old_status": "VERIFYING",
+          "new_status": "FAILED",
+          "attempt_id": "9d18265b-4a8b-48fe-91ce-57ec52298203",
+          "detail": {
+            "code": "VERIFY_MISMATCH",
+            "phase": "VERIFY",
+            "fields": [
+              "effective_at"
+            ],
+            "outcome": "terminal"
+          }
+        }
+      ],
+      "injected_fault": "effective_at"
+    },
+    {
+      "case_id": "C4-08-patient_key",
+      "outcome": "PASS",
+      "fixture": "both",
+      "exchange_id": "98b4795a-6ca5-4725-a821-36d28c6f8ee2",
+      "expected_columns": {
+        "external_system": "https://example.org/lis/result",
+        "external_id": "C4-SYNTHETIC-R-2ecee57b-acca-4a63-b4ab-df129b891a2d",
+        "analyte_system": "https://example.org/lis/test-code",
+        "analyte_code": "C4-LOCAL-TEST",
+        "analyte_display": "C4 synthetic analyte",
+        "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+        "quantity": "0.30000000000000004",
+        "unit_text": "mg/dL",
+        "low": "0.1",
+        "high": "0.9",
+        "effective_at": "2026-10-29T08:00:00.123456Z",
+        "clinical_status": "final",
+        "patient_key": "fe3f9f59-a539-4509-aa7e-8f211774a306"
+      },
+      "expected_fhir": {
+        "resourceType": "Observation",
+        "identifier": [
+          {
+            "system": "https://example.org/lis/result",
+            "value": "C4-SYNTHETIC-R-2ecee57b-acca-4a63-b4ab-df129b891a2d"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://example.org/lis/test-code",
+              "code": "C4-LOCAL-TEST",
+              "display": "C4 synthetic analyte"
+            }
+          ],
+          "text": "C4 synthetic analyte / Blood / Chemistry"
+        },
+        "subject": {
+          "type": "Patient",
+          "identifier": {
+            "system": "https://example.org/lis/patient",
+            "value": "C4-SYNTHETIC-P-2ecee57b-acca-4a63-b4ab-df129b891a2d"
+          }
+        },
+        "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+        "valueQuantity": {
+          "value": 0.30000000000000004,
+          "unit": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 0.1,
+              "unit": "mg/dL"
+            },
+            "high": {
+              "value": 0.9,
+              "unit": "mg/dL"
+            }
+          }
+        ]
+      },
+      "actual_rows": [
+        {
+          "target_id": "af9ca8e9-8f54-457a-b5f4-fe5579357dcd",
+          "patient_key": "58a494a5-17ae-4f64-9499-d89be306165a",
+          "external_system": "https://example.org/lis/result",
+          "external_id": "C4-SYNTHETIC-R-2ecee57b-acca-4a63-b4ab-df129b891a2d",
+          "analyte_system": "https://example.org/lis/test-code",
+          "analyte_code": "C4-LOCAL-TEST",
+          "analyte_display": "C4 synthetic analyte",
+          "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+          "quantity": "0.30000000000000004",
+          "unit_text": "mg/dL",
+          "low": "0.1",
+          "high": "0.9",
+          "effective_at": "2026-10-29T08:00:00.123456Z",
+          "clinical_status": "final",
+          "fhir_json": {
+            "code": {
+              "text": "C4 synthetic analyte / Blood / Chemistry",
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "system": "https://example.org/lis/test-code",
+                  "display": "C4 synthetic analyte"
+                }
+              ]
+            },
+            "status": "final",
+            "subject": {
+              "type": "Patient",
+              "identifier": {
+                "value": "C4-SYNTHETIC-P-2ecee57b-acca-4a63-b4ab-df129b891a2d",
+                "system": "https://example.org/lis/patient"
+              }
+            },
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "identifier": [
+              {
+                "value": "C4-SYNTHETIC-R-2ecee57b-acca-4a63-b4ab-df129b891a2d",
+                "system": "https://example.org/lis/result"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            },
+            "referenceRange": [
+              {
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                },
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                }
+              }
+            ],
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+          },
+          "received_at": "2026-10-29T16:55:14.087101Z",
+          "stored_at": "2026-10-29T16:55:14.087101Z"
+        }
+      ],
+      "http": [
+        {
+          "method": "POST",
+          "path": "/api/observations",
+          "query": {},
+          "content_type": "application/fhir+json",
+          "request_body": {
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "display": "C4 synthetic analyte",
+                  "system": "https://example.org/lis/test-code"
+                }
+              ],
+              "text": "C4 synthetic analyte / Blood / Chemistry"
+            },
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+            "identifier": [
+              {
+                "system": "https://example.org/lis/result",
+                "value": "C4-SYNTHETIC-R-2ecee57b-acca-4a63-b4ab-df129b891a2d"
+              }
+            ],
+            "referenceRange": [
+              {
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                },
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                }
+              }
+            ],
+            "resourceType": "Observation",
+            "status": "final",
+            "subject": {
+              "identifier": {
+                "system": "https://example.org/lis/patient",
+                "value": "C4-SYNTHETIC-P-2ecee57b-acca-4a63-b4ab-df129b891a2d"
+              },
+              "type": "Patient"
+            },
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            }
+          },
+          "status": 201,
+          "response_body": {
+            "result": "STORED",
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-2ecee57b-acca-4a63-b4ab-df129b891a2d",
+            "target_id": "af9ca8e9-8f54-457a-b5f4-fe5579357dcd",
+            "patient_key": "fe3f9f59-a539-4509-aa7e-8f211774a306"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/lab-results",
+          "query": {
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-2ecee57b-acca-4a63-b4ab-df129b891a2d"
+          },
+          "content_type": null,
+          "request_body": null,
+          "status": 200,
+          "response_body": {
+            "items": [
+              {
+                "target_id": "af9ca8e9-8f54-457a-b5f4-fe5579357dcd",
+                "patient_key": "58a494a5-17ae-4f64-9499-d89be306165a",
+                "external_system": "https://example.org/lis/result",
+                "external_id": "C4-SYNTHETIC-R-2ecee57b-acca-4a63-b4ab-df129b891a2d",
+                "analyte_system": "https://example.org/lis/test-code",
+                "analyte_code": "C4-LOCAL-TEST",
+                "analyte_display": "C4 synthetic analyte",
+                "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+                "quantity": "0.30000000000000004",
+                "unit_text": "mg/dL",
+                "low": "0.1",
+                "high": "0.9",
+                "effective_at": "2026-10-29T08:00:00.123456Z",
+                "clinical_status": "final",
+                "fhir_json": {
+                  "code": {
+                    "text": "C4 synthetic analyte / Blood / Chemistry",
+                    "coding": [
+                      {
+                        "code": "C4-LOCAL-TEST",
+                        "system": "https://example.org/lis/test-code",
+                        "display": "C4 synthetic analyte"
+                      }
+                    ]
+                  },
+                  "status": "final",
+                  "subject": {
+                    "type": "Patient",
+                    "identifier": {
+                      "value": "C4-SYNTHETIC-P-2ecee57b-acca-4a63-b4ab-df129b891a2d",
+                      "system": "https://example.org/lis/patient"
+                    }
+                  },
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "laboratory",
+                          "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "identifier": [
+                    {
+                      "value": "C4-SYNTHETIC-R-2ecee57b-acca-4a63-b4ab-df129b891a2d",
+                      "system": "https://example.org/lis/result"
+                    }
+                  ],
+                  "resourceType": "Observation",
+                  "valueQuantity": {
+                    "unit": "mg/dL",
+                    "value": 0.30000000000000004
+                  },
+                  "referenceRange": [
+                    {
+                      "low": {
+                        "unit": "mg/dL",
+                        "value": 0.1
+                      },
+                      "high": {
+                        "unit": "mg/dL",
+                        "value": 0.9
+                      }
+                    }
+                  ],
+                  "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+                },
+                "received_at": "2026-10-29T16:55:14.087101Z",
+                "stored_at": "2026-10-29T16:55:14.087101Z"
+              }
+            ]
+          }
+        }
+      ],
+      "status": "FAILED",
+      "verified_at": null,
+      "completed_at": null,
+      "attempts": [
+        {
+          "attempt_id": "c8cb70df-b41b-4cda-84eb-1dbbe6836060",
+          "phase": "SEND",
+          "attempt_no": 1,
+          "http_status": 201,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:14.084Z",
+          "ended_at": "2026-10-29T16:55:14.089Z",
+          "response_body": {
+            "result": "STORED",
+            "target_id": "af9ca8e9-8f54-457a-b5f4-fe5579357dcd",
+            "external_id": "C4-SYNTHETIC-R-2ecee57b-acca-4a63-b4ab-df129b891a2d",
+            "patient_key": "fe3f9f59-a539-4509-aa7e-8f211774a306",
+            "external_system": "https://example.org/lis/result"
+          }
+        },
+        {
+          "attempt_id": "1d928105-f067-4474-974a-1cf3e24d9adc",
+          "phase": "VERIFY",
+          "attempt_no": 1,
+          "http_status": 200,
+          "error_code": "VERIFY_MISMATCH",
+          "started_at": "2026-10-29T16:55:14.093Z",
+          "ended_at": "2026-10-29T16:55:14.099Z",
+          "response_body": {
+            "outcome": "terminal"
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "RECEIVED",
+          "old_status": null,
+          "new_status": "RECEIVED",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "CLAIMED",
+          "old_status": "RECEIVED",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "VALIDATED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "TRANSFORMED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "SENT",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": "c8cb70df-b41b-4cda-84eb-1dbbe6836060",
+          "detail": {
+            "phase": "SEND",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "TARGET_STORED",
+          "old_status": "PROCESSING",
+          "new_status": "VERIFYING",
+          "attempt_id": "c8cb70df-b41b-4cda-84eb-1dbbe6836060",
+          "detail": {
+            "code": null,
+            "phase": "SEND",
+            "outcome": "stored"
+          }
+        },
+        {
+          "type": "VERIFY_STARTED",
+          "old_status": "VERIFYING",
+          "new_status": "VERIFYING",
+          "attempt_id": "1d928105-f067-4474-974a-1cf3e24d9adc",
+          "detail": {
+            "phase": "VERIFY",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "VERIFY_MISMATCH",
+          "old_status": "VERIFYING",
+          "new_status": "FAILED",
+          "attempt_id": "1d928105-f067-4474-974a-1cf3e24d9adc",
+          "detail": {
+            "code": "VERIFY_MISMATCH",
+            "phase": "VERIFY",
+            "fields": [
+              "patient_key"
+            ],
+            "outcome": "terminal"
+          }
+        }
+      ],
+      "injected_fault": "patient_key"
+    },
+    {
+      "case_id": "C4-08-fhir_json",
+      "outcome": "PASS",
+      "fixture": "both",
+      "exchange_id": "b8faf610-d222-4e65-bf35-6a185118d28d",
+      "expected_columns": {
+        "external_system": "https://example.org/lis/result",
+        "external_id": "C4-SYNTHETIC-R-4634535b-6bb0-4050-8fb4-ede1b3f008b4",
+        "analyte_system": "https://example.org/lis/test-code",
+        "analyte_code": "C4-LOCAL-TEST",
+        "analyte_display": "C4 synthetic analyte",
+        "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+        "quantity": "0.30000000000000004",
+        "unit_text": "mg/dL",
+        "low": "0.1",
+        "high": "0.9",
+        "effective_at": "2026-10-29T08:00:00.123456Z",
+        "clinical_status": "final",
+        "patient_key": "80bf68f3-b7fc-43a8-990f-d311df02fe56"
+      },
+      "expected_fhir": {
+        "resourceType": "Observation",
+        "identifier": [
+          {
+            "system": "https://example.org/lis/result",
+            "value": "C4-SYNTHETIC-R-4634535b-6bb0-4050-8fb4-ede1b3f008b4"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://example.org/lis/test-code",
+              "code": "C4-LOCAL-TEST",
+              "display": "C4 synthetic analyte"
+            }
+          ],
+          "text": "C4 synthetic analyte / Blood / Chemistry"
+        },
+        "subject": {
+          "type": "Patient",
+          "identifier": {
+            "system": "https://example.org/lis/patient",
+            "value": "C4-SYNTHETIC-P-4634535b-6bb0-4050-8fb4-ede1b3f008b4"
+          }
+        },
+        "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+        "valueQuantity": {
+          "value": 0.30000000000000004,
+          "unit": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 0.1,
+              "unit": "mg/dL"
+            },
+            "high": {
+              "value": 0.9,
+              "unit": "mg/dL"
+            }
+          }
+        ]
+      },
+      "actual_rows": [
+        {
+          "target_id": "a5af9fdf-f8b4-4b28-94d8-2d90cbe886e2",
+          "patient_key": "80bf68f3-b7fc-43a8-990f-d311df02fe56",
+          "external_system": "https://example.org/lis/result",
+          "external_id": "C4-SYNTHETIC-R-4634535b-6bb0-4050-8fb4-ede1b3f008b4",
+          "analyte_system": "https://example.org/lis/test-code",
+          "analyte_code": "C4-LOCAL-TEST",
+          "analyte_display": "C4 synthetic analyte",
+          "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+          "quantity": "0.30000000000000004",
+          "unit_text": "mg/dL",
+          "low": "0.1",
+          "high": "0.9",
+          "effective_at": "2026-10-29T08:00:00.123456Z",
+          "clinical_status": "final",
+          "fhir_json": {
+            "code": {
+              "text": "C4 synthetic analyte / Blood / Chemistry",
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "system": "https://example.org/lis/test-code",
+                  "display": "C4 synthetic analyte"
+                }
+              ]
+            },
+            "status": "final",
+            "subject": {
+              "type": "Patient",
+              "identifier": {
+                "value": "C4-SYNTHETIC-WRONG-PATIENT",
+                "system": "https://example.org/lis/patient"
+              }
+            },
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "identifier": [
+              {
+                "value": "C4-SYNTHETIC-R-4634535b-6bb0-4050-8fb4-ede1b3f008b4",
+                "system": "https://example.org/lis/result"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            },
+            "referenceRange": [
+              {
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                },
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                }
+              }
+            ],
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+          },
+          "received_at": "2026-10-29T16:55:14.119236Z",
+          "stored_at": "2026-10-29T16:55:14.119236Z"
+        }
+      ],
+      "http": [
+        {
+          "method": "POST",
+          "path": "/api/observations",
+          "query": {},
+          "content_type": "application/fhir+json",
+          "request_body": {
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "display": "C4 synthetic analyte",
+                  "system": "https://example.org/lis/test-code"
+                }
+              ],
+              "text": "C4 synthetic analyte / Blood / Chemistry"
+            },
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+            "identifier": [
+              {
+                "system": "https://example.org/lis/result",
+                "value": "C4-SYNTHETIC-R-4634535b-6bb0-4050-8fb4-ede1b3f008b4"
+              }
+            ],
+            "referenceRange": [
+              {
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                },
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                }
+              }
+            ],
+            "resourceType": "Observation",
+            "status": "final",
+            "subject": {
+              "identifier": {
+                "system": "https://example.org/lis/patient",
+                "value": "C4-SYNTHETIC-P-4634535b-6bb0-4050-8fb4-ede1b3f008b4"
+              },
+              "type": "Patient"
+            },
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            }
+          },
+          "status": 201,
+          "response_body": {
+            "result": "STORED",
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-4634535b-6bb0-4050-8fb4-ede1b3f008b4",
+            "target_id": "a5af9fdf-f8b4-4b28-94d8-2d90cbe886e2",
+            "patient_key": "80bf68f3-b7fc-43a8-990f-d311df02fe56"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/lab-results",
+          "query": {
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-4634535b-6bb0-4050-8fb4-ede1b3f008b4"
+          },
+          "content_type": null,
+          "request_body": null,
+          "status": 200,
+          "response_body": {
+            "items": [
+              {
+                "target_id": "a5af9fdf-f8b4-4b28-94d8-2d90cbe886e2",
+                "patient_key": "80bf68f3-b7fc-43a8-990f-d311df02fe56",
+                "external_system": "https://example.org/lis/result",
+                "external_id": "C4-SYNTHETIC-R-4634535b-6bb0-4050-8fb4-ede1b3f008b4",
+                "analyte_system": "https://example.org/lis/test-code",
+                "analyte_code": "C4-LOCAL-TEST",
+                "analyte_display": "C4 synthetic analyte",
+                "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+                "quantity": "0.30000000000000004",
+                "unit_text": "mg/dL",
+                "low": "0.1",
+                "high": "0.9",
+                "effective_at": "2026-10-29T08:00:00.123456Z",
+                "clinical_status": "final",
+                "fhir_json": {
+                  "code": {
+                    "text": "C4 synthetic analyte / Blood / Chemistry",
+                    "coding": [
+                      {
+                        "code": "C4-LOCAL-TEST",
+                        "system": "https://example.org/lis/test-code",
+                        "display": "C4 synthetic analyte"
+                      }
+                    ]
+                  },
+                  "status": "final",
+                  "subject": {
+                    "type": "Patient",
+                    "identifier": {
+                      "value": "C4-SYNTHETIC-WRONG-PATIENT",
+                      "system": "https://example.org/lis/patient"
+                    }
+                  },
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "laboratory",
+                          "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "identifier": [
+                    {
+                      "value": "C4-SYNTHETIC-R-4634535b-6bb0-4050-8fb4-ede1b3f008b4",
+                      "system": "https://example.org/lis/result"
+                    }
+                  ],
+                  "resourceType": "Observation",
+                  "valueQuantity": {
+                    "unit": "mg/dL",
+                    "value": 0.30000000000000004
+                  },
+                  "referenceRange": [
+                    {
+                      "low": {
+                        "unit": "mg/dL",
+                        "value": 0.1
+                      },
+                      "high": {
+                        "unit": "mg/dL",
+                        "value": 0.9
+                      }
+                    }
+                  ],
+                  "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+                },
+                "received_at": "2026-10-29T16:55:14.119236Z",
+                "stored_at": "2026-10-29T16:55:14.119236Z"
+              }
+            ]
+          }
+        }
+      ],
+      "status": "FAILED",
+      "verified_at": null,
+      "completed_at": null,
+      "attempts": [
+        {
+          "attempt_id": "bf48bc68-86e0-4792-9d0f-98895f999d75",
+          "phase": "SEND",
+          "attempt_no": 1,
+          "http_status": 201,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:14.116Z",
+          "ended_at": "2026-10-29T16:55:14.121Z",
+          "response_body": {
+            "result": "STORED",
+            "target_id": "a5af9fdf-f8b4-4b28-94d8-2d90cbe886e2",
+            "external_id": "C4-SYNTHETIC-R-4634535b-6bb0-4050-8fb4-ede1b3f008b4",
+            "patient_key": "80bf68f3-b7fc-43a8-990f-d311df02fe56",
+            "external_system": "https://example.org/lis/result"
+          }
+        },
+        {
+          "attempt_id": "76d4333a-7d35-47f8-8c31-7b3a8abb1054",
+          "phase": "VERIFY",
+          "attempt_no": 1,
+          "http_status": 200,
+          "error_code": "VERIFY_MISMATCH",
+          "started_at": "2026-10-29T16:55:14.125Z",
+          "ended_at": "2026-10-29T16:55:14.130Z",
+          "response_body": {
+            "outcome": "terminal"
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "RECEIVED",
+          "old_status": null,
+          "new_status": "RECEIVED",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "CLAIMED",
+          "old_status": "RECEIVED",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "VALIDATED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "TRANSFORMED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "SENT",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": "bf48bc68-86e0-4792-9d0f-98895f999d75",
+          "detail": {
+            "phase": "SEND",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "TARGET_STORED",
+          "old_status": "PROCESSING",
+          "new_status": "VERIFYING",
+          "attempt_id": "bf48bc68-86e0-4792-9d0f-98895f999d75",
+          "detail": {
+            "code": null,
+            "phase": "SEND",
+            "outcome": "stored"
+          }
+        },
+        {
+          "type": "VERIFY_STARTED",
+          "old_status": "VERIFYING",
+          "new_status": "VERIFYING",
+          "attempt_id": "76d4333a-7d35-47f8-8c31-7b3a8abb1054",
+          "detail": {
+            "phase": "VERIFY",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "VERIFY_MISMATCH",
+          "old_status": "VERIFYING",
+          "new_status": "FAILED",
+          "attempt_id": "76d4333a-7d35-47f8-8c31-7b3a8abb1054",
+          "detail": {
+            "code": "VERIFY_MISMATCH",
+            "phase": "VERIFY",
+            "fields": [
+              "fhir_json"
+            ],
+            "outcome": "terminal"
+          }
+        }
+      ],
+      "injected_fault": "fhir_json"
+    },
+    {
+      "case_id": "C4-08-missing",
+      "outcome": "PASS",
+      "fixture": "both",
+      "exchange_id": "8e6d06ef-2271-4070-a67e-519073cef97d",
+      "expected_columns": {
+        "external_system": "https://example.org/lis/result",
+        "external_id": "C4-SYNTHETIC-R-3258091d-a5e0-4adc-934c-90524967db4c",
+        "analyte_system": "https://example.org/lis/test-code",
+        "analyte_code": "C4-LOCAL-TEST",
+        "analyte_display": "C4 synthetic analyte",
+        "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+        "quantity": "0.30000000000000004",
+        "unit_text": "mg/dL",
+        "low": "0.1",
+        "high": "0.9",
+        "effective_at": "2026-10-29T08:00:00.123456Z",
+        "clinical_status": "final",
+        "patient_key": "46d316ea-99bf-4312-9083-009fc4024dc9"
+      },
+      "expected_fhir": {
+        "resourceType": "Observation",
+        "identifier": [
+          {
+            "system": "https://example.org/lis/result",
+            "value": "C4-SYNTHETIC-R-3258091d-a5e0-4adc-934c-90524967db4c"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://example.org/lis/test-code",
+              "code": "C4-LOCAL-TEST",
+              "display": "C4 synthetic analyte"
+            }
+          ],
+          "text": "C4 synthetic analyte / Blood / Chemistry"
+        },
+        "subject": {
+          "type": "Patient",
+          "identifier": {
+            "system": "https://example.org/lis/patient",
+            "value": "C4-SYNTHETIC-P-3258091d-a5e0-4adc-934c-90524967db4c"
+          }
+        },
+        "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+        "valueQuantity": {
+          "value": 0.30000000000000004,
+          "unit": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 0.1,
+              "unit": "mg/dL"
+            },
+            "high": {
+              "value": 0.9,
+              "unit": "mg/dL"
+            }
+          }
+        ]
+      },
+      "actual_rows": [],
+      "http": [
+        {
+          "method": "POST",
+          "path": "/api/observations",
+          "query": {},
+          "content_type": "application/fhir+json",
+          "request_body": {
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "display": "C4 synthetic analyte",
+                  "system": "https://example.org/lis/test-code"
+                }
+              ],
+              "text": "C4 synthetic analyte / Blood / Chemistry"
+            },
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+            "identifier": [
+              {
+                "system": "https://example.org/lis/result",
+                "value": "C4-SYNTHETIC-R-3258091d-a5e0-4adc-934c-90524967db4c"
+              }
+            ],
+            "referenceRange": [
+              {
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                },
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                }
+              }
+            ],
+            "resourceType": "Observation",
+            "status": "final",
+            "subject": {
+              "identifier": {
+                "system": "https://example.org/lis/patient",
+                "value": "C4-SYNTHETIC-P-3258091d-a5e0-4adc-934c-90524967db4c"
+              },
+              "type": "Patient"
+            },
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            }
+          },
+          "status": 201,
+          "response_body": {
+            "result": "STORED",
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-3258091d-a5e0-4adc-934c-90524967db4c",
+            "target_id": "740ef93f-258b-4bd7-971e-186227538c81",
+            "patient_key": "46d316ea-99bf-4312-9083-009fc4024dc9"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/lab-results",
+          "query": {
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-3258091d-a5e0-4adc-934c-90524967db4c"
+          },
+          "content_type": null,
+          "request_body": null,
+          "status": 200,
+          "response_body": {
+            "items": []
+          }
+        }
+      ],
+      "status": "FAILED",
+      "verified_at": null,
+      "completed_at": null,
+      "attempts": [
+        {
+          "attempt_id": "38e64bf0-4f0d-4e11-952b-25ed67220c2c",
+          "phase": "SEND",
+          "attempt_no": 1,
+          "http_status": 201,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:14.144Z",
+          "ended_at": "2026-10-29T16:55:14.148Z",
+          "response_body": {
+            "result": "STORED",
+            "target_id": "740ef93f-258b-4bd7-971e-186227538c81",
+            "external_id": "C4-SYNTHETIC-R-3258091d-a5e0-4adc-934c-90524967db4c",
+            "patient_key": "46d316ea-99bf-4312-9083-009fc4024dc9",
+            "external_system": "https://example.org/lis/result"
+          }
+        },
+        {
+          "attempt_id": "f3e5906d-551e-42f7-9e52-a35540c72d7f",
+          "phase": "VERIFY",
+          "attempt_no": 1,
+          "http_status": 200,
+          "error_code": "VERIFY_MISMATCH",
+          "started_at": "2026-10-29T16:55:14.152Z",
+          "ended_at": "2026-10-29T16:55:14.156Z",
+          "response_body": {
+            "outcome": "terminal"
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "RECEIVED",
+          "old_status": null,
+          "new_status": "RECEIVED",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "CLAIMED",
+          "old_status": "RECEIVED",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "VALIDATED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "TRANSFORMED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "SENT",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": "38e64bf0-4f0d-4e11-952b-25ed67220c2c",
+          "detail": {
+            "phase": "SEND",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "TARGET_STORED",
+          "old_status": "PROCESSING",
+          "new_status": "VERIFYING",
+          "attempt_id": "38e64bf0-4f0d-4e11-952b-25ed67220c2c",
+          "detail": {
+            "code": null,
+            "phase": "SEND",
+            "outcome": "stored"
+          }
+        },
+        {
+          "type": "VERIFY_STARTED",
+          "old_status": "VERIFYING",
+          "new_status": "VERIFYING",
+          "attempt_id": "f3e5906d-551e-42f7-9e52-a35540c72d7f",
+          "detail": {
+            "phase": "VERIFY",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "VERIFY_MISMATCH",
+          "old_status": "VERIFYING",
+          "new_status": "FAILED",
+          "attempt_id": "f3e5906d-551e-42f7-9e52-a35540c72d7f",
+          "detail": {
+            "code": "VERIFY_MISMATCH",
+            "phase": "VERIFY",
+            "fields": [
+              "items.count"
+            ],
+            "outcome": "terminal"
+          }
+        }
+      ],
+      "injected_fault": "missing"
+    },
+    {
+      "case_id": "C4-08-recovery",
+      "outcome": "PASS",
+      "fixture": "both",
+      "exchange_id": "ce7eda4d-2ece-401f-ae3c-5d9e912beb53",
+      "expected_columns": {
+        "external_system": "https://example.org/lis/result",
+        "external_id": "C4-SYNTHETIC-R-c5777d4a-b162-40ff-9007-92623a24ad8e",
+        "analyte_system": "https://example.org/lis/test-code",
+        "analyte_code": "C4-LOCAL-TEST",
+        "analyte_display": "C4 synthetic analyte",
+        "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+        "quantity": "0.30000000000000004",
+        "unit_text": "mg/dL",
+        "low": "0.1",
+        "high": "0.9",
+        "effective_at": "2026-10-29T08:00:00.123456Z",
+        "clinical_status": "final",
+        "patient_key": "2d04cec8-28e2-4a1c-b16f-8f7291ed2c91"
+      },
+      "expected_fhir": {
+        "resourceType": "Observation",
+        "identifier": [
+          {
+            "system": "https://example.org/lis/result",
+            "value": "C4-SYNTHETIC-R-c5777d4a-b162-40ff-9007-92623a24ad8e"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://example.org/lis/test-code",
+              "code": "C4-LOCAL-TEST",
+              "display": "C4 synthetic analyte"
+            }
+          ],
+          "text": "C4 synthetic analyte / Blood / Chemistry"
+        },
+        "subject": {
+          "type": "Patient",
+          "identifier": {
+            "system": "https://example.org/lis/patient",
+            "value": "C4-SYNTHETIC-P-c5777d4a-b162-40ff-9007-92623a24ad8e"
+          }
+        },
+        "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+        "valueQuantity": {
+          "value": 0.30000000000000004,
+          "unit": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 0.1,
+              "unit": "mg/dL"
+            },
+            "high": {
+              "value": 0.9,
+              "unit": "mg/dL"
+            }
+          }
+        ]
+      },
+      "actual_rows": [
+        {
+          "target_id": "a771ab29-3623-4f72-9911-8bd8d28580d4",
+          "patient_key": "2d04cec8-28e2-4a1c-b16f-8f7291ed2c91",
+          "external_system": "https://example.org/lis/result",
+          "external_id": "C4-SYNTHETIC-R-c5777d4a-b162-40ff-9007-92623a24ad8e",
+          "analyte_system": "https://example.org/lis/test-code",
+          "analyte_code": "C4-LOCAL-TEST",
+          "analyte_display": "C4 synthetic analyte",
+          "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+          "quantity": "0.30000000000000004",
+          "unit_text": "mg/dL",
+          "low": "0.1",
+          "high": "0.9",
+          "effective_at": "2026-10-29T08:00:00.123456Z",
+          "clinical_status": "final",
+          "fhir_json": {
+            "code": {
+              "text": "C4 synthetic analyte / Blood / Chemistry",
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "system": "https://example.org/lis/test-code",
+                  "display": "C4 synthetic analyte"
+                }
+              ]
+            },
+            "status": "final",
+            "subject": {
+              "type": "Patient",
+              "identifier": {
+                "value": "C4-SYNTHETIC-P-c5777d4a-b162-40ff-9007-92623a24ad8e",
+                "system": "https://example.org/lis/patient"
+              }
+            },
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "identifier": [
+              {
+                "value": "C4-SYNTHETIC-R-c5777d4a-b162-40ff-9007-92623a24ad8e",
+                "system": "https://example.org/lis/result"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            },
+            "referenceRange": [
+              {
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                },
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                }
+              }
+            ],
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+          },
+          "received_at": "2026-10-29T16:55:14.175782Z",
+          "stored_at": "2026-10-29T16:55:14.175782Z"
+        }
+      ],
+      "http": [
+        {
+          "method": "POST",
+          "path": "/api/observations",
+          "query": {},
+          "content_type": "application/fhir+json",
+          "request_body": {
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "display": "C4 synthetic analyte",
+                  "system": "https://example.org/lis/test-code"
+                }
+              ],
+              "text": "C4 synthetic analyte / Blood / Chemistry"
+            },
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+            "identifier": [
+              {
+                "system": "https://example.org/lis/result",
+                "value": "C4-SYNTHETIC-R-c5777d4a-b162-40ff-9007-92623a24ad8e"
+              }
+            ],
+            "referenceRange": [
+              {
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                },
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                }
+              }
+            ],
+            "resourceType": "Observation",
+            "status": "final",
+            "subject": {
+              "identifier": {
+                "system": "https://example.org/lis/patient",
+                "value": "C4-SYNTHETIC-P-c5777d4a-b162-40ff-9007-92623a24ad8e"
+              },
+              "type": "Patient"
+            },
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            }
+          },
+          "status": 201,
+          "response_body": {
+            "result": "STORED",
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-c5777d4a-b162-40ff-9007-92623a24ad8e",
+            "target_id": "a771ab29-3623-4f72-9911-8bd8d28580d4",
+            "patient_key": "2d04cec8-28e2-4a1c-b16f-8f7291ed2c91"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/lab-results",
+          "query": {
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-c5777d4a-b162-40ff-9007-92623a24ad8e"
+          },
+          "content_type": null,
+          "request_body": null,
+          "status": 503,
+          "response_body": {
+            "error": {
+              "code": "DEPENDENCY_UNAVAILABLE",
+              "message": "EMR persistence is temporarily unavailable"
+            }
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/lab-results",
+          "query": {
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-c5777d4a-b162-40ff-9007-92623a24ad8e"
+          },
+          "content_type": null,
+          "request_body": null,
+          "status": 200,
+          "response_body": {
+            "items": [
+              {
+                "target_id": "a771ab29-3623-4f72-9911-8bd8d28580d4",
+                "patient_key": "2d04cec8-28e2-4a1c-b16f-8f7291ed2c91",
+                "external_system": "https://example.org/lis/result",
+                "external_id": "C4-SYNTHETIC-R-c5777d4a-b162-40ff-9007-92623a24ad8e",
+                "analyte_system": "https://example.org/lis/test-code",
+                "analyte_code": "C4-LOCAL-TEST",
+                "analyte_display": "C4 synthetic analyte",
+                "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+                "quantity": "0.30000000000000004",
+                "unit_text": "mg/dL",
+                "low": "0.1",
+                "high": "0.9",
+                "effective_at": "2026-10-29T08:00:00.123456Z",
+                "clinical_status": "final",
+                "fhir_json": {
+                  "code": {
+                    "text": "C4 synthetic analyte / Blood / Chemistry",
+                    "coding": [
+                      {
+                        "code": "C4-LOCAL-TEST",
+                        "system": "https://example.org/lis/test-code",
+                        "display": "C4 synthetic analyte"
+                      }
+                    ]
+                  },
+                  "status": "final",
+                  "subject": {
+                    "type": "Patient",
+                    "identifier": {
+                      "value": "C4-SYNTHETIC-P-c5777d4a-b162-40ff-9007-92623a24ad8e",
+                      "system": "https://example.org/lis/patient"
+                    }
+                  },
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "laboratory",
+                          "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "identifier": [
+                    {
+                      "value": "C4-SYNTHETIC-R-c5777d4a-b162-40ff-9007-92623a24ad8e",
+                      "system": "https://example.org/lis/result"
+                    }
+                  ],
+                  "resourceType": "Observation",
+                  "valueQuantity": {
+                    "unit": "mg/dL",
+                    "value": 0.30000000000000004
+                  },
+                  "referenceRange": [
+                    {
+                      "low": {
+                        "unit": "mg/dL",
+                        "value": 0.1
+                      },
+                      "high": {
+                        "unit": "mg/dL",
+                        "value": 0.9
+                      }
+                    }
+                  ],
+                  "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+                },
+                "received_at": "2026-10-29T16:55:14.175782Z",
+                "stored_at": "2026-10-29T16:55:14.175782Z"
+              }
+            ]
+          }
+        }
+      ],
+      "status": "DELIVERED",
+      "verified_at": "2026-10-29T16:55:14.272Z",
+      "completed_at": "2026-10-29T16:55:14.272Z",
+      "attempts": [
+        {
+          "attempt_id": "fb0ac17d-40ea-4659-b091-8d70369ab480",
+          "phase": "SEND",
+          "attempt_no": 1,
+          "http_status": 201,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:14.173Z",
+          "ended_at": "2026-10-29T16:55:14.177Z",
+          "response_body": {
+            "result": "STORED",
+            "target_id": "a771ab29-3623-4f72-9911-8bd8d28580d4",
+            "external_id": "C4-SYNTHETIC-R-c5777d4a-b162-40ff-9007-92623a24ad8e",
+            "patient_key": "2d04cec8-28e2-4a1c-b16f-8f7291ed2c91",
+            "external_system": "https://example.org/lis/result"
+          }
+        },
+        {
+          "attempt_id": "adc94ec7-6c7c-4a5c-812c-0c9b05014310",
+          "phase": "VERIFY",
+          "attempt_no": 1,
+          "http_status": 503,
+          "error_code": "HTTP_TEMPORARY",
+          "started_at": "2026-10-29T16:55:14.181Z",
+          "ended_at": "2026-10-29T16:55:14.185Z",
+          "response_body": {
+            "outcome": "retry"
+          }
+        },
+        {
+          "attempt_id": "56558fe7-1831-41bd-a4a1-656888691a68",
+          "phase": "VERIFY",
+          "attempt_no": 2,
+          "http_status": 200,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:14.260Z",
+          "ended_at": "2026-10-29T16:55:14.271Z",
+          "response_body": {
+            "outcome": "delivered"
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "RECEIVED",
+          "old_status": null,
+          "new_status": "RECEIVED",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "CLAIMED",
+          "old_status": "RECEIVED",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "VALIDATED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "TRANSFORMED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "SENT",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": "fb0ac17d-40ea-4659-b091-8d70369ab480",
+          "detail": {
+            "phase": "SEND",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "TARGET_STORED",
+          "old_status": "PROCESSING",
+          "new_status": "VERIFYING",
+          "attempt_id": "fb0ac17d-40ea-4659-b091-8d70369ab480",
+          "detail": {
+            "code": null,
+            "phase": "SEND",
+            "outcome": "stored"
+          }
+        },
+        {
+          "type": "VERIFY_STARTED",
+          "old_status": "VERIFYING",
+          "new_status": "VERIFYING",
+          "attempt_id": "adc94ec7-6c7c-4a5c-812c-0c9b05014310",
+          "detail": {
+            "phase": "VERIFY",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "RETRY_SCHEDULED",
+          "old_status": "VERIFYING",
+          "new_status": "RETRY_WAIT",
+          "attempt_id": "adc94ec7-6c7c-4a5c-812c-0c9b05014310",
+          "detail": {
+            "code": "HTTP_TEMPORARY",
+            "phase": "VERIFY",
+            "outcome": "retry"
+          }
+        },
+        {
+          "type": "CLAIMED",
+          "old_status": "RETRY_WAIT",
+          "new_status": "VERIFYING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "VERIFY_STARTED",
+          "old_status": "VERIFYING",
+          "new_status": "VERIFYING",
+          "attempt_id": "56558fe7-1831-41bd-a4a1-656888691a68",
+          "detail": {
+            "phase": "VERIFY",
+            "outcome": "STARTED",
+            "attempt_no": 2
+          }
+        },
+        {
+          "type": "DELIVERED",
+          "old_status": "VERIFYING",
+          "new_status": "DELIVERED",
+          "attempt_id": "56558fe7-1831-41bd-a4a1-656888691a68",
+          "detail": {
+            "code": null,
+            "phase": "VERIFY",
+            "outcome": "delivered"
+          }
+        }
+      ],
+      "before_recovery": {
+        "status": "RETRY_WAIT",
+        "retry_phase": "VERIFY",
+        "verified_at": null,
+        "completed_at": null,
+        "events": [
+          "RECEIVED",
+          "CLAIMED",
+          "VALIDATED",
+          "TRANSFORMED",
+          "SENT",
+          "TARGET_STORED",
+          "VERIFY_STARTED",
+          "RETRY_SCHEDULED"
+        ]
+      },
+      "injected_fault": "unrepresentable persisted timestamp"
+    },
+    {
+      "case_id": "C4-PROCESS",
+      "outcome": "PASS",
+      "fixture": "both",
+      "exchange_id": "2dbb806f-fbab-4317-b0a4-6dd80f265acd",
+      "expected_columns": {
+        "external_system": "https://example.org/lis/result",
+        "external_id": "C4-SYNTHETIC-R-a0053ec8-7e31-4243-9da8-1c1913d9fda9",
+        "analyte_system": "https://example.org/lis/test-code",
+        "analyte_code": "C4-LOCAL-TEST",
+        "analyte_display": "C4 synthetic analyte",
+        "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+        "quantity": "0.30000000000000004",
+        "unit_text": "mg/dL",
+        "low": "0.1",
+        "high": "0.9",
+        "effective_at": "2026-10-29T08:00:00.123456Z",
+        "clinical_status": "final",
+        "patient_key": "1f0c16e0-46a9-4a74-b44f-181ca52f32f7"
+      },
+      "expected_fhir": {
+        "resourceType": "Observation",
+        "identifier": [
+          {
+            "system": "https://example.org/lis/result",
+            "value": "C4-SYNTHETIC-R-a0053ec8-7e31-4243-9da8-1c1913d9fda9"
+          }
+        ],
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "https://example.org/lis/test-code",
+              "code": "C4-LOCAL-TEST",
+              "display": "C4 synthetic analyte"
+            }
+          ],
+          "text": "C4 synthetic analyte / Blood / Chemistry"
+        },
+        "subject": {
+          "type": "Patient",
+          "identifier": {
+            "system": "https://example.org/lis/patient",
+            "value": "C4-SYNTHETIC-P-a0053ec8-7e31-4243-9da8-1c1913d9fda9"
+          }
+        },
+        "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+        "valueQuantity": {
+          "value": 0.30000000000000004,
+          "unit": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 0.1,
+              "unit": "mg/dL"
+            },
+            "high": {
+              "value": 0.9,
+              "unit": "mg/dL"
+            }
+          }
+        ]
+      },
+      "actual_rows": [
+        {
+          "target_id": "07b4ffc0-a7a7-4464-98bb-a57ab8b46bdf",
+          "patient_key": "1f0c16e0-46a9-4a74-b44f-181ca52f32f7",
+          "external_system": "https://example.org/lis/result",
+          "external_id": "C4-SYNTHETIC-R-a0053ec8-7e31-4243-9da8-1c1913d9fda9",
+          "analyte_system": "https://example.org/lis/test-code",
+          "analyte_code": "C4-LOCAL-TEST",
+          "analyte_display": "C4 synthetic analyte",
+          "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+          "quantity": "0.30000000000000004",
+          "unit_text": "mg/dL",
+          "low": "0.1",
+          "high": "0.9",
+          "effective_at": "2026-10-29T08:00:00.123456Z",
+          "clinical_status": "final",
+          "fhir_json": {
+            "code": {
+              "text": "C4 synthetic analyte / Blood / Chemistry",
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "system": "https://example.org/lis/test-code",
+                  "display": "C4 synthetic analyte"
+                }
+              ]
+            },
+            "status": "final",
+            "subject": {
+              "type": "Patient",
+              "identifier": {
+                "value": "C4-SYNTHETIC-P-a0053ec8-7e31-4243-9da8-1c1913d9fda9",
+                "system": "https://example.org/lis/patient"
+              }
+            },
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "identifier": [
+              {
+                "value": "C4-SYNTHETIC-R-a0053ec8-7e31-4243-9da8-1c1913d9fda9",
+                "system": "https://example.org/lis/result"
+              }
+            ],
+            "resourceType": "Observation",
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            },
+            "referenceRange": [
+              {
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                },
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                }
+              }
+            ],
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+          },
+          "received_at": "2026-10-29T16:55:14.920147Z",
+          "stored_at": "2026-10-29T16:55:14.920147Z"
+        }
+      ],
+      "http": [
+        {
+          "method": "POST",
+          "path": "/api/observations",
+          "query": {},
+          "content_type": "application/fhir+json",
+          "request_body": {
+            "category": [
+              {
+                "coding": [
+                  {
+                    "code": "laboratory",
+                    "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                  }
+                ]
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "code": "C4-LOCAL-TEST",
+                  "display": "C4 synthetic analyte",
+                  "system": "https://example.org/lis/test-code"
+                }
+              ],
+              "text": "C4 synthetic analyte / Blood / Chemistry"
+            },
+            "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00",
+            "identifier": [
+              {
+                "system": "https://example.org/lis/result",
+                "value": "C4-SYNTHETIC-R-a0053ec8-7e31-4243-9da8-1c1913d9fda9"
+              }
+            ],
+            "referenceRange": [
+              {
+                "high": {
+                  "unit": "mg/dL",
+                  "value": 0.9
+                },
+                "low": {
+                  "unit": "mg/dL",
+                  "value": 0.1
+                }
+              }
+            ],
+            "resourceType": "Observation",
+            "status": "final",
+            "subject": {
+              "identifier": {
+                "system": "https://example.org/lis/patient",
+                "value": "C4-SYNTHETIC-P-a0053ec8-7e31-4243-9da8-1c1913d9fda9"
+              },
+              "type": "Patient"
+            },
+            "valueQuantity": {
+              "unit": "mg/dL",
+              "value": 0.30000000000000004
+            }
+          },
+          "status": 201,
+          "response_body": {
+            "result": "STORED",
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-a0053ec8-7e31-4243-9da8-1c1913d9fda9",
+            "target_id": "07b4ffc0-a7a7-4464-98bb-a57ab8b46bdf",
+            "patient_key": "1f0c16e0-46a9-4a74-b44f-181ca52f32f7"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/api/lab-results",
+          "query": {
+            "external_system": "https://example.org/lis/result",
+            "external_id": "C4-SYNTHETIC-R-a0053ec8-7e31-4243-9da8-1c1913d9fda9"
+          },
+          "content_type": null,
+          "request_body": null,
+          "status": 200,
+          "response_body": {
+            "items": [
+              {
+                "target_id": "07b4ffc0-a7a7-4464-98bb-a57ab8b46bdf",
+                "patient_key": "1f0c16e0-46a9-4a74-b44f-181ca52f32f7",
+                "external_system": "https://example.org/lis/result",
+                "external_id": "C4-SYNTHETIC-R-a0053ec8-7e31-4243-9da8-1c1913d9fda9",
+                "analyte_system": "https://example.org/lis/test-code",
+                "analyte_code": "C4-LOCAL-TEST",
+                "analyte_display": "C4 synthetic analyte",
+                "analyte_context": "C4 synthetic analyte / Blood / Chemistry",
+                "quantity": "0.30000000000000004",
+                "unit_text": "mg/dL",
+                "low": "0.1",
+                "high": "0.9",
+                "effective_at": "2026-10-29T08:00:00.123456Z",
+                "clinical_status": "final",
+                "fhir_json": {
+                  "code": {
+                    "text": "C4 synthetic analyte / Blood / Chemistry",
+                    "coding": [
+                      {
+                        "code": "C4-LOCAL-TEST",
+                        "system": "https://example.org/lis/test-code",
+                        "display": "C4 synthetic analyte"
+                      }
+                    ]
+                  },
+                  "status": "final",
+                  "subject": {
+                    "type": "Patient",
+                    "identifier": {
+                      "value": "C4-SYNTHETIC-P-a0053ec8-7e31-4243-9da8-1c1913d9fda9",
+                      "system": "https://example.org/lis/patient"
+                    }
+                  },
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "laboratory",
+                          "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "identifier": [
+                    {
+                      "value": "C4-SYNTHETIC-R-a0053ec8-7e31-4243-9da8-1c1913d9fda9",
+                      "system": "https://example.org/lis/result"
+                    }
+                  ],
+                  "resourceType": "Observation",
+                  "valueQuantity": {
+                    "unit": "mg/dL",
+                    "value": 0.30000000000000004
+                  },
+                  "referenceRange": [
+                    {
+                      "low": {
+                        "unit": "mg/dL",
+                        "value": 0.1
+                      },
+                      "high": {
+                        "unit": "mg/dL",
+                        "value": 0.9
+                      }
+                    }
+                  ],
+                  "effectiveDateTime": "2026-10-29T15:00:00.123456+07:00"
+                },
+                "received_at": "2026-10-29T16:55:14.920147Z",
+                "stored_at": "2026-10-29T16:55:14.920147Z"
+              }
+            ]
+          }
+        }
+      ],
+      "status": "DELIVERED",
+      "verified_at": "2026-10-29T16:55:14.970Z",
+      "completed_at": "2026-10-29T16:55:14.970Z",
+      "attempts": [
+        {
+          "attempt_id": "93805c60-0484-4b96-8965-406e6b7c743b",
+          "phase": "SEND",
+          "attempt_no": 1,
+          "http_status": 201,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:14.884Z",
+          "ended_at": "2026-10-29T16:55:14.933Z",
+          "response_body": {
+            "result": "STORED",
+            "target_id": "07b4ffc0-a7a7-4464-98bb-a57ab8b46bdf",
+            "external_id": "C4-SYNTHETIC-R-a0053ec8-7e31-4243-9da8-1c1913d9fda9",
+            "patient_key": "1f0c16e0-46a9-4a74-b44f-181ca52f32f7",
+            "external_system": "https://example.org/lis/result"
+          }
+        },
+        {
+          "attempt_id": "93522bae-25e6-4260-98d9-f7975ff169b6",
+          "phase": "VERIFY",
+          "attempt_no": 1,
+          "http_status": 200,
+          "error_code": null,
+          "started_at": "2026-10-29T16:55:14.952Z",
+          "ended_at": "2026-10-29T16:55:14.969Z",
+          "response_body": {
+            "outcome": "delivered"
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "RECEIVED",
+          "old_status": null,
+          "new_status": "RECEIVED",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "CLAIMED",
+          "old_status": "RECEIVED",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "VALIDATED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "TRANSFORMED",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": null,
+          "detail": null
+        },
+        {
+          "type": "SENT",
+          "old_status": "PROCESSING",
+          "new_status": "PROCESSING",
+          "attempt_id": "93805c60-0484-4b96-8965-406e6b7c743b",
+          "detail": {
+            "phase": "SEND",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "TARGET_STORED",
+          "old_status": "PROCESSING",
+          "new_status": "VERIFYING",
+          "attempt_id": "93805c60-0484-4b96-8965-406e6b7c743b",
+          "detail": {
+            "code": null,
+            "phase": "SEND",
+            "outcome": "stored"
+          }
+        },
+        {
+          "type": "VERIFY_STARTED",
+          "old_status": "VERIFYING",
+          "new_status": "VERIFYING",
+          "attempt_id": "93522bae-25e6-4260-98d9-f7975ff169b6",
+          "detail": {
+            "phase": "VERIFY",
+            "outcome": "STARTED",
+            "attempt_no": 1
+          }
+        },
+        {
+          "type": "DELIVERED",
+          "old_status": "VERIFYING",
+          "new_status": "DELIVERED",
+          "attempt_id": "93522bae-25e6-4260-98d9-f7975ff169b6",
+          "detail": {
+            "code": null,
+            "phase": "VERIFY",
+            "outcome": "delivered"
+          }
+        }
+      ],
+      "worker_process_exit": 0
+    }
+  ]
+}

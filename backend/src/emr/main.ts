@@ -1,5 +1,5 @@
 import express from "express";
-import { registerEmrRoutes } from "./controller.js";
+import { emrJsonParser, registerEmrRoutes } from "./controller.js";
 
 const port = Number(process.env.EMR_PORT ?? 3103);
 const host = process.env.HOST ?? "127.0.0.1";
@@ -9,7 +9,7 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) {
 }
 
 const app = express();
-app.use(express.json({ limit: "1mb" }));
+app.use(emrJsonParser());
 registerEmrRoutes(app);
 
 // Chi lang nghe localhost: prototype chay tren may cua nhom.

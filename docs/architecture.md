@@ -36,13 +36,14 @@ backend/src/
 Mỗi dịch vụ sẽ gồm các file với vai trò rõ ràng:
 
 - `main.ts`: Khởi động dịch vụ và mở cổng HTTP.
-- `controller.ts`: Tiếp nhận HTTP request và trả kết quả. LIS đã có 4 API nghiệp vụ ở A3; Middleware đã có 3 API nhận/tra cứu exchange ở B3. Cả ba dịch vụ giữ `/health`, `/ready`; EMR chưa có API nghiệp vụ.
+- `controller.ts`: Tiếp nhận HTTP request và trả kết quả. LIS đã có 4 API nghiệp vụ ở A3; Middleware đã có 3 API nhận/tra cứu exchange ở B3; EMR có 2 API nhận Observation và đọc kết quả ở C3. Cả ba dịch vụ giữ `/health`, `/ready`.
 - `db.ts`: Cấu hình kết nối PostgreSQL riêng cho dịch vụ (gọi qua hàm chung tại `common/database.ts`).
 - `schema.ts`: Khai báo bảng bằng TypeScript với Drizzle ORM để thao tác dữ liệu.
-- `service.ts`: Viết logic xử lý chính. LIS đã có Service Publish ở A2; Middleware đã có Service nhận/kiểm tra/lưu exchange ở B2, được Controller B3 gọi; EMR chưa có Service nghiệp vụ.
-- `repository.ts`: Viết các câu lệnh đọc/ghi database qua Drizzle. LIS đã có Repository ở A1 và boundary đọc/kiểm tra/lưu Publish ở A2; Middleware có phần nhận/tra cứu B1 và các thao tác lease, attempts, chuyển trạng thái nguyên tử ở B4B.
-- `dispatcher.ts` *(phía LIS, chưa triển khai)*: Gửi các sự kiện Publish đã lưu sang Middleware.
-- `worker.ts` *(phía Middleware, đã có B4B)*: Nhận việc bằng lease PostgreSQL, chuyển snapshot đã lưu sang FHIR, gửi EMR qua HTTP và đọc lại đối chiếu. SEND/VERIFY có retry riêng; đã kiểm thử với EMR giả lập.
+- `service.ts`: Viết logic xử lý chính. LIS đã có Service Publish ở A2; Middleware đã có Service nhận/kiểm tra/lưu exchange ở B2, được Controller B3 gọi; EMR có Service C2 kiểm tra Observation, liên kết bệnh nhân, xử lý retry và đọc/list, được Controller C3 gọi. Xem [hướng dẫn C2](spp-66-c2-review.md).
+- `repository.ts`: Viết các câu lệnh đọc/ghi database qua Drizzle. LIS đã có Repository ở A1 và boundary đọc/kiểm tra/lưu Publish ở A2; Middleware có phần nhận/tra cứu B1 và các thao tác lease, attempts, chuyển trạng thái nguyên tử ở B4B. EMR có C1 lưu/đọc kết quả giữ NUMERIC và microsecond; C2 bổ sung transaction khóa liên kết bệnh nhân tới khi lưu xong.
+- `dispatcher.ts` *(phía LIS, đã có D2)*: Dùng Repository D1 nhận sự kiện Publish, gửi nguyên gói đã lưu sang Middleware qua HTTP, kiểm tra receipt và lưu ACK. Có retry giới hạn, lịch sử lượt thử và bảo vệ bằng lease. Test dùng PostgreSQL LIS thật với HTTP Middleware giả lập.
+- `dispatcher-config.ts`, `dispatcher-main.ts`: Cấu hình và chạy Dispatcher riêng; dùng `dev:lis-dispatcher` hoặc `start:lis-dispatcher`, Compose bật bằng profile `dispatcher`. Không tự chạy cùng API LIS.
+- `worker.ts` *(phía Middleware, đã có B4B)*: Nhận việc bằng lease PostgreSQL, chuyển snapshot đã lưu sang FHIR, gửi EMR qua HTTP và đọc lại đối chiếu. SEND/VERIFY có retry riêng; có test EMR giả lập B4B và bộ test EMR thật C4 riêng.
 - `worker-main.ts`, `worker-config.ts`: Khởi động Worker thành tiến trình riêng và đọc cấu hình URL/timeout/lease/retry. Dùng `dev:middleware-worker` hoặc `start:middleware-worker`; Compose có profile `worker` để bật chủ động.
 - `worker-verification.ts`: Kiểm tra xác nhận lưu và đối chiếu kết quả đọc lại, không truy cập database EMR.
 - `mapper.ts` *(phía Middleware, đã có B4A)*: Hàm thuần đổi snapshot đã kiểm tra sang FHIR R4 Observation theo MR01–MR09; trả kèm mapping version nội bộ, không truy cập database hoặc gửi HTTP.
@@ -66,10 +67,16 @@ Mỗi dịch vụ sẽ gồm các file với vai trò rõ ràng:
 Hiện đã triển khai phần LIS đọc dữ liệu/lưu yêu cầu Publish và ba API Middleware
 nhận, kiểm tra, lưu, tra cứu gói qua Controller → Service → Repository (B1–B3).
 Chi tiết: [hướng dẫn B3](spp-66-b3-review.md). Mapper [B4A](spp-66-b4a-review.md)
-đã nối vào [Worker B4B](spp-66-b4b-review.md), có kiểm thử PostgreSQL + HTTP EMR
-giả lập. Hai API EMR thật, Dispatcher/ACK tự động phía LIS và evaluator chưa
-triển khai; **chưa nghiệm thu end-to-end**. Xem [hướng dẫn A3](spp-66-a3-review.md)
-để biết phần LIS đã kiểm thử.
+đã nối vào [Worker B4B](spp-66-b4b-review.md). [C4](spp-66-c4-review.md) đã kiểm
+thử Middleware nhận HTTP → Worker/Mapper → HTTP EMR thật → PostgreSQL → đọc lại
+và `DELIVERED`, gồm lịch sử gửi/kiểm tra. Test dùng fixture giả riêng, không dùng
+dataset SPP-65. [Dispatcher D2](spp-66-d2-review.md) đã triển khai ACK tự động
+phía LIS, kiểm thử với PostgreSQL thật và HTTP Middleware giả lập.
+[D3](spp-66-d3-review.md) bổ sung kiểm thử toàn luồng backend thật từ LIS Publish
+qua Dispatcher tới EMR và đọc lại, gồm lỗi mất ACK, khởi động lại và gửi cạnh
+tranh. D3 dùng dữ liệu giả có đáp án riêng; **chưa nghiệm thu bằng MIMIC/SPP-65
+chính thức**, chưa làm D4, frontend hoặc evaluator. Xem
+[hướng dẫn A3](spp-66-a3-review.md) để biết phần API Publish đã kiểm thử.
 
 - **Lưu trước khi gửi (Outbox tại LIS):** Khi bác sĩ duyệt (Publish) kết quả xét nghiệm, LIS lưu sự kiện vào bảng `publish_events` trước. Tiến trình gửi (`dispatcher.ts`) sẽ tự động đọc bảng này để gửi sang Middleware, tránh việc mất dữ liệu khi mạng bị lỗi.
 - **Xác minh 2 bước (Middleware):** Middleware nhận dữ liệu, chuyển sang FHIR Observation rồi gửi sang EMR. Sau khi gửi, Middleware phải gọi đọc lại kết quả từ EMR để đối soát. Khi EMR lưu đúng và đủ thì Middleware mới đánh dấu là `DELIVERED`.

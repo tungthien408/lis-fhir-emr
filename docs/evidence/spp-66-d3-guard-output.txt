@@ -1,0 +1,32 @@
+npm notice run lis-fhir-emr@0.2.0 test:e2e
+npm notice run node --import tsx --test --test-concurrency=1 tests/e2e/*.test.ts
+(node:158804) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ D3: full LIS Publish → Dispatcher → Middleware Worker/Mapper → EMR → verified read-back (4.239458ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 246.663084
+
+✖ failing tests:
+
+test at tests/e2e/lis-emr.e2e.test.ts:1:6769
+✖ D3: full LIS Publish → Dispatcher → Middleware Worker/Mapper → EMR → verified read-back (4.239458ms)
+  AssertionError [ERR_ASSERTION]: D3 needs a disposable database: run npm run test:e2e:postgres
+      at createHarness (/home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/tests/e2e/d3-harness.ts:30:10)
+      at TestContext.<anonymous> (/home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/tests/e2e/lis-emr.e2e.test.ts:94:19)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
