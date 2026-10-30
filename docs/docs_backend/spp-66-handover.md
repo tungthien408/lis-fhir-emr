@@ -95,14 +95,18 @@ Sau khi hệ thống đã khởi động, thực hiện theo các bước mẫu 
 Chèn một kết quả xét nghiệm giả định tại LIS và liên kết bệnh nhân tương ứng tại EMR:
 
 ```bash
-docker compose exec -i db psql -U postgres -d dacn_db << 'EOF'
+docker compose exec -T -i db psql -U postgres -d dacn_db <<'EOF'
 -- 1. Bệnh nhân và kết quả xét nghiệm tại LIS
-INSERT INTO lis.patients (patient_id, full_name, birth_date, gender)
-VALUES ('DEMO-P1', 'Nguyễn Văn Thử Nghiệm', '1990-01-01', 'M')
+INSERT INTO lis.patients (patient_id, source_subject_id, display_label)
+VALUES ('DEMO-P1', 'DEMO-SUBJECT-P1', 'DEMO PATIENT 01')
 ON CONFLICT (patient_id) DO NOTHING;
 
-INSERT INTO lis.test_catalog (test_code, test_name, fluid, category, default_unit)
-VALUES ('GLU-01', 'Glucose máu', 'Blood', 'Biochemistry', 'mmol/L')
+INSERT INTO lis.test_catalog
+  (test_code, test_name, fluid, category,
+   accepted_units, catalog_version)
+VALUES
+  ('GLU-01', 'Glucose máu', 'Blood',
+   'Biochemistry', '["mmol/L"]'::jsonb, 'demo-v1')
 ON CONFLICT (test_code) DO NOTHING;
 
 INSERT INTO lis.results (result_id, patient_id, test_code, value_num, unit, reference_low, reference_high, effective_at, result_status)

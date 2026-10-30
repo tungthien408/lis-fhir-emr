@@ -74,21 +74,21 @@ flowchart TD
 
 ### Các thành phần chính và phân bổ tệp mã nguồn:
 - **Tầng LIS (`backend/src/lis/`):**
-  - [controller.ts](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/src/lis/controller.ts): Tiếp nhận HTTP cho 4 API nghiệp vụ và tài liệu Swagger UI.
-  - [service.ts](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/src/lis/service.ts): Thẩm định điều kiện kết quả (`FINAL`), tính toán Canonical SHA-256 hash.
-  - [repository.ts](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/src/lis/repository.ts): Thao tác nguyên tử trên các bảng `lis.results`, `lis.publish_events`, `lis.dispatch_attempts`.
-  - [dispatcher.ts](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/src/lis/dispatcher.ts) & [dispatcher-main.ts](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/src/lis/dispatcher-main.ts): Tiến trình nền quét hàng đợi outbox và gọi sang Middleware.
+  - [controller.ts](../../backend/src/lis/controller.ts): Tiếp nhận HTTP cho 4 API nghiệp vụ và tài liệu Swagger UI.
+  - [service.ts](lis-fhir-emr/backend/src/lis/service.ts): Thẩm định điều kiện kết quả (`FINAL`), tính toán Canonical SHA-256 hash.
+  - [repository.ts](lis-fhir-emr/backend/src/lis/repository.ts): Thao tác nguyên tử trên các bảng `lis.results`, `lis.publish_events`, `lis.dispatch_attempts`.
+  - [dispatcher.ts](../../backend/src/lis/dispatcher.ts) & [dispatcher-main.ts](../../backend/src/lis/dispatcher-main.ts): Tiến trình nền quét hàng đợi outbox và gọi sang Middleware.
 - **Tầng Middleware (`backend/src/middleware/`):**
-  - [controller.ts](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/src/middleware/controller.ts): Tiếp nhận `POST /api/exchanges` và các endpoint tra cứu.
-  - [service.ts](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/src/middleware/service.ts): Kiểm tra tính toàn vẹn gói tin, đối chiếu idempotency.
-  - [repository.ts](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/src/middleware/repository.ts): Quản lý vòng đời giao dịch, phân bổ lease và lưu vết audit events.
-  - [mapper.ts](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/src/middleware/mapper.ts): Chuyển đổi dữ liệu nguồn sang FHIR R4 Observation theo quy tắc MR01–MR09.
-  - [worker.ts](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/src/middleware/worker.ts) & [worker-main.ts](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/src/middleware/worker-main.ts): Tiến trình nền gửi dữ liệu sang EMR và đọc lại đối soát.
-  - [worker-verification.ts](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/src/middleware/worker-verification.ts): Thuật toán so khớp trường dữ liệu lossless độc lập.
+  - [controller.ts](../../backend/src/middleware/controller.ts): Tiếp nhận `POST /api/exchanges` và các endpoint tra cứu.
+  - [service.ts](../../backend/src/middleware/service.ts): Kiểm tra tính toàn vẹn gói tin, đối chiếu idempotency.
+  - [repository.ts](../../backend/src/middleware/repository.ts): Quản lý vòng đời giao dịch, phân bổ lease và lưu vết audit events.
+  - [mapper.ts](../../backend/src/middleware/mapper.ts): Chuyển đổi dữ liệu nguồn sang FHIR R4 Observation theo quy tắc MR01–MR09.
+  - [worker.ts](../../backend/src/middleware/worker.ts) & [worker-main.ts](../../backend/src/middleware/worker-main.ts): Tiến trình nền gửi dữ liệu sang EMR và đọc lại đối soát.
+  - [worker-verification.ts](../../backend/src/middleware/worker-verification.ts): Thuật toán so khớp trường dữ liệu lossless độc lập.
 - **Tầng EMR (`backend/src/emr/`):**
-  - [controller.ts](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/src/emr/controller.ts): Tiếp nhận `POST /api/observations` (`application/fhir+json`) và `GET /api/lab-results`.
-  - [service.ts](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/src/emr/service.ts): Thẩm tra định dạng FHIR R4, giải quyết danh tính bệnh nhân.
-  - [repository.ts](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend/src/emr/repository.ts): Thao tác đọc/ghi cơ sở dữ liệu với bảo toàn định dạng số thực NUMERIC và thời gian microsecond.
+  - [controller.ts](../../backend/src/emr/controller.ts): Tiếp nhận `POST /api/observations` (`application/fhir+json`) và `GET /api/lab-results`.
+  - [service.ts](../../backend/src/emr/service.ts): Thẩm tra định dạng FHIR R4, giải quyết danh tính bệnh nhân.
+  - [repository.ts](../../backend/src/emr/repository.ts): Thao tác đọc/ghi cơ sở dữ liệu với bảo toàn định dạng số thực NUMERIC và thời gian microsecond.
 
 ---
 
@@ -106,7 +106,7 @@ flowchart TD
 
 ## 4. Tình trạng triển khai hợp đồng API (API contract implementation status)
 
-Đối chiếu chi tiết giữa tài liệu đặc tả [docs/api-contract.md](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/docs/api-contract.md) và mã nguồn thực tế:
+Đối chiếu chi tiết giữa tài liệu đặc tả [docs/api-contract.md](../api-contract.md) và mã nguồn thực tế:
 
 | Phương thức & Đường dẫn | Mục đích nghiệp vụ | Headers yêu cầu | Trạng thái mã nguồn | Bằng chứng kiểm thử |
 |---|---|---|---|---|
@@ -165,9 +165,9 @@ stateDiagram-v2
 ## 6. Môi trường kiểm thử và bằng chứng D3 (D3 test environment and evidence)
 
 ### 6.1. Xác minh tệp bằng chứng lịch sử (Historical Test Evidence)
-- Tệp bằng chứng JSON: [docs/evidence/spp-66-d3.json](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/docs/evidence/spp-66-d3.json)
-- Tệp log kiểm thử tổng thể: [docs/evidence/spp-66-d3-test-output.txt](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/docs/evidence/spp-66-d3-test-output.txt)
-- Tệp log cơ chế bảo vệ cấu hình (guard): [docs/evidence/spp-66-d3-guard-output.txt](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/docs/evidence/spp-66-d3-guard-output.txt)
+- Tệp bằng chứng JSON: [docs/evidence/spp-66-d3.json](evidence/spp-66-d3.json)
+- Tệp log kiểm thử tổng thể: [docs/evidence/spp-66-d3-test-output.txt](evidence/spp-66-d3-test-output.txt)
+- Tệp log cơ chế bảo vệ cấu hình (guard): [docs/evidence/spp-66-d3-guard-output.txt](evidence/spp-66-d3-guard-output.txt)
 
 ### 6.2. Đối chiếu mã băm toàn vẹn (Integrity Checksums)
 Đã thực hiện băm SHA-256 các tệp nguồn trong working tree tại thời điểm kiểm toán D4 và đối chiếu với trường metadata trong `docs/evidence/spp-66-d3.json`:
@@ -303,7 +303,7 @@ Trong khuôn khổ đợt kiểm toán D4 ngày 2026-10-30, kiểm toán viên �
 ## 14. Tình trạng chéo kiểm tra của con người (Human cross-check status)
 
 - **Trạng thái:** **PENDING HUMAN CROSS-CHECK** (Đang chờ đồng nghiệp kiểm tra độc lập).
-- Kỹ sư kiểm toán đã chuẩn bị đầy đủ kịch bản chạy thử nghiệm, curl mẫu, và danh mục kiểm tra thủ công trong tài liệu bàn giao [docs/spp-66-handover.md](file:///home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/docs/spp-66-handover.md).
+- Kỹ sư kiểm toán đã chuẩn bị đầy đủ kịch bản chạy thử nghiệm, curl mẫu, và danh mục kiểm tra thủ công trong tài liệu bàn giao [docs/spp-66-handover.md](spp-66-handover.md).
 - Thành viên nhóm cần thực thi kịch bản happy-path, kiểm tra các bảng cơ sở dữ liệu và xác nhận tính đầy đủ trước khi đóng nhiệm vụ trên Jira.
 
 ---
