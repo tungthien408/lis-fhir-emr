@@ -142,7 +142,7 @@ curl -i -X POST http://127.0.0.1:3101/api/results/DEMO-R1/publish
 Nếu `lis-dispatcher` và `middleware-worker` đang chạy:
 1. Dispatcher nhận sự kiện $\rightarrow$ Gọi Middleware `POST /api/exchanges` $\rightarrow$ LIS nhận xác nhận $\rightarrow$ LIS cập nhật `dispatch_status = 'ACK'`.
 2. Worker nhận việc $\rightarrow$ Gọi Mapper tạo FHIR R4 Observation $\rightarrow$ Gọi EMR `POST /api/observations` $\rightarrow$ Nhận `201 STORED`.
-3. Worker gọi EMR `GET /api/lab-results?external_id=DEMO-R1` $\rightarrow$ Nhận dữ liệu đã lưu $\rightarrow$ Đối chiếu khớp $\rightarrow$ Cập nhật giao dịch thành **`DELIVERED`**.
+3. Worker gọi EMR `GET /api/lab-results?external_system=https://example.org%2Flis%2Fresult&external_id=DEMO-R1` $\rightarrow$ Nhận dữ liệu đã lưu $\rightarrow$ Đối chiếu khớp $\rightarrow$ Cập nhật giao dịch thành **`DELIVERED`**.
 
 ### Bước 3.4: Kiểm tra kết quả tại các endpoint
 ```bash

@@ -63,7 +63,7 @@ flowchart TD
         EMR_Repo -->|Tra cứu patient_links & Ghi lab_results| DB_EMR[(Schema emr)]
         EMR_Ctrl --Phản hồi 201 STORED--> MW_Worker
 
-        MW_Worker -->|2. GET /api/lab-results?external_id=...| EMR_Ctrl
+        MW_Worker -->|2. GET /api/lab-results?external_system=...&external_id=...| EMR_Ctrl
         EMR_Ctrl -->|Đọc lab_results| EMR_Repo
         EMR_Repo --> DB_EMR
         EMR_Ctrl --Trả dữ liệu đã lưu--> MW_Worker
@@ -75,8 +75,8 @@ flowchart TD
 ### Các thành phần chính và phân bổ tệp mã nguồn:
 - **Tầng LIS (`backend/src/lis/`):**
   - [controller.ts](../../backend/src/lis/controller.ts): Tiếp nhận HTTP cho 4 API nghiệp vụ và tài liệu Swagger UI.
-  - [service.ts](lis-fhir-emr/backend/src/lis/service.ts): Thẩm định điều kiện kết quả (`FINAL`), tính toán Canonical SHA-256 hash.
-  - [repository.ts](lis-fhir-emr/backend/src/lis/repository.ts): Thao tác nguyên tử trên các bảng `lis.results`, `lis.publish_events`, `lis.dispatch_attempts`.
+  - [service.ts](../../backend/src/lis/service.ts): Thẩm định điều kiện kết quả (`FINAL`), tính toán Canonical SHA-256 hash.
+  - [repository.ts](../../backend/src/lis/repository.ts): Thao tác nguyên tử trên các bảng `lis.results`, `lis.publish_events`, `lis.dispatch_attempts`.
   - [dispatcher.ts](../../backend/src/lis/dispatcher.ts) & [dispatcher-main.ts](../../backend/src/lis/dispatcher-main.ts): Tiến trình nền quét hàng đợi outbox và gọi sang Middleware.
 - **Tầng Middleware (`backend/src/middleware/`):**
   - [controller.ts](../../backend/src/middleware/controller.ts): Tiếp nhận `POST /api/exchanges` và các endpoint tra cứu.

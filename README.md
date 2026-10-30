@@ -253,9 +253,9 @@ lis-fhir-emr/
 
 ## 8. Tài liệu tham khảo kỹ thuật
 
-- [Báo cáo Tổng kết & Đánh giá Kỹ thuật D4](docs/spp-66-d4-final-review.md)
-- [Tài liệu Bàn giao Kỹ thuật SPP-66](docs/spp-66-handover.md)
-- [Báo cáo Đánh giá Luồng E2E D3](docs/spp-66-d3-review.md)
+- [Báo cáo Tổng kết & Đánh giá Kỹ thuật D4](docs/docs_backend/spp-66-d4-final-review.md)
+- [Tài liệu Bàn giao Kỹ thuật SPP-66](docs/docs_backend/spp-66-handover.md)
+- [Báo cáo Đánh giá Luồng E2E D3](docs/docs_backend/spp-66-d3-review.md)
 - [Hợp đồng API Chi tiết](docs/api-contract.md)
 - [Kiến trúc & Tổ chức Mã nguồn](docs/architecture.md)
 - [Cơ sở Dữ liệu & Phân quyền](docs/database.md)
