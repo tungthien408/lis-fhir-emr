@@ -133,7 +133,24 @@ EMR_BASE_URL=http://127.0.0.1:3103
 ```bash
 docker compose up -d db
 ```
-Khi volume database chạy lần đầu, Docker sẽ nạp cấu trúc bảng (`database/dacn_db_init_v2.sql`) và phân quyền (`database/access_roles.sql`). Đặt mật khẩu tương ứng với `.env`:
+Khi tạo volume database lần đầu, Docker tự chạy theo thứ tự:
+
+1. Tạo cấu trúc bảng (`database/dacn_db_init_v2.sql`).
+2. Tạo role và phân quyền (`database/access_roles.sql`).
+3. Nạp 100 bệnh nhân LIS, 5 loại xét nghiệm, 100 bệnh nhân EMR và liên kết định danh.
+4. Nạp 1.000 kết quả xét nghiệm MIMIC-IV Demo v2.2 vào LIS, bao gồm 40 ca kiểm tra chức năng.
+
+Các script dữ liệu nằm trong [`database/seed/`](database/seed/README.md), được mount chỉ đọc. Bộ dữ liệu sẵn sàng để demo Publish; chưa có kết quả xét nghiệm trong EMR hay sự kiện Publish. **Volume đã tồn tại sẽ giữ nguyên dữ liệu và không tự chạy lại các script khởi tạo.** Database hiện tại của nhóm đã được nạp bộ này; không cần nạp lại hay xóa volume.
+
+Kiểm tra nhanh dữ liệu sau khi database báo `healthy`:
+
+```bash
+docker compose exec db psql -U postgres -d dacn_db -c "SELECT COUNT(*) AS mimic_results, COUNT(*) FILTER (WHERE provenance->>'in_functional_40' = 'true') AS functional_40 FROM lis.results WHERE provenance->>'seed_tag' = 'DACN-MIMIC22-SOURCE-ALIGNED-V2';"
+```
+
+Kết quả mong đợi: `mimic_results = 1000`, `functional_40 = 40`. Khi khởi tạo mới, toàn bộ LIS có 1.000 kết quả; database có ca demo khác từ trước có thể có tổng lớn hơn.
+
+Đặt mật khẩu các role tương ứng với `.env` (vẫn cần thực hiện khi khởi tạo mới):
 
 ```bash
 docker compose exec db psql -U postgres -d dacn_db
