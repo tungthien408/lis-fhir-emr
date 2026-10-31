@@ -1,0 +1,53 @@
+{
+  "provenance": "Hand-authored D3 synthetic source and independent answers; no MIMIC/SPP-65 data and no Mapper-generated answers",
+  "catalog": {
+    "test_code": "D3-LOCAL-TEST", "test_name": "D3 synthetic analyte", "fluid": "Blood", "category": "Chemistry",
+    "accepted_units": ["mg/dL"], "catalog_version": "d3-synthetic-v1"
+  },
+  "snapshot": {
+    "result_id": "D3-SYNTHETIC-RESULT", "patient_id": "D3-SYNTHETIC-PATIENT",
+    "test_code": "D3-LOCAL-TEST", "test_name": "D3 synthetic analyte", "fluid": "Blood", "category": "Chemistry",
+    "value_num": 0.30000000000000004, "unit": "mg/dL", "reference_low": 0.1, "reference_high": 0.9,
+    "effective_at": "2026-10-30T08:00:00.123456Z", "result_status": "FINAL"
+  },
+  "observation": {
+    "resourceType": "Observation",
+    "identifier": [{"system":"https://example.org/lis/result","value":"D3-SYNTHETIC-RESULT"}],
+    "status": "final",
+    "category": [{"coding":[{"system":"http://terminology.hl7.org/CodeSystem/observation-category","code":"laboratory"}]}],
+    "code": {"coding":[{"system":"https://example.org/lis/test-code","code":"D3-LOCAL-TEST","display":"D3 synthetic analyte"}],"text":"D3 synthetic analyte / Blood / Chemistry"},
+    "subject": {"type":"Patient","identifier":{"system":"https://example.org/lis/patient","value":"D3-SYNTHETIC-PATIENT"}},
+    "effectiveDateTime": "2026-10-30T08:00:00.123456Z",
+    "valueQuantity": {"value":0.30000000000000004,"unit":"mg/dL"},
+    "referenceRange": [{"low":{"value":0.1,"unit":"mg/dL"},"high":{"value":0.9,"unit":"mg/dL"}}]
+  },
+  "columns": {
+    "external_system": "https://example.org/lis/result", "external_id": "D3-SYNTHETIC-RESULT",
+    "analyte_system": "https://example.org/lis/test-code", "analyte_code": "D3-LOCAL-TEST",
+    "analyte_display": "D3 synthetic analyte", "analyte_context": "D3 synthetic analyte / Blood / Chemistry",
+    "quantity": "0.30000000000000004", "unit_text": "mg/dL", "low": "0.1", "high": "0.9",
+    "effective_at": "2026-10-30T08:00:00.123456Z", "clinical_status": "final"
+  },
+  "variants": [
+    {
+      "name": "both",
+      "source": {"value_num":"0.30000000000000004","reference_low":"0.1000","reference_high":"0.9000","effective_at":"2026-10-30T15:00:00.123456+07:00"},
+      "expected": {"quantity":"0.30000000000000004","low":"0.1","high":"0.9","effective_at":"2026-10-30T08:00:00.123456Z"}
+    },
+    {
+      "name": "low",
+      "source": {"value_num":"9007199254740991","reference_low":"9007199254740990","reference_high":null,"effective_at":"2026-10-30T15:00:00.000001+07:00"},
+      "expected": {"quantity":"9007199254740991","low":"9007199254740990","high":null,"effective_at":"2026-10-30T08:00:00.000001Z"}
+    },
+    {
+      "name": "high",
+      "source": {"value_num":"0.000000123456789","reference_low":null,"reference_high":"0.0000002","effective_at":"2026-10-30T15:00:00.999999+07:00"},
+      "expected": {"quantity":"0.000000123456789","low":null,"high":"0.0000002","effective_at":"2026-10-30T08:00:00.999999Z"}
+    },
+    {
+      "name": "none",
+      "source": {"value_num":"-12345.6789012345","reference_low":null,"reference_high":null,"effective_at":"2026-10-30T15:00:00.654321+07:00"},
+      "expected": {"quantity":"-12345.6789012345","low":null,"high":null,"effective_at":"2026-10-30T08:00:00.654321Z"}
+    }
+  ]
+}

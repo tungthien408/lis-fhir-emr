@@ -14,6 +14,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./database/dacn_db_init_v2.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
       - ./database/access_roles.sql:/docker-entrypoint-initdb.d/02-roles.sql:ro
+      - ./database/seed/01_reference_data.sql:/docker-entrypoint-initdb.d/03-reference-data.sql:ro
+      - ./database/seed/02_lis_results.sql:/docker-entrypoint-initdb.d/04-lis-results.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d dacn_db"]
       interval: 5s
@@ -36,6 +38,25 @@ services:
       db:
         condition: service_healthy
 
+  # Opt-in D2 process; uses only the LIS role and reaches Middleware over HTTP.
+  lis-dispatcher:
+    image: lis-fhir-emr-backend:local
+    profiles: ["dispatcher"]
+    command: ["npm", "run", "start:lis-dispatcher"]
+    environment:
+      LIS_DATABASE_URL: postgresql://lis_app:${LIS_DB_PASSWORD}@db:5432/dacn_db
+      MIDDLEWARE_BASE_URL: ${DISPATCHER_MIDDLEWARE_BASE_URL:-http://middleware:3102}
+      LIS_DISPATCHER_HTTP_TIMEOUT_MS: ${LIS_DISPATCHER_HTTP_TIMEOUT_MS:-3000}
+      LIS_DISPATCHER_LEASE_MS: ${LIS_DISPATCHER_LEASE_MS:-15000}
+      LIS_DISPATCHER_POLL_MS: ${LIS_DISPATCHER_POLL_MS:-1000}
+      LIS_DISPATCHER_MAX_ATTEMPTS: ${LIS_DISPATCHER_MAX_ATTEMPTS:-4}
+      LIS_DISPATCHER_RETRY_DELAYS_MS: ${LIS_DISPATCHER_RETRY_DELAYS_MS-2000,4000,8000}
+    depends_on:
+      db:
+        condition: service_healthy
+      middleware:
+        condition: service_started
+
   middleware:
     image: lis-fhir-emr-backend:local
     command: ["npm", "run", "start:middleware"]
@@ -49,7 +70,7 @@ services:
       db:
         condition: service_healthy
 
-  # Opt-in only: EMR business endpoints must exist before real delivery testing.
+  # Opt-in worker process; reads integration.exchange_transactions, maps to FHIR R4 Observation, delivers to EMR and verifies read-back.
   middleware-worker:
     image: lis-fhir-emr-backend:local
     profiles: ["worker"]
