@@ -59,6 +59,81 @@ test("EMR Service C2 (disposable PostgreSQL)", {
     assert.deepEqual(Object.keys(receipt).sort(), ["kind", "result", "external_system", "external_id", "target_id", "patient_key"].sort());
   });
 
+  await t.test(
+    "different result IDs with identical clinical values must both be stored",
+    async () => {
+      // Hai kết quả giống hệt nhau, ngoại trừ mã kết quả.
+      const resultA = validObservation();
+      const resultB = structuredClone(resultA);
+
+      resultB.identifier[0].value =
+        `C2-SYNTHETIC-${randomUUID()}`;
+
+      assert.notEqual(
+        resultA.identifier[0].value,
+        resultB.identifier[0].value,
+      );
+
+      // Lưu cả hai qua EMR Service thật.
+      const receiptA = await service.storeObservation(resultA);
+      const receiptB = await service.storeObservation(resultB);
+
+      assert.equal(receiptA.kind, "stored");
+      assert.equal(receiptB.kind, "stored");
+
+      if (
+        receiptA.kind !== "stored" ||
+        receiptB.kind !== "stored"
+      ) {
+        return;
+      }
+
+      // Phải có hai target_id khác nhau.
+      assert.notEqual(
+        receiptA.target_id,
+        receiptB.target_id,
+      );
+
+      // Cả hai phải thuộc đúng bệnh nhân đã liên kết.
+      assert.equal(receiptA.patient_key, patientKeys[0]);
+      assert.equal(receiptB.patient_key, patientKeys[0]);
+
+      // Đọc hai kết quả từ PostgreSQL thật.
+      const storedA = await rows(resultA);
+      const storedB = await rows(resultB);
+
+      assert.equal(storedA.length, 1);
+      assert.equal(storedB.length, 1);
+
+      assert.notEqual(
+        storedA[0].external_id,
+        storedB[0].external_id,
+      );
+
+      // Giá trị xét nghiệm giống nhau phải được giữ nguyên.
+      assert.equal(
+        storedA[0].quantity,
+        storedB[0].quantity,
+      );
+
+      assert.equal(
+        storedA[0].analyte_code,
+        storedB[0].analyte_code,
+      );
+
+      assert.deepEqual(storedA[0].fhir_json, resultA);
+      assert.deepEqual(storedB[0].fhir_json, resultB);
+
+      // Gửi lại A không được tạo thêm bản ghi.
+      const retryA = await service.storeObservation(resultA);
+      assert.equal(retryA.kind, "already_exists");
+
+      assert.equal((await rows(resultA)).length, 1);
+      assert.equal((await rows(resultB)).length, 1);
+    },
+  );
+
+
   await t.test("missing link, other-namespace-only link and unsupported namespace never create patients/results", async () => {
     for (const id of ["C2-MISSING", "C2-ONLY-OTHER"]) {
       const input = validObservation(); input.subject.identifier.value = id;
