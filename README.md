@@ -5,7 +5,7 @@
 **Trạng thái hiện tại (SPP-66 D1–D4):**
 - Đã hoàn thành triển khai và kiểm thử toàn bộ các giai đoạn **A1–A3, B1–B4B, C1–C4, D1–D3**.
 - Luồng trao đổi toàn vẹn hai chiều đã hoạt động thật trên backend:
-  $$\text{LIS Publish} \longrightarrow \text{LIS Dispatcher} \longrightarrow \text{Middleware API} \longrightarrow \text{Worker \& Mapper (FHIR R4)} \longrightarrow \text{EMR API} \longrightarrow \text{EMR Read-back} \longrightarrow \text{DELIVERED}$$
+  $$\text{LIS Publish} \longrightarrow \text{LIS Dispatcher} \longrightarrow \text{Middleware API} \longrightarrow \text{Worker and Mapper (FHIR R4)} \longrightarrow \text{EMR API} \longrightarrow \text{EMR Read-back} \longrightarrow \text{DELIVERED}$$
 - Toàn bộ 495 bài kiểm thử tự động (gồm 15 ca E2E D3) đều đạt **PASS** trên PostgreSQL cô lập với dữ liệu giả định kiểm chứng độc lập.
 - **Giới hạn phạm vi:** Dữ liệu hiện tại là fixture giả lập có đáp án độc lập (synthetic data), **chưa** nghiệm thu bằng bộ dữ liệu MIMIC / SPP-65 chính thức; **chưa** triển khai môi trường production có TLS; giao diện người dùng frontend (SPP-67) là bước tích hợp tiếp theo.
 
