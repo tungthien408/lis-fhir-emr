@@ -1,0 +1,7 @@
+{
+    "command_test": "python scripts/verify-mapper-fhir.py /tmp/fhir.schema.json",
+    "passed": 1,
+    "root": "#/definitions/Observation",
+    "schema_sha256": "2230406893b4cf002a4ee1e5e2bbeca22ac5d2d4931b3e9ef7b9594bbc376a01",
+    "scope": "JSON Schema structure only; not FHIRPath, terminology or clinical correctness"
+}
