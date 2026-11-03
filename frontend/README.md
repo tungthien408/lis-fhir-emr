@@ -2,6 +2,8 @@
 
 Ba ứng dụng React + TypeScript + Vite độc lập, quản lý bằng npm workspaces trong thư mục `frontend/`. Workspace là một gói npm con được quản lý cùng các gói khác từ thư mục cha.
 
+Ứng dụng LIS đã được bổ sung màn hình danh sách ở Giai đoạn 2.1. Xem [hướng dẫn và kết quả kiểm tra LIS](apps/lis/README.md). Các mục Giai đoạn 1 bên dưới ghi nhận đợt chuyển đổi cấu trúc trước đó.
+
 ## Phạm vi giai đoạn 1
 
 - Di chuyển nguyên trạng ứng dụng thử nghiệm LIS vào `apps/lis/`.

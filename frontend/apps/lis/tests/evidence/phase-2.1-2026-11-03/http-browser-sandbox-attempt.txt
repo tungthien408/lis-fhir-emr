@@ -1,0 +1,140 @@
+﻿✖ P10: 10 bản ghi, đi tới/quay lại, limit/offset, dòng và nút (5912.1751ms)
+✖ P11: 11 bản ghi, đi tới/quay lại, limit/offset, dòng và nút (10.9534ms)
+✖ P20: 20 bản ghi, đi tới/quay lại, limit/offset, dòng và nút (0.3048ms)
+✖ P21: 21 bản ghi, đi tới/quay lại, limit/offset, dòng và nút (0.204ms)
+✖ V0: nội dung ô giá trị giữ nguyên "0" (0.3154ms)
+✖ VNEG: nội dung ô giá trị giữ nguyên "-2.50" (0.202ms)
+✖ VLONG: nội dung ô giá trị giữ nguyên "12345678901234567890.123456789012345678901234567890" (0.1276ms)
+✖ E503: lỗi HTTP, ẩn dữ liệu cũ, phục hồi đúng bộ lọc/trang (0.1564ms)
+✖ E400: lỗi HTTP, ẩn dữ liệu cũ, phục hồi đúng bộ lọc/trang (0.2099ms)
+✖ E502: lỗi HTTP, ẩn dữ liệu cũ, phục hồi đúng bộ lọc/trang (0.1878ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 0
+ℹ fail 10
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7302.9812
+
+✖ failing tests:
+
+test at tests\browser-http.mjs:150:3
+✖ P10: 10 bản ghi, đi tới/quay lại, limit/offset, dòng và nút (5912.1751ms)
+  Error: CDP đã đóng
+      at WebSocket.<anonymous> (file:///E:/SGU/Ky1_4/DACN/lis-fhir-emr/frontend/apps/lis/tests/helpers/http-browser.mjs:112:24)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:845:20)
+      at WebSocket.dispatchEvent (node:internal/event_target:778:26)
+      at fireEvent (node:internal/deps/undici/undici:12652:14)
+      at #onSocketClose (node:internal/deps/undici/undici:13911:9)
+      at Socket.onSocketClose (node:internal/deps/undici/undici:13611:72)
+      at Socket.emit (node:events:520:35)
+      at TCP.<anonymous> (node:net:346:12)
+
+test at tests\browser-http.mjs:150:3
+✖ P11: 11 bản ghi, đi tới/quay lại, limit/offset, dòng và nút (10.9534ms)
+  Error: CDP đã đóng
+      at WebSocket.<anonymous> (file:///E:/SGU/Ky1_4/DACN/lis-fhir-emr/frontend/apps/lis/tests/helpers/http-browser.mjs:112:24)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:845:20)
+      at WebSocket.dispatchEvent (node:internal/event_target:778:26)
+      at fireEvent (node:internal/deps/undici/undici:12652:14)
+      at #onSocketClose (node:internal/deps/undici/undici:13911:9)
+      at Socket.onSocketClose (node:internal/deps/undici/undici:13611:72)
+      at Socket.emit (node:events:520:35)
+      at TCP.<anonymous> (node:net:346:12)
+
+test at tests\browser-http.mjs:150:3
+✖ P20: 20 bản ghi, đi tới/quay lại, limit/offset, dòng và nút (0.3048ms)
+  Error: CDP đã đóng
+      at WebSocket.<anonymous> (file:///E:/SGU/Ky1_4/DACN/lis-fhir-emr/frontend/apps/lis/tests/helpers/http-browser.mjs:112:24)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:845:20)
+      at WebSocket.dispatchEvent (node:internal/event_target:778:26)
+      at fireEvent (node:internal/deps/undici/undici:12652:14)
+      at #onSocketClose (node:internal/deps/undici/undici:13911:9)
+      at Socket.onSocketClose (node:internal/deps/undici/undici:13611:72)
+      at Socket.emit (node:events:520:35)
+      at TCP.<anonymous> (node:net:346:12)
+
+test at tests\browser-http.mjs:150:3
+✖ P21: 21 bản ghi, đi tới/quay lại, limit/offset, dòng và nút (0.204ms)
+  Error: CDP đã đóng
+      at WebSocket.<anonymous> (file:///E:/SGU/Ky1_4/DACN/lis-fhir-emr/frontend/apps/lis/tests/helpers/http-browser.mjs:112:24)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:845:20)
+      at WebSocket.dispatchEvent (node:internal/event_target:778:26)
+      at fireEvent (node:internal/deps/undici/undici:12652:14)
+      at #onSocketClose (node:internal/deps/undici/undici:13911:9)
+      at Socket.onSocketClose (node:internal/deps/undici/undici:13611:72)
+      at Socket.emit (node:events:520:35)
+      at TCP.<anonymous> (node:net:346:12)
+
+test at tests\browser-http.mjs:193:3
+✖ V0: nội dung ô giá trị giữ nguyên "0" (0.3154ms)
+  Error: CDP đã đóng
+      at WebSocket.<anonymous> (file:///E:/SGU/Ky1_4/DACN/lis-fhir-emr/frontend/apps/lis/tests/helpers/http-browser.mjs:112:24)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:845:20)
+      at WebSocket.dispatchEvent (node:internal/event_target:778:26)
+      at fireEvent (node:internal/deps/undici/undici:12652:14)
+      at #onSocketClose (node:internal/deps/undici/undici:13911:9)
+      at Socket.onSocketClose (node:internal/deps/undici/undici:13611:72)
+      at Socket.emit (node:events:520:35)
+      at TCP.<anonymous> (node:net:346:12)
+
+test at tests\browser-http.mjs:193:3
+✖ VNEG: nội dung ô giá trị giữ nguyên "-2.50" (0.202ms)
+  Error: CDP đã đóng
+      at WebSocket.<anonymous> (file:///E:/SGU/Ky1_4/DACN/lis-fhir-emr/frontend/apps/lis/tests/helpers/http-browser.mjs:112:24)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:845:20)
+      at WebSocket.dispatchEvent (node:internal/event_target:778:26)
+      at fireEvent (node:internal/deps/undici/undici:12652:14)
+      at #onSocketClose (node:internal/deps/undici/undici:13911:9)
+      at Socket.onSocketClose (node:internal/deps/undici/undici:13611:72)
+      at Socket.emit (node:events:520:35)
+      at TCP.<anonymous> (node:net:346:12)
+
+test at tests\browser-http.mjs:193:3
+✖ VLONG: nội dung ô giá trị giữ nguyên "12345678901234567890.123456789012345678901234567890" (0.1276ms)
+  Error: CDP đã đóng
+      at WebSocket.<anonymous> (file:///E:/SGU/Ky1_4/DACN/lis-fhir-emr/frontend/apps/lis/tests/helpers/http-browser.mjs:112:24)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:845:20)
+      at WebSocket.dispatchEvent (node:internal/event_target:778:26)
+      at fireEvent (node:internal/deps/undici/undici:12652:14)
+      at #onSocketClose (node:internal/deps/undici/undici:13911:9)
+      at Socket.onSocketClose (node:internal/deps/undici/undici:13611:72)
+      at Socket.emit (node:events:520:35)
+      at TCP.<anonymous> (node:net:346:12)
+
+test at tests\browser-http.mjs:212:3
+✖ E503: lỗi HTTP, ẩn dữ liệu cũ, phục hồi đúng bộ lọc/trang (0.1564ms)
+  Error: CDP đã đóng
+      at WebSocket.<anonymous> (file:///E:/SGU/Ky1_4/DACN/lis-fhir-emr/frontend/apps/lis/tests/helpers/http-browser.mjs:112:24)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:845:20)
+      at WebSocket.dispatchEvent (node:internal/event_target:778:26)
+      at fireEvent (node:internal/deps/undici/undici:12652:14)
+      at #onSocketClose (node:internal/deps/undici/undici:13911:9)
+      at Socket.onSocketClose (node:internal/deps/undici/undici:13611:72)
+      at Socket.emit (node:events:520:35)
+      at TCP.<anonymous> (node:net:346:12)
+
+test at tests\browser-http.mjs:212:3
+✖ E400: lỗi HTTP, ẩn dữ liệu cũ, phục hồi đúng bộ lọc/trang (0.2099ms)
+  Error: CDP đã đóng
+      at WebSocket.<anonymous> (file:///E:/SGU/Ky1_4/DACN/lis-fhir-emr/frontend/apps/lis/tests/helpers/http-browser.mjs:112:24)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:845:20)
+      at WebSocket.dispatchEvent (node:internal/event_target:778:26)
+      at fireEvent (node:internal/deps/undici/undici:12652:14)
+      at #onSocketClose (node:internal/deps/undici/undici:13911:9)
+      at Socket.onSocketClose (node:internal/deps/undici/undici:13611:72)
+      at Socket.emit (node:events:520:35)
+      at TCP.<anonymous> (node:net:346:12)
+
+test at tests\browser-http.mjs:212:3
+✖ E502: lỗi HTTP, ẩn dữ liệu cũ, phục hồi đúng bộ lọc/trang (0.1878ms)
+  Error: CDP đã đóng
+      at WebSocket.<anonymous> (file:///E:/SGU/Ky1_4/DACN/lis-fhir-emr/frontend/apps/lis/tests/helpers/http-browser.mjs:112:24)
+      at [nodejs.internal.kHybridDispatch] (node:internal/event_target:845:20)
+      at WebSocket.dispatchEvent (node:internal/event_target:778:26)
+      at fireEvent (node:internal/deps/undici/undici:12652:14)
+      at #onSocketClose (node:internal/deps/undici/undici:13911:9)
+      at Socket.onSocketClose (node:internal/deps/undici/undici:13611:72)
+      at Socket.emit (node:events:520:35)
+      at TCP.<anonymous> (node:net:346:12)

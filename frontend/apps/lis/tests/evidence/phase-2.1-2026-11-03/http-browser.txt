@@ -1,0 +1,18 @@
+﻿✔ P10: 10 bản ghi, đi tới/quay lại, limit/offset, dòng và nút (6290.4007ms)
+✔ P11: 11 bản ghi, đi tới/quay lại, limit/offset, dòng và nút (1006.4631ms)
+✔ P20: 20 bản ghi, đi tới/quay lại, limit/offset, dòng và nút (955.5708ms)
+✔ P21: 21 bản ghi, đi tới/quay lại, limit/offset, dòng và nút (1574.6442ms)
+✔ V0: nội dung ô giá trị giữ nguyên "0" (635.3727ms)
+✔ VNEG: nội dung ô giá trị giữ nguyên "-2.50" (165.043ms)
+✔ VLONG: nội dung ô giá trị giữ nguyên "12345678901234567890.123456789012345678901234567890" (149.3098ms)
+✔ E503: lỗi HTTP, ẩn dữ liệu cũ, phục hồi đúng bộ lọc/trang (2832.5369ms)
+✔ E400: lỗi HTTP, ẩn dữ liệu cũ, phục hồi đúng bộ lọc/trang (533.9063ms)
+✔ E502: lỗi HTTP, ẩn dữ liệu cũ, phục hồi đúng bộ lọc/trang (698.0768ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 16255.5606
