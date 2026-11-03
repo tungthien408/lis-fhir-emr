@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "run_id": "SPP82-B-SIMULATED",
+  "scenario": "SPP-73-simulated",
+  "simulated": true,
+  "result_ids": [
+    "D3-SYNTHETIC-RESULT",
+    "SIMULATED-EXISTING",
+    "SIMULATED-FAILED"
+  ],
+  "manifest_hash": null,
+  "selection_hash": "f1d441c160487f33bdc73c05f17a978d099b32013506bba082aa414feb33a84b",
+  "concurrency": 1,
+  "concurrency_semantics": "publish_http_in_flight",
+  "observer_concurrency": 1,
+  "worker_counts": {
+    "dispatcher": null,
+    "middleware": null
+  },
+  "service_configuration": {
+    "dispatcher_http_timeout_ms": null,
+    "dispatcher_max_attempts": null,
+    "dispatcher_retry_delays_ms": null,
+    "worker_http_timeout_ms": null,
+    "worker_max_send_attempts": null,
+    "worker_max_verify_attempts": null,
+    "worker_retry_delays_ms": null
+  },
+  "http_timeout_ms": 1000,
+  "polling_interval_ms": 1000,
+  "run_timeout_ms": 10000,
+  "git_commit": null,
+  "started": {
+    "utc": "2026-11-02T00:00:00.000Z",
+    "elapsed_ms": 0
+  },
+  "ended": {
+    "utc": "2026-11-02T00:00:01.090Z",
+    "elapsed_ms": 1090
+  },
+  "stop_reason": "completed"
+}

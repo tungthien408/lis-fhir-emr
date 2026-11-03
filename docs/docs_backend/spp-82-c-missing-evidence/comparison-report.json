@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tool_version": "spp82-independent-verification-v1",
+  "run_id": "UNAVAILABLE",
+  "oracle_manifest_sha256": "55cb4256c77d731bff7e8ea1c1ad7f9788df889b4833d9a6b501282c169c7267",
+  "simulated": false,
+  "input_checksums": {
+    "oracle_manifest": "55cb4256c77d731bff7e8ea1c1ad7f9788df889b4833d9a6b501282c169c7267"
+  },
+  "total_expected_results": 1000,
+  "total_observed_results": null,
+  "observed_namespace_rows": null,
+  "matched_result_count": 0,
+  "match_rate": 0,
+  "missing_result_count": 0,
+  "duplicate_result_count": 0,
+  "source_cardinality_failure_count": 0,
+  "wrong_patient_linkage_count": 0,
+  "field_mismatch_result_count": 0,
+  "stale_result_count": 0,
+  "reused_target_count": 0,
+  "unverified_result_count": 1000,
+  "failed_result_count": 0,
+  "unexpected_extra_result_count": null,
+  "unexpected_extra_source_count": null,
+  "unexpected_extra_exchange_count": null,
+  "outcome": "NOT_VERIFIED",
+  "per_field": {
+    "EVIDENCE:verification.inputs": {
+      "PASS": 0,
+      "FAIL": 0,
+      "NOT_VERIFIED": 1
+    }
+  },
+  "limitations": [
+    "Original manifest_1000.csv and upstream lock checksum were not found in available handoff.",
+    "This is a local reference freeze, not SPP-65 owner sign-off.",
+    "Raw charttime has no timezone: UTC and FINAL are declared project assumptions.",
+    "NO_APPROVED_CURRENT_RUN_OR_DATABASE_SNAPSHOTS_CAPTURED",
+    "No successful verification is claimed; expected denominator remains 1000."
+  ]
+}

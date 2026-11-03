@@ -1,0 +1,1 @@
+{"run_id":"UNAVAILABLE","result_id":null,"exchange_id":null,"rule_id":"EVIDENCE","field_path":"verification.inputs","expected":"frozen 1000-row oracle and saved run/database evidence","actual_source":null,"actual_fhir":null,"actual_target":null,"outcome":"NOT_VERIFIED","reason":"NO_APPROVED_CURRENT_RUN_OR_DATABASE_SNAPSHOTS_CAPTURED"}
