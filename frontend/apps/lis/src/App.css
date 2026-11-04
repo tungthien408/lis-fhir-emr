@@ -38,7 +38,7 @@
 
 .result-filters {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -118,7 +118,7 @@
 
 .results-table {
   width: 100%;
-  min-width: 1080px;
+  min-width: 1240px;
   border-collapse: collapse;
   text-align: left;
   font-size: 14px;
@@ -210,5 +210,133 @@
 
   .result-filters {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.filter-hint {
+  margin: 0;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.search-summary {
+  margin: 0 0 12px;
+  color: #475569;
+  font-size: 14px;
+}
+
+.results-table .identifier {
+  white-space: nowrap;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.detail-heading-group {
+  min-width: 0;
+  flex: 1 1 320px;
+}
+
+.detail-header h2 {
+  margin-bottom: 8px;
+  color: #17365d;
+}
+
+.detail-location {
+  margin: 0;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.detail-location span {
+  font-weight: 600;
+}
+
+.detail-header-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.result-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.result-detail-grid section {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.result-detail-grid h3 {
+  margin: 0 0 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #17365d;
+  font-size: 17px;
+}
+
+.result-detail-grid dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 16px;
+}
+
+.detail-field {
+  min-width: 0;
+}
+
+.result-detail-grid dt {
+  color: #475569;
+  font-size: 14px;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.result-detail-grid dd {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.result-detail-grid .result-value {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+@media (max-width: 1024px) {
+  .result-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .result-detail-grid section {
+    padding: 16px;
+  }
+
+  .result-detail-grid dl {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
   }
 }

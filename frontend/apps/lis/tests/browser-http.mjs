@@ -5,7 +5,7 @@ import { before, after, test } from 'node:test'
 import { setTimeout as delay } from 'node:timers/promises'
 import { openHttpBrowser, until } from './helpers/http-browser.mjs'
 
-const evidence = path.resolve(process.env.LIS_EVIDENCE_DIR || path.join(import.meta.dirname, 'evidence/phase-2.1-2026-11-03'))
+const evidence = path.resolve(process.env.LIS_EVIDENCE_DIR || path.join(import.meta.dirname, 'evidence/phase-2.2-2026-11-03/list-regression'))
 mkdirSync(evidence, { recursive: true })
 const report = { source: 'HTTP mô phỏng bằng Chrome CDP Fetch; giao diện production thật', startedAt: new Date().toISOString(), cases: [] }
 let browser, respond, current
@@ -69,9 +69,9 @@ async function snapshot(label) {
     busy: document.querySelector('.results-content')?.getAttribute('aria-busy'),
     page: document.querySelector('.results-pagination p')?.textContent,
     ids: [...document.querySelectorAll('tbody tr')].map((row) => row.cells[0].textContent),
-    values: [...document.querySelectorAll('tbody tr')].map((row) => row.cells[3].textContent),
+    values: [...document.querySelectorAll('tbody tr')].map((row) => row.cells[4].textContent),
     patients: [...document.querySelectorAll('tbody tr')].map((row) => row.cells[1].textContent),
-    statuses: [...document.querySelectorAll('tbody tr')].map((row) => row.cells[6].textContent),
+    statuses: [...document.querySelectorAll('tbody tr')].map((row) => row.cells[7].textContent),
     buttons: Object.fromEntries([...document.querySelectorAll('button')].filter((b) => b.closest('nav') || b.closest('[role="alert"]')).map((b) => [b.textContent.trim(), !b.disabled])),
     alert: document.querySelector('[role="alert"]')?.textContent ?? null,
     content: document.querySelector('.results-content')?.textContent,

@@ -132,7 +132,7 @@ Proxy là thành phần nhận yêu cầu từ trình duyệt rồi chuyển ti�
 | `/api/middleware/...` | `http://127.0.0.1:3102` | `/api/...` |
 | `/api/emr/...` | `http://127.0.0.1:3103` | `/api/...` |
 
-Ví dụ LIS gọi `/api/lis/results?limit=10&offset=0`; Vite chuyển tiếp đến `http://127.0.0.1:3101/api/results?limit=10&offset=0`.
+Ví dụ LIS gọi `/api/lis/results?limit=11&offset=0`; Vite chuyển tiếp đến `http://127.0.0.1:3101/api/results?limit=11&offset=0`.
 
 Cấu hình này dành cho frontend chạy trực tiếp trên host, gọi các cổng backend Docker đã công bố. Không sửa backend để xử lý CORS. Proxy này không ánh xạ `/health` hoặc `/ready`; kiểm tra hai endpoint đó trực tiếp tại địa chỉ backend khi cần.
 
@@ -151,14 +151,16 @@ Nếu LIS báo lỗi tải dữ liệu, kiểm tra backend LIS đang hoạt đ�
 
 Thư mục `dist/` và `node_modules/` cũ tại frontend cha là sản phẩm sinh tự động, không phải mã nguồn được chuyển. Bản build mới nằm riêng trong mỗi ứng dụng. Không dùng lại `frontend/dist/` cũ.
 
-## Chức năng LIS được bảo toàn
+## Chức năng LIS hiện tại – Giai đoạn 2.2
 
-- Gọi GET API LIS thật với `limit=10`, `offset=0` khi mở trang.
-- Hiển thị bảng mã kết quả, mã bệnh nhân, xét nghiệm, giá trị, thời điểm và trạng thái.
-- Giữ các trạng thái đang tải, lỗi và danh sách rỗng.
-- Giữ cơ chế hủy yêu cầu bằng `AbortController`.
-- Giữ nguyên mã gọi API, kiểu dữ liệu, CSS và tài nguyên của bản thử nghiệm.
-- Chưa thêm bộ lọc, phân trang, Publish hoặc màn hình nghiệp vụ mới.
+- Danh sách dùng GET với `limit=11`, hiển thị 10 dòng; dòng thứ 11 xác định có trang sau.
+- Bộ lọc mã bệnh nhân, mã xét nghiệm, READY/FINAL; tách bản nháp và bộ lọc áp dụng.
+- Hash routing lưu bộ lọc và trang trong URL, hỗ trợ F5 và Back/Forward.
+- Màn hình chi tiết riêng gọi GET `/api/lis/results/<encodedResultId>`, đủ 12 trường, bố cục rộng/hẹp.
+- Giữ chuỗi số/đơn vị, thời gian UTC và ISO gốc, nullable; hủy yêu cầu và chặn phản hồi cũ.
+- Có trạng thái đang tải/rỗng/lỗi/thử lại, không triển khai Publish, Monitor hoặc EMR.
+
+Xem [README LIS](apps/lis/README.md) để chạy kiểm thử và [báo cáo 2.2](apps/lis/tests/evidence/phase-2.2-2026-11-03/BAO_CAO.md) để xem bằng chứng mới. Phần kiểm tra ngày 02/11/2026 bên dưới là lịch sử chuyển đổi workspace, không mô tả trạng thái chức năng/nghiệm thu hiện tại.
 
 ## Kết quả kiểm tra ngày 02/11/2026
 

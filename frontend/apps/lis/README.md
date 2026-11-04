@@ -1,99 +1,156 @@
-# Danh sách kết quả xét nghiệm LIS – Giai đoạn 2.1
+# Kết quả xét nghiệm LIS – Giai đoạn 2.2
 
-Ứng dụng dùng dữ liệu từ API LIS thật qua Vite proxy. Đợt này hoàn thiện danh sách; chưa có Publish hoặc trang chi tiết.
+Ứng dụng gọi API LIS thật qua Vite proxy, gồm danh sách có bộ lọc/phân trang và màn hình chi tiết riêng. Không triển khai Publish, Monitor hoặc EMR.
 
-## Chức năng
+## Chức năng và điều hướng
 
-- Thanh tiêu đề phía trên, không có sidebar.
-- Lọc theo mã bệnh nhân, mã xét nghiệm và trạng thái kết quả READY/FINAL/Tất cả.
-- Tìm kiếm bằng nút hoặc Enter; không gọi API theo từng ký tự.
-- Xóa bộ lọc về trang đầu. Tìm lại cùng điều kiện vẫn tải lại dữ liệu.
-- Chuyển trang giữ bộ lọc đã áp dụng, kể cả khi người dùng đang nhập điều kiện khác.
-- Bảng tám cột; nút Xem chi tiết luôn vô hiệu hóa trong giai đoạn này.
-- Đang tải, danh sách rỗng, lỗi HTTP/kết nối/phản hồi không hợp lệ và nút Thử tải lại.
-- Hủy yêu cầu cũ; phản hồi cũ không ghi đè kết quả của truy vấn mới.
-- Giao diện bộ lọc thích ứng với màn hình hẹp; bảng cuộn ngang trong vùng riêng.
+- Lọc mã bệnh nhân, mã kết quả, mã loại xét nghiệm, trạng thái READY/FINAL/Tất cả; tìm kiếm bằng nút hoặc Enter.
+- Gõ chỉ sửa bản nháp. Tìm kiếm mới áp dụng bộ lọc và trở về trang đầu; tìm lại cùng điều kiện và Thử tải lại vẫn gửi yêu cầu mới.
+- Khi không có mã kết quả, mỗi trang hiển thị tối đa 10 dòng, gọi GET với `limit=11`, `offset=pageIndex*10`; dòng thứ 11 chỉ xác định có trang sau.
+- Xem chi tiết có hai card cạnh nhau ở desktop, xếp dọc ở màn hình ≤1024px, đủ 12 trường API. Giá trị xét nghiệm nổi bật bằng cỡ chữ/độ đậm.
+- Nút quay lại hoạt động cả khi chi tiết đang tải hoặc lỗi.
+- F5, URL trực tiếp và Back/Forward dùng hash routing, không thêm thư viện.
+- URL sai, bộ lọc không được hỗ trợ/lặp, ID/mã hóa URL sai, trạng thái hoặc số trang sai được báo rõ; không tải danh sách rộng hơn.
 
-## Phân trang và dữ liệu
+## Quy ước URL
 
-Mỗi yêu cầu dùng `limit=11`, `offset=pageIndex*10`. Chỉ hiển thị mười dòng đầu; dòng thứ 11 cho biết có thể sang trang sau. Không tính tổng số kết quả hoặc tổng số trang.
+```text
+#/results
+#/results?patient_id=P1&test_code=T1&result_status=FINAL&page=3
+#/results/<encodedResultId>?patient_id=P1&test_code=T1&result_status=FINAL&page=3
+```
 
-Ô mã định danh rỗng hoặc chỉ chứa khoảng trắng không được gửi thành bộ lọc. Mọi ký tự của mã không rỗng được giữ nguyên, kể cả khoảng trắng đầu/cuối và chữ hoa/thường.
+`page` bắt đầu từ 1; mặc định 1. Bốn bộ lọc và số trang trong URL chi tiết chỉ để quay lại danh sách, không gửi vào GET chi tiết. URL chi tiết không có ngữ cảnh quay về danh sách mặc định. Không lưu bản nháp chưa tìm kiếm qua F5/rời danh sách.
 
-Số xét nghiệm và đơn vị giữ nguyên từ API. Thời gian hiển thị `YYYY-MM-DD HH:mm:ss` theo UTC, không chuyển sang múi giờ Việt Nam. Giá trị thời gian `null` hiển thị `—`. Chuỗi ISO gốc, bao gồm phần lẻ giây, được giữ trong dữ liệu và thuộc tính `datetime`/`title` của phần tử `time`.
+ID thông thường được `encodeURIComponent` khi tạo hash và đường dẫn API; giải mã đúng một lần. Đường dẫn chi tiết giữ nguyên khoảng trắng của mã không rỗng, chữ hoa/thường, Unicode và ký tự đặc biệt. Bộ lọc tìm kiếm trim hai đầu và chỉ đổi hoa với `MIMIC-P-[0-9]+` (bệnh nhân) / `MIMIC-LAB-[0-9]+` (kết quả), không phân biệt hoa/thường khi nhận biết mẫu. Không đổi hoa ID khác. Mã rỗng/chỉ khoảng trắng/ký tự điều khiển bị từ chối. Hai ID `.` và `..` được chấp nhận trong hash; API client và proxy LIS phối hợp truyền chúng mà không làm thay đổi định danh (chi tiết bên dưới).
 
-READY/FINAL là trạng thái kết quả xét nghiệm, không phải trạng thái trao đổi dữ liệu.
+## Tra mã kết quả từ danh sách
 
-## Tổ chức mã nguồn
+Bộ lọc xếp theo thứ tự bệnh nhân → kết quả → loại xét nghiệm → trạng thái, hai cột desktop/một cột mobile. Bảng chín cột bổ sung `test_code` sau `patient_id`, cuộn ngang nếu thiếu chỗ.
+
+Khi có `result_id`, `src/api/searchResults.ts` gọi GET chi tiết sẵn có qua `getLisResult`, kiểm tra AND chính xác bệnh nhân/loại/trạng thái trên bản ghi trả về. Không lọc trên trang 10 dòng, không gọi GET danh sách và không phân trang. Chỉ phản hồi 404 đúng hợp đồng bản ghi (`NOT_FOUND`, `Laboratory result not found`) trở thành trạng thái rỗng; 404 route/HTML, lỗi dữ liệu và kết nối vẫn hiển thị lỗi/thử lại. Thay đổi hợp đồng lỗi backend trong tương lai cần cập nhật nhận diện này.
+
+```text
+#/results?patient_id=MIMIC-P-10007928&result_id=MIMIC-LAB-100145&test_code=50971&result_status=FINAL
+#/results/MIMIC-LAB-100145?patient_id=MIMIC-P-10007928&result_id=MIMIC-LAB-100145&test_code=50971&result_status=FINAL
+```
+
+Mã kết quả trong query là bộ lọc danh sách; ID trong path là bản ghi đang xem. Cả bốn bộ lọc được giữ qua F5/quay lại/Back/Forward. Query có mã kết quả luôn dùng trang đầu.
+
+## Truyền ID dấu chấm và giới hạn triển khai
+
+Hash `#/results/.` và `#/results/..` giữ nguyên ID; dạng escape `%2E` trong hash cũng được giải mã đúng một lần. Literal ID `%2E` dùng hash `#/results/%252E`, khác với ID `.`.
+
+Trình duyệt và bộ phân tích URL của proxy đều có thể rút gọn dot segment. Vì vậy client dùng đường dẫn vận chuyển và header riêng cho đúng hai ID dấu chấm:
+
+| ID gốc | Browser GET /api/lis/results/... | X-LIS-Dot-Segment | Raw path proxy GET /api/results/... |
+|---|---|---|---|
+| `.` | `%252E` | `1` | `%2E` |
+| `..` | `%252E%252E` | `1` | `%2E%2E` |
+| `%2E` | `%252E` | không có | `%252E` |
+| `%2E%2E` | `%252E%252E` | không có | `%252E%252E` |
+
+Proxy riêng LIS bỏ header trước khi chuyển tiếp, dùng `toProxy: true` để giữ raw path và thêm `Vary: X-LIS-Dot-Segment` cho cả hai biến thể có cùng URL vận chuyển; giữ Vary hiện có. Đây là quy ước giữa client và proxy, backend vẫn nhận endpoint/hợp đồng GET cũ và giải mã một lần. Các ID khác giữ encodeURIComponent như trước; không giải mã thêm %, /, +, #, ? hoặc Unicode.
+
+**Vite development và Vite preview bản build đều có cấu hình này.** Thư mục `dist/` chỉ chứa tệp tĩnh, không chứa proxy. Khi triển khai bằng một máy chủ khác, phải cấu hình cùng xử lý raw path/header/Vary ở reverse proxy trước khi coi dot ID hoạt động. Chỉ phục vụ dist với quy tắc rewrite tiền tố cũ chưa đáp ứng dot ID. Không thay backend/Compose hoặc tự tạo dot record để kiểm thử.
+
+Mã: `src/api/resultRequest.ts`, `proxy/lis.ts`, `vite.config.ts`. Bằng chứng mới tại [báo cáo sửa dot ID](tests/evidence/phase-2.2-dot-fix-2026-11-03/BAO_CAO.md).
+
+## Hợp đồng dữ liệu và lỗi
+
+- GET danh sách: `/api/lis/results?limit=11&offset=...`; GET chi tiết: `/api/lis/results/<encodedResultId>`.
+- Chi tiết HTTP 200 phải là object đúng 12 trường/kiểu theo `LisResult`, gồm năm trường nullable: `fluid`, `category`, `reference_low`, `reference_high`, `effective_at`. Kiểm tra ID trả về trùng ID yêu cầu.
+- Giữ nguyên mọi chuỗi số/đơn vị; cận thấp/cao hiển thị riêng; null hiển thị `—`.
+- Thời gian UTC đến giây; ISO gốc và phần lẻ giữ trong `datetime`/`title`. Không đổi múi giờ.
+- Chỉ hiển thị READY/FINAL; không suy đoán kết luận hoặc trộn trạng thái trao đổi.
+- HTTP 400/404 có thông báo riêng; 503/502, JSON không hợp lệ, cấu trúc sai và mất mạng có Thử tải lại.
+- `AbortController` hủy yêu cầu khi đổi truy vấn/ID, thử lại, rời trang. Kết quả gắn với yêu cầu tạo ra nó, phản hồi muộn không thay dữ liệu hiện tại.
+
+## Tổ chức mã
 
 | Tệp | Trách nhiệm |
 |---|---|
-| `src/App.tsx` | Khung trang, bộ lọc đang nhập, thao tác tìm kiếm/xóa/chuyển trang/thử lại |
-| `src/components/ResultFilters.tsx` | Biểu mẫu ba bộ lọc |
-| `src/components/ResultsTable.tsx` | Bảng tám cột và thao tác chưa khả dụng |
-| `src/components/ResultsPagination.tsx` | Nút Trang trước/Trang sau và số trang hiện tại |
-| `src/hooks/useLisResults.ts` | Tải dữ liệu, hủy yêu cầu, gắn kết quả với truy vấn tương ứng |
-| `src/state/results.ts` | Bộ lọc đã áp dụng, vị trí trang, lấy mười dòng và định dạng thời gian |
-| `src/api/lis.ts` | GET qua proxy, giữ định danh, kiểm tra phản hồi, đọc lỗi |
-| `src/types/lis.ts` | Kiểu dữ liệu và nullable theo hợp đồng |
-| `src/App.css` | Kế thừa màu sắc/bố cục cũ, thêm biểu mẫu và phân trang thích ứng |
-| `tests/results.test.mjs` | Kiểm thử tự động API client, phân trang, truy vấn và kết xuất thành phần |
-| `tests/browser.mjs` | Kiểm thử Chrome/Chromium với backend thật, chỉ gửi GET |
+| `src/App.tsx` | Chọn màn hình, bản nháp bộ lọc và các thao tác danh sách |
+| `src/state/routes.ts` | Kiểm tra, đọc và tạo hash URL/ngữ cảnh danh sách |
+| `src/hooks/useResultsRoute.ts` | Điều hướng và đồng bộ lịch sử trình duyệt |
+| `src/components/ResultDetail.tsx` | Trang chi tiết và 12 trường |
+| `src/hooks/useLisResult.ts` | Tải/hủy/thử lại chi tiết, chặn dữ liệu muộn |
+| `src/components/ResultsTable.tsx` | Bảng chín cột, nút Xem chi tiết |
+| `src/components/ResultFilters.tsx`, `ResultsPagination.tsx` | Bộ lọc và phân trang đã nghiệm thu |
+| `src/hooks/useLisResults.ts`, `src/state/results.ts`, `src/api/searchResults.ts` | Tải/hủy tìm kiếm, chuẩn hóa bộ lọc và tra mã kết quả trực tiếp |
+| `src/api/lis.ts`, `src/types/lis.ts` | API client và hợp đồng dữ liệu |
+| `src/api/resultRequest.ts`, `proxy/lis.ts` | Vận chuyển dot ID và proxy/Vary riêng LIS |
+| `tests/results.test.mjs`, `tests/detail.test.mjs`, `tests/dot.test.mjs` | Unit test hồi quy và chi tiết |
+| `tests/browser.mjs`, `tests/browser-http.mjs` | Bộ Chrome hồi quy danh sách thật/mô phỏng |
+| `tests/browser-detail.mjs` | Bộ Chrome chi tiết thật/mô phỏng |
 
-Không thêm dependency. Các kiểm thử dùng công cụ Node.js, React và TypeScript đã có.
+## Lệnh kiểm tra
 
-## Lệnh chạy và kiểm tra
-
-Đứng tại `frontend/`, sau khi đã cài dependency của workspace:
+Tại `frontend/` (Windows dùng `npm.cmd` nếu PowerShell chặn `npm.ps1`):
 
 ```powershell
-npm run dev:lis
-npm run build:lis
-npm run check --workspace apps/lis
-npm run lint
-npm run test --workspace apps/lis
-npm run test:browser --workspace apps/lis
+npm.cmd run dev:lis
+npm.cmd run check --workspace apps/lis
+npm.cmd run lint
+npm.cmd run build:lis
+npm.cmd run test --workspace apps/lis
 ```
 
-Kiểm thử trình duyệt cần API thật ở `http://127.0.0.1:3101` với ít nhất 11 kết quả và một mã xét nghiệm có hơn mười kết quả. Script tìm Chrome/Edge trên Windows hoặc Chrome/Chromium trên Linux; có thể chỉ định đường dẫn thực thi bằng biến môi trường `CHROME_PATH`.
+Tại `frontend/apps/lis/`, sau khi build:
 
-Nếu cổng 5173 đang phục vụ đúng mã LIS hiện tại, script dùng máy chủ đó. Nếu chưa có máy chủ, script khởi động Vite và đóng sau khi xong. Trình duyệt kiểm thử dùng hồ sơ riêng trong `node_modules/.cache/lis-browser/`, được đóng khi kết thúc. Script không dừng máy chủ LIS đã chạy sẵn.
+```powershell
+$env:LIS_EVIDENCE_DIR = 'tests/evidence/phase-2.2-2026-11-03'
+node tests/browser-detail.mjs
+node tests/browser-detail.mjs --real
+$env:LIS_EVIDENCE_DIR = 'tests/evidence/phase-2.2-2026-11-03/list-regression'
+node --test --test-reporter=spec tests/browser-http.mjs
+node tests/browser.mjs
+```
 
-Trên Windows sandbox, Vite có thể bị chặn cập nhật cache `.vite` với lỗi EPERM. Khi gặp lỗi này, chạy kiểm thử từ terminal host có quyền phù hợp; không xóa ép cache của phiên Vite đang chạy.
+Kiểm thử chi tiết dùng preview cổng 5183. Kiểm thử danh sách thật dùng Vite cổng 5173, nhận diện máy chủ đang chạy và không đóng máy chủ có sẵn. Các bộ dùng Chrome headless với hồ sơ riêng; đặt `CHROME_PATH` nếu cần. Chạy tuần tự các bộ dùng cùng cổng. API thật cần backend `127.0.0.1:3101` và dữ liệu đủ trang; không khởi động/sửa backend từ kiểm thử.
 
-Unit test dùng phản hồi HTTP được kiểm soát riêng để kiểm tra lỗi và nullable. Các phản hồi này không được đưa vào mã ứng dụng, không ghi database và không được coi là bằng chứng tích hợp dữ liệu thật.
+HTTP mô phỏng chỉ dùng ở kiểm thử, có nhãn rõ trong JSON. Ca phản hồi muộn buộc trình duyệt kiểm thử bỏ signal khi gửi fetch, ghi nhận signal mà ứng dụng truyền và kiểm tra nó đã bị hủy; cách này cố tình cho phản hồi cũ đến để kiểm tra chặn ghi đè. Không thêm dependency hay ghi database.
 
-## Kết quả kiểm chứng ngày 03/11/2026
+Nếu sandbox chặn Chrome/Vite, cần quyền chạy ngoài sandbox. Không xóa cache hoặc dừng máy chủ của người dùng.
 
-Môi trường: Node.js 24.11.0, npm workspaces, Chrome headless và API LIS thật.
+## Báo cáo và giới hạn
 
-| Hạng mục | Kết quả |
-|---|---|
-| TypeScript LIS | Đạt |
-| ESLint toàn frontend | Đạt |
-| Build LIS | Đạt |
-| Unit test | 12/12 đạt |
-| API trực tiếp | GET danh sách trả HTTP 200, limit 11 và offset 0 |
-| Danh sách qua trình duyệt/proxy | Đối chiếu mã kết quả với GET backend thật; hiển thị đúng mười dòng, tám cột, thời gian UTC |
-| Bộ lọc | Gõ không gửi yêu cầu; Enter tìm kiếm; kết hợp ba điều kiện khớp kết quả backend |
-| Phân trang | Trước/Sau gửi đúng offset và giữ bộ lọc đã áp dụng khi các ô đang nhập đã thay đổi |
-| Xóa bộ lọc | Xóa ba trường và tải lại trang đầu |
-| Danh sách rỗng | Tra một mã không tồn tại qua API thật; hiển thị trạng thái rỗng |
-| Mất kết nối/thử lại | Tạm đặt trình duyệt kiểm thử ngoại tuyến rồi kết nối lại; hiển thị lỗi và tải lại thành công |
-| Phản hồi đến muộn | Trì hoãn phản hồi thật của truy vấn cũ, cho truy vấn mới hoàn tất trước; kết quả mới được giữ nguyên |
-| Màn hình hẹp | Kiểm tra 375px, không tràn ngang toàn trang, bảng cuộn ngang được; đã xem ảnh chụp |
-| Lỗi JavaScript chưa xử lý | Không phát hiện trong lượt kiểm thử trình duyệt |
+- [Báo cáo và bằng chứng 2.2](tests/evidence/phase-2.2-2026-11-03/BAO_CAO.md).
+- [Bằng chứng nghiệm thu 2.1](tests/evidence/phase-2.1-2026-11-03/BAO_CAO.md) được giữ nguyên.
+- Phân trang offset có thể đổi vị trí khi dữ liệu nguồn thay đổi giữa hai yêu cầu.
+- Chưa kiểm tra Firefox/Safari hoặc mọi kích thước màn hình.
+- Không sửa backend, database, SQL, Compose; không POST, Publish, commit, push hoặc merge.
 
-Lượt kiểm thử trình duyệt đầu tiên gặp giới hạn cache sandbox, rồi phát hiện cổng 5173 đã được sử dụng. Script được điều chỉnh để nhận diện và dùng đúng máy chủ LIS hiện có. Một lượt khác cần điều chỉnh cách mô phỏng phím Enter của công cụ kiểm thử; lượt cuối cùng đạt toàn bộ các kiểm tra nêu trên.
 
-## Giới hạn và phạm vi bàn giao
+## Kiểm thử dot ID qua proxy thật
 
-Bằng chứng nghiệm thu bổ sung ngày 03/11/2026: [Báo cáo Giai đoạn 2.1](tests/evidence/phase-2.1-2026-11-03/BAO_CAO.md). Đã kiểm tra trên trình duyệt các tổng 10/11/20/21, ô số `0`/`-2.50`/thập phân dài và phục hồi HTTP 503/400/502 HTML bằng HTTP mô phỏng, đồng thời chạy lại bộ API thật. Báo cáo này cập nhật giới hạn bằng chứng của lượt kiểm tra trước bên dưới; không mở rộng chức năng sang 2.2.
+Sau build, tại `frontend/apps/lis/`, đặt thư mục mới riêng cho mỗi lượt để giữ nguyên bằng chứng nghiệm thu:
 
-Sau `npm run build:lis`, tại `frontend/apps/lis/` chạy `node --test --test-reporter=spec tests/browser-http.mjs`. Đặt `LIS_EVIDENCE_DIR` để lưu JSON/ảnh vào thư mục riêng. Bộ kiểm thử không yêu cầu backend, dùng preview riêng cổng 5183 và không thêm dependency. Xem báo cáo để biết lệnh tái hiện đầy đủ và đối chiếu Git có tính file untracked.
+```powershell
+$env:LIS_EVIDENCE_DIR = 'tests/evidence/<thu-muc-moi>/dev-mock'
+node tests/browser-dot.mjs --dev
+$env:LIS_EVIDENCE_DIR = 'tests/evidence/<thu-muc-moi>/preview-mock'
+node tests/browser-dot.mjs
+$env:LIS_EVIDENCE_DIR = 'tests/evidence/<thu-muc-moi>/dev-real'
+node tests/browser-dot.mjs --dev --real
+$env:LIS_EVIDENCE_DIR = 'tests/evidence/<thu-muc-moi>/preview-real'
+node tests/browser-dot.mjs --real
+```
 
-- Trường hợp nullable, lỗi HTTP JSON/không JSON và các kích thước trang 0/1/9/10/11 được kiểm chứng bằng unit test; chưa khẳng định tất cả trường hợp đó có sẵn trong dataset thật.
-- Chưa kiểm chứng trên Firefox/Safari hoặc mọi kích thước màn hình.
-- Phân trang offset đọc dữ liệu tại từng thời điểm; dữ liệu nguồn thay đổi giữa hai yêu cầu có thể làm vị trí bản ghi thay đổi.
-- Nút Xem chi tiết chưa hoạt động theo đúng phạm vi 2.1. Chưa triển khai 2.2, Publish, Monitor hoặc EMR.
-- Không sửa backend, database, Compose hoặc hợp đồng API. Không POST, không tạo dữ liệu thực nghiệm và không commit/push/merge.
+Chạy tuần tự vì dùng cùng cổng 5183. Chế độ mock khởi động upstream HTTP riêng phía sau proxy Vite, không chặn bằng CDP trước proxy; ghi raw path, ID sau giải mã, header đã bỏ, body/status và dữ liệu DOM. Kiểm tra cache Chrome có Vary, retry 503, native abort và response đến muộn. Chế độ real chỉ GET backend 3101: có thể 404 nếu không có dot record; không coi 404 là ID không hợp lệ và không tạo dữ liệu.
+
+`tests/dot.test.mjs` bổ sung kiểm tra cấp hàm cho routing/client/proxy/cache headers và bảo toàn cấu hình các ứng dụng khác. Các bộ 2.1/2.2 cũ vẫn phải được chạy hồi quy; đừng chạy script bằng chứng cũ với thư mục đầu ra mặc định nếu cần bảo toàn hồ sơ.
+
+## Nghiệm thu hoàn thiện UI/UX ngày 04/11/2026
+
+Sau build, tại `frontend/apps/lis/`:
+
+```powershell
+node tests/verify-uiux.mjs
+# Chạy riêng một nhóm khi cần:
+node tests/verify-uiux.mjs --only=uiux-real,uiux-mock
+```
+
+Runner tạo thư mục `tests/evidence/phase-2.2-uiux-2026-11-04/verification-<ngẫu-nhiên>` cho mỗi lượt, không ghi đè nghiệm thu trước. Chạy tuần tự 12 bộ Chrome: UI/UX mới (thật/mô phỏng), danh sách, chi tiết, bộ lọc kết hợp và dot ID qua dev/preview. Cần Chrome và API thật cổng 3101 đang có sẵn; chỉ GET. Nếu sandbox chặn Chrome/Vite cần quyền thực thi ngoài sandbox.
+
+Bằng chứng và giới hạn: [Báo cáo hoàn thiện UI/UX](tests/evidence/phase-2.2-uiux-2026-11-04/BAO_CAO.md).

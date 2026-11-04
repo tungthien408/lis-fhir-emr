@@ -16,13 +16,21 @@ export function ResultFilters({ values, onChange, onSearch, onReset }: Props) {
     >
       <div className="filter-field">
         <label htmlFor="patient-id">Mã bệnh nhân</label>
-        <input id="patient-id" type="text" value={values.patientId}
+        <input id="patient-id" type="text" placeholder="VD: MIMIC-P-10007928" value={values.patientId}
           onChange={(event) => onChange({ ...values, patientId: event.target.value })} />
       </div>
       <div className="filter-field">
-        <label htmlFor="test-code">Mã xét nghiệm</label>
-        <input id="test-code" type="text" value={values.testCode}
+        <label htmlFor="result-id">Mã kết quả xét nghiệm</label>
+        <input id="result-id" type="text" placeholder="VD: MIMIC-LAB-100145" value={values.resultId}
+          onChange={(event) => onChange({ ...values, resultId: event.target.value })} />
+      </div>
+      <div className="filter-field">
+        <label htmlFor="test-code">Mã loại xét nghiệm</label>
+        <input id="test-code" type="text" placeholder="VD: 50971" aria-describedby={/^MIMIC-LAB-/i.test(values.testCode.trim()) ? 'test-code-hint' : undefined} value={values.testCode}
           onChange={(event) => onChange({ ...values, testCode: event.target.value })} />
+        {/^MIMIC-LAB-/i.test(values.testCode.trim()) && <p id="test-code-hint" className="filter-hint">
+          Đây có thể là mã kết quả. Hãy dùng ô Mã kết quả xét nghiệm để tra cứu.
+        </p>}
       </div>
       <div className="filter-field">
         <label htmlFor="result-status">Trạng thái kết quả</label>

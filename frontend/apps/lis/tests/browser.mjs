@@ -166,11 +166,11 @@ try {
   await send('Page.navigate', { url: 'http://127.0.0.1:5173' }, sessionId)
   await waitFor(() => document.querySelectorAll('tbody tr').length === 10 && document.querySelector('.results-content').getAttribute('aria-busy') === 'false')
   assert.deepEqual(await visibleIds(), firstPage.items.slice(0, 10).map((row) => row.result_id))
-  assert.equal(await evaluate(() => document.querySelectorAll('thead th').length), 8)
-  assert.equal(await evaluate(() => [...document.querySelectorAll('tbody button')].every((button) => button.disabled)), true)
+  assert.equal(await evaluate(() => document.querySelectorAll('thead th').length), 9)
+  assert.equal(await evaluate(() => [...document.querySelectorAll('tbody button')].every((button) => !button.disabled)), true)
   assert.equal(await evaluate(() => document.querySelector('time')?.getAttribute('datetime')), sample.effective_at)
   assert.equal(await evaluate(() => document.querySelector('time')?.textContent), sample.effective_at.slice(0, 19).replace('T', ' '))
-  passed('danh sách thật, 10 dòng, tám cột, thời gian UTC và nút chi tiết vô hiệu hóa')
+  passed('danh sách thật, 10 dòng, chín cột, thời gian UTC và nút chi tiết khả dụng')
 
   const beforeTyping = requests.length
   await setValue('#test-code', sample.test_code)

@@ -3,10 +3,10 @@ import { spawn } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync } from 'node:fs'
 import path from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
-import { preview } from 'vite'
+import { createServer, preview } from 'vite'
 
 // CDP chặn HTTP trước khi tới proxy; không thay fetch hay mã ứng dụng.
-export async function openHttpBrowser(onRequest) {
+export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, onEvent } = {}) {
   const appRoot = path.resolve(import.meta.dirname, '../..')
   assert.ok(existsSync(path.join(appRoot, 'dist/index.html')), 'Chạy npm run build:lis trước')
   const executable = process.env.CHROME_PATH || [
@@ -44,15 +44,24 @@ export async function openHttpBrowser(onRequest) {
     } finally {
       if (server) {
         server.httpServer.closeAllConnections()
-        await new Promise((resolve) => server.httpServer.close(resolve))
+        if (server.close) await server.close()
+        else await new Promise((resolve) => server.httpServer.close(resolve))
       }
     }
   }
   try {
-    server = await preview({
+    const settings = {
       root: appRoot, configFile: path.join(appRoot, 'vite.config.ts'), logLevel: 'silent',
-      preview: { host: '127.0.0.1', port: 5183, strictPort: true, open: false },
-    })
+      cacheDir: path.join(cache, 'vite-' + mode),
+      [mode === 'development' ? 'server' : 'preview']: {
+        host: '127.0.0.1', port: 5183, strictPort: true, open: false,
+        ...(lisTarget ? { proxy: { '/api/lis': { target: lisTarget } } } : {}),
+      },
+    }
+    if (mode === 'development') {
+      server = await createServer(settings)
+      await server.listen()
+    } else server = await preview(settings)
     browser = spawn(executable, [
       '--headless=new', '--disable-gpu', '--disable-background-networking',
       '--no-first-run', '--no-default-browser-check', '--remote-debugging-port=0',
@@ -78,12 +87,17 @@ export async function openHttpBrowser(onRequest) {
     })
     socket.addEventListener('message', ({ data }) => {
       const message = JSON.parse(data)
+      onEvent?.(message)
       const command = pending.get(message.id)
       if (command) {
         clearTimeout(command.timer)
         pending.delete(message.id)
         if (message.error) command.reject(new Error(JSON.stringify(message.error)))
         else command.resolve(message.result)
+      }
+      if (!onRequest && message.method === 'Network.requestWillBeSent' && message.params.request.url.includes('/api/')) {
+        const { request } = message.params
+        requests.push({ method: request.method, url: request.url, query: Object.fromEntries(new URL(request.url).searchParams) })
       }
       if (message.method === 'Runtime.exceptionThrown') exceptions.push(message.params.exceptionDetails)
       if (message.method === 'Fetch.requestPaused') {
@@ -92,8 +106,13 @@ export async function openHttpBrowser(onRequest) {
         requests.push(entry)
         void (async () => {
           assert.equal(request.method, 'GET', 'Chỉ cho phép GET')
-          assert.equal(new URL(request.url).pathname, '/api/lis/results')
+          assert.match(new URL(request.url).pathname, /^\/api\/lis\/results(?:\/[^/]+)?$/)
           const response = await onRequest(entry)
+          if (response.networkError) {
+            await send('Fetch.failRequest', { requestId, errorReason: 'InternetDisconnected' })
+            entry.failed = true
+            return
+          }
           entry.status = response.status ?? 200
           entry.contentType = response.html === undefined ? 'application/json' : 'text/html'
           entry.body = response.html ?? response.json
@@ -117,7 +136,9 @@ export async function openHttpBrowser(onRequest) {
     ;({ sessionId } = await send('Target.attachToTarget', { targetId, flatten: true }, null))
     await send('Runtime.enable')
     await send('Page.enable')
-    await send('Fetch.enable', { patterns: [{ urlPattern: '*/api/*', requestStage: 'Request' }] })
+    if (onRequest) await send('Fetch.enable', { patterns: [{ urlPattern: '*/api/*', requestStage: 'Request' }] })
+    await send('Network.enable')
+    await send('Network.setCacheDisabled', { cacheDisabled: true })
     const version = await send('Browser.getVersion', {}, null)
     return {
       requests, exceptions, interceptionErrors, close, version, executable,
@@ -129,7 +150,8 @@ export async function openHttpBrowser(onRequest) {
         if (response.exceptionDetails) throw new Error(JSON.stringify(response.exceptionDetails))
         return response.result.value
       },
-      async navigate() { await send('Page.navigate', { url: 'http://127.0.0.1:5183' }) },
+      async navigate(hash = '') { await send('Page.navigate', { url: 'http://127.0.0.1:5183/' + hash }) },
+      command: send,
       async screenshot() { return (await send('Page.captureScreenshot', { format: 'png' })).data },
     }
   } catch (error) {

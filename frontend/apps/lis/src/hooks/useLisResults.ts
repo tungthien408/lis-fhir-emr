@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { getLisResults } from '../api/lis.ts'
-import { PAGE_SIZE, resultsPage, type ResultsQuery } from '../state/results.ts'
+import { searchLisResults } from '../api/searchResults.ts'
+import type { ResultsQuery } from '../state/results.ts'
 import type { LisResult } from '../types/lis.ts'
 
 type LoadedResults =
@@ -15,16 +15,9 @@ export function useLisResults(query: ResultsQuery) {
 
     async function loadResults() {
       try {
-        const data = await getLisResults({
-          limit: PAGE_SIZE + 1,
-          offset: query.pageIndex * PAGE_SIZE,
-          patientId: query.filters.patientId,
-          testCode: query.filters.testCode,
-          resultStatus: query.filters.resultStatus || undefined,
-          signal: controller.signal,
-        })
+        const data = await searchLisResults(query, controller.signal)
         if (!controller.signal.aborted) {
-          setLoaded({ query, status: 'success', ...resultsPage(data.items) })
+          setLoaded({ query, status: 'success', ...data })
         }
       } catch (error) {
         if (!controller.signal.aborted) {

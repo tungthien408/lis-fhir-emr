@@ -44,14 +44,14 @@ function mockFetch(t, handler) {
   t.mock.method(globalThis, 'fetch', handler)
 }
 
-test('API: lấy dư một dòng và giữ nguyên mọi ký tự của mã định danh', async (t) => {
+test('API: lấy dư một dòng và trim bộ lọc, giữ nguyên hoa/thường và ký tự bên trong', async (t) => {
   const controller = new AbortController()
   mockFetch(t, async (url, options) => {
     const query = new URL(url, 'http://localhost').searchParams
     assert.equal(query.get('limit'), '11')
     assert.equal(query.get('offset'), '20')
-    assert.equal(query.get('patient_id'), '  AbC+&  ')
-    assert.equal(query.get('test_code'), ' tCode ')
+    assert.equal(query.get('patient_id'), 'AbC+&')
+    assert.equal(query.get('test_code'), 'tCode')
     assert.equal(query.get('result_status'), 'READY')
     assert.equal(options.signal, controller.signal)
     return Response.json({ items: [], limit: 11, offset: 20 })
@@ -131,7 +131,7 @@ test('Truy vấn: tìm kiếm, xóa và thử lại; phân trang giữ bộ lọ
   filters.patientId = 'đang nhập điều kiện khác'
   query = resultsQueryReducer(query, { type: 'next' })
   assert.equal(query.pageIndex * 10, 10)
-  assert.equal(query.filters.patientId, ' P1 ')
+  assert.equal(query.filters.patientId, 'P1')
   const retried = resultsQueryReducer(query, { type: 'retry' })
   assert.notEqual(retried, query)
   assert.deepEqual(retried, query)
@@ -147,15 +147,15 @@ test('Hiển thị: UTC đến giây, giữ nguyên phần lẻ trong dữ liệ
   const timestamp = '2180-06-03T12:34:56.123456Z'
   assert.equal(formatLisTimestamp(timestamp), '2180-06-03 12:34:56')
   assert.equal(formatLisTimestamp(null), '—')
-  const html = renderToStaticMarkup(createElement(ResultsTable, { results: [result(), result({ result_id: 'TEST-R2', value_num: '0', effective_at: null })] }))
-  assert.equal((html.match(/scope="col"/g) || []).length, 8)
+  const html = renderToStaticMarkup(createElement(ResultsTable, { results: [result(), result({ result_id: 'TEST-R2', value_num: '0', effective_at: null })], onDetail: () => {} }))
+  assert.equal((html.match(/scope="col"/g) || []).length, 9)
   assert.ok(html.includes('12345678901234567890.123456789'))
   assert.ok(html.includes('mg/dL'))
   assert.ok(html.includes('Thời điểm xét nghiệm (UTC)'))
   assert.ok(html.includes('dateTime="' + timestamp + '"'))
   assert.ok(html.includes('2180-06-03 12:34:56'))
   assert.ok(html.includes('—'))
-  assert.equal((html.match(/disabled=""/g) || []).length, 2)
+  assert.equal((html.match(/disabled=""/g) || []).length, 0)
   assert.ok(!html.includes('ACK'))
 })
 
