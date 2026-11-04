@@ -341,6 +341,47 @@ Frontend LIS đi qua tiền tố `/api/lis` cho các endpoint LIS; GET middlewar
 `verified_at`/`completed_at` hợp lệ. Lỗi đọc hoặc dữ liệu không khớp là **Chưa xác minh**.
 Không có API retry thủ công mới hoặc deep link Monitor.
 
+### API lịch sử attempts — Exchange Monitor
+
+`GET /api/exchanges/:exchangeId/attempts` chỉ đọc. UUID 8-4-4-4-12; không nhận query/body.
+200 cho exchange có thật (items có thể rỗng), 400 `VALIDATION_ERROR`, 404 `NOT_FOUND`/`Exchange not found`,
+503 `DEPENDENCY_UNAVAILABLE`. Route thiếu có message `API route not found`, khác exchange thiếu.
+`Cache-Control: no-store`. Không tạo lượt thử, thay status/counters, gọi Worker hoặc reset retry.
+
+```json
+{
+  "exchange_id":"00000000-0000-4000-8000-000000000001",
+  "event_id":"00000000-0000-4000-8000-000000000002",
+  "source_system":"lis-demo","source_result_id":"R1",
+  "items":[{
+    "attempt_id":"00000000-0000-4000-8000-000000000003",
+    "exchange_id":"00000000-0000-4000-8000-000000000001",
+    "phase":"SEND","attempt_no":1,
+    "started_at":"2026-11-04T10:00:00.000Z","sent_at":null,
+    "response_at":null,"ended_at":null,"http_status":null,
+    "error_code":null,"error_message":null,"receipt":null
+  }],
+  "diagnostics":[]
+}
+```
+
+Items giữ thứ tự repository `started_at ASC, attempt_id ASC`, không đánh lại số lượt.
+`sent_at`, `response_at`, `ended_at`, `http_status`, `error_code`, `error_message`, `receipt` nullable.
+Pha SEND/VERIFY và attempt_no lấy từ bản ghi; không dựng từ timeline.
+
+`receipt` chỉ được trả cho SEND đã kết thúc, không lỗi, HTTP 201/STORED hoặc 200/ALREADY_EXISTS,
+identity khớp result và namespace FHIR dự án. Chỉ gồm `result`, `external_system`, `external_id`,
+`target_id`, `patient_key`; UUID phải hợp lệ. Không trả `response_body` thô. Receipt chưa phải DELIVERED.
+
+`diagnostics` trích code từ event detail, gồm `log_event_id`, `attempt_id` (nullable), `event_type`,
+`occurred_at`, `error_code`. Chỉ công khai mã Worker đã biết (INVALID_SOURCE, MAPPING_UNSUPPORTED,
+PAYLOAD_INTEGRITY, STORAGE_RECEIPT_MISSING, DUPLICATE_CONFLICT, REMOTE_VALIDATION_ERROR, HTTP_TEMPORARY,
+HTTP_PERMANENT, HTTP_TIMEOUT, NETWORK_ERROR, INVALID_STORAGE_RESPONSE, INVALID_VERIFY_RESPONSE,
+VERIFY_MISMATCH, LEASE_EXPIRED, RETRY_EXHAUSTED). Mã không nhận diện được thay DIAGNOSTIC_ERROR.
+Thông điệp lỗi attempts luôn là thông báo chung do server dựng, không lấy raw error_message.
+Không trả nguyên events.detail, mismatch values, stack, SQL, token hoặc body lỗi từ xa.
+Timestamp cột vẫn dùng ISO UTC millisecond theo hợp đồng hiện có. Không có API retry thủ công.
+
 ### Phản hồi Middleware — đã triển khai ở B3
 
 Trước B3, contract chưa chốt JSON cho từng phần tử danh sách/chi tiết và event.

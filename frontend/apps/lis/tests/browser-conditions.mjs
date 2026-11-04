@@ -53,7 +53,7 @@ function observeFetch() {
   window.conditionHttp = []
   window.fetch = async function (...args) {
     const [input, options] = args
-    if (String(input).includes('/publish-event')) return original.apply(this, args)
+    if (String(input).includes('/publish-event') || String(input).includes('/api/middleware/')) return original.apply(this, args)
     const entry = {
       url: new URL(typeof input === 'string' ? input : input.url, location.href).href,
       method: options?.method ?? 'GET', startedAt: new Date().toISOString(), complete: false,

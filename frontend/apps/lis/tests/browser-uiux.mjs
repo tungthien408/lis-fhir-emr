@@ -31,6 +31,7 @@ function observe() {
   window.uiHttp = []
   const original = window.fetch
   window.fetch = async (...args) => {
+    if (String(args[0]).includes('/publish-event') || String(args[0]).includes('/api/middleware/')) return original(...args)
     const entry = { url: args[0], headers: args[1]?.headers, complete: false }
     window.uiHttp.push(entry)
     try {

@@ -28,7 +28,7 @@ let browser, upstream, failId, heldId, releaseUpstream
 const heldResponses = []
 const requestMap = new Set()
 const onEvent = (event) => {
-  if (event.method === 'Network.requestWillBeSent' && event.params.request.url.includes('/api/') && !event.params.request.url.includes('/publish-event')) {
+  if (event.method === 'Network.requestWillBeSent' && event.params.request.url.includes('/api/') && !event.params.request.url.includes('/publish-event') && !event.params.request.url.includes('/api/middleware/')) {
     requestMap.add(event.params.requestId)
     report.protocol.push({ event: event.method, requestId: event.params.requestId, request: event.params.request })
   }
@@ -57,7 +57,7 @@ function observe() {
   window.dotDocument = crypto.randomUUID()
   window.dotHttp = []
   window.fetch = async function (url, options) {
-    if (String(url).includes('/publish-event')) return original.call(this, url, options)
+    if (String(url).includes('/publish-event') || String(url).includes('/api/middleware/')) return original.call(this, url, options)
     const entry = { url: new URL(url, location.href).href, headers: options?.headers ?? {}, signal: options?.signal, complete: false }
     window.dotHttp.push(entry)
     try {

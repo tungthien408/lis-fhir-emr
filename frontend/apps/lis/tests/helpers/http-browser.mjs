@@ -99,7 +99,8 @@ export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, 
       }
       if (!onRequest && message.method === 'Network.requestWillBeSent' && message.params.request.url.includes('/api/')) {
         const { request } = message.params
-        const target = !publishRequests && new URL(request.url).pathname.endsWith('/publish-event') ? auxiliaryRequests : requests
+        const apiPath = new URL(request.url).pathname
+        const target = !publishRequests && (apiPath.endsWith('/publish-event') || apiPath.startsWith('/api/middleware/')) ? auxiliaryRequests : requests
         target.push({ method: request.method, url: request.url, query: Object.fromEntries(new URL(request.url).searchParams) })
       }
       if (message.method === 'Runtime.exceptionThrown') exceptions.push(message.params.exceptionDetails)

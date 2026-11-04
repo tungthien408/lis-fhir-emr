@@ -27,6 +27,7 @@ test("Middleware Controller HTTP (isolated dependencies)", async (t) => {
     listExchanges: async () => [row],
     getExchangeById: async (id) => id.toLowerCase() === row.exchangeId ? row : undefined,
     getExchangeEvents: async () => [event],
+    getExchangeAttempts: async () => [],
     checkDatabase: async () => ({ status: "ready", database: "dacn_db", role: "integration_app", schema: "integration" }),
   };
   const app = express(); app.use(express.json({ limit: "1mb" }));
@@ -186,6 +187,45 @@ test("Middleware Controller HTTP (isolated dependencies)", async (t) => {
       assert.doesNotMatch(JSON.stringify(response.body), /SELECT|postgresql|secret|private-stack-marker/);
       failure.mock.restore();
     }
+  });
+
+  await t.test("Monitor attempts: stable read-only DTO, receipt allowlist and pre-HTTP diagnostics", async (t) => {
+    const at = new Date("2026-11-04T10:00:00Z");
+    const original = { ...row, fhirPayload: { identifier: [{ system: "https://example.org/lis/result", value: row.sourceResultId }] } };
+    t.mock.method(dependencies, "getExchangeById", async () => original);
+    const attempt = { attemptId: "00000000-0000-4000-8000-000000000010", exchangeId: row.exchangeId,
+      phase: "SEND", attemptNo: 2, startedAt: at, sentAt: at, responseAt: at, endedAt: at, httpStatus: 201,
+      errorCode: null, errorMessage: "SELECT secret", responseBody: { result: "STORED", external_system: "https://example.org/lis/result",
+        external_id: row.sourceResultId, target_id: "00000000-0000-4000-8000-000000000011", patient_key: "00000000-0000-4000-8000-000000000012", secret: "private-stack-marker" } };
+    t.mock.method(dependencies, "getExchangeAttempts", async () => [attempt]);
+    t.mock.method(dependencies, "getExchangeEvents", async () => [{ ...event, detail: { code: "INVALID_SOURCE", sql: "SELECT secret" } }]);
+    const response = await request(`/api/exchanges/${row.exchangeId}/attempts`);
+    assert.equal(response.status, 200); assert.ok(isRecord(response.body));
+    assert.ok(Array.isArray(response.body.items)); assert.equal(response.body.items.length, 1);
+    const item = response.body.items[0]; assert.ok(isRecord(item));
+    assert.equal(item.attempt_no, 2); assert.equal(item.phase, "SEND"); assert.equal(item.error_message, null);
+    assert.ok(isRecord(item.receipt)); assert.equal(item.receipt.target_id, attempt.responseBody.target_id);
+    assert.deepEqual(Object.keys(item.receipt).sort(), ["external_id", "external_system", "patient_key", "result", "target_id"]);
+    assert.ok(Array.isArray(response.body.diagnostics)); assert.equal(response.body.diagnostics[0].error_code, "INVALID_SOURCE");
+    assert.doesNotMatch(JSON.stringify(response.body), /SELECT|secret|private-stack-marker|response_body|lease_token/);
+    assert.deepEqual(await request(`/api/exchanges/${row.exchangeId}/attempts`), response);
+    assert.equal(original.status, row.status);
+  });
+
+  await t.test("Monitor attempts: malformed/missing/query/database failures stay errors", async (t) => {
+    assertError(await request("/api/exchanges/not-uuid/attempts"), 400, "VALIDATION_ERROR");
+    assertError(await request(`/api/exchanges/${row.exchangeId}/attempts?phase=SEND`), 400, "VALIDATION_ERROR");
+    assertError(await request("/api/exchanges/00000000-0000-4000-8000-000000000099/attempts"), 404, "NOT_FOUND");
+    for (const name of ["getExchangeAttempts", "getExchangeEvents"] as const) {
+      const failure = t.mock.method(dependencies, name, async () => { throw new Error("SELECT secret; token=private-stack-marker"); });
+      const response = await request(`/api/exchanges/${row.exchangeId}/attempts`);
+      assertError(response, 503, "DEPENDENCY_UNAVAILABLE"); assert.doesNotMatch(JSON.stringify(response.body), /SELECT|secret|token/); failure.mock.restore();
+    }
+  });
+
+  await t.test("Monitor attempts: existing exchange without attempts has an empty list", async () => {
+    const response = await request(`/api/exchanges/${row.exchangeId}/attempts`);
+    assert.equal(response.status, 200); assert.ok(isRecord(response.body)); assert.deepEqual(response.body.items, []);
   });
 
   await t.test("unknown API routes use the JSON error envelope", async () => {
