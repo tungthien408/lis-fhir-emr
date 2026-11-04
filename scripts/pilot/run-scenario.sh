@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
-# usage: run-scenario.sh <dirname> <scenario-label> <mode> <concurrency>
+# usage: PILOT_ENV_FILE=<file-môi-trường> run-scenario.sh <thư-mục-lượt> <nhãn-kịch-bản> <SEQUENTIAL|CONCURRENT> <concurrency>
+# <thư-mục-lượt> là đường dẫn tương đối so với PILOT_EVIDENCE_DIR (mặc định docs/docs_backend/spp-73/pilot-evidence).
+# Logic giống bản đã chạy ở SPP-73; SPP-74 chỉ thay đường dẫn tuyệt đối/scratchpad bằng biến môi trường.
 set -u
-cd /home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/backend
-S=/tmp/claude-1000/-home-thien408-Projects-2026-2027-dacn-lis-fhir-emr/c8fe7937-ffd6-4f42-9242-8324d0ba4db8/scratchpad
-E=../docs/docs_backend/spp-73/pilot-evidence/$1
-set -a; . $S/pilot.env; set +a
+HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+ROOT=${PILOT_ROOT:-$(cd "$HERE/../.." && pwd)}
+: "${PILOT_ENV_FILE:?Thiếu PILOT_ENV_FILE (file chứa biến môi trường, xem tools/pilot.env.example)}"
+EV=${PILOT_EVIDENCE_DIR:-$ROOT/docs/docs_backend/spp-73/pilot-evidence}
+cd "$ROOT/backend"
+E=$EV/$1
+set -a; . "$PILOT_ENV_FILE"; set +a
 O=(--oracle scripts/spp82/reference/spp65-v2/manifest.json --oracle-sha256 55cb4256c77d731bff7e8ea1c1ad7f9788df889b4833d9a6b501282c169c7267)
 echo "start $(date -u +%FT%TZ)" > $E/orchestration.log
 npm run spp82:capture -- "${O[@]}" --phase before --output $E/before.json >> $E/orchestration.log 2>&1

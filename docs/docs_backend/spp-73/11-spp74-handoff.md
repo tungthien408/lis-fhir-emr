@@ -44,7 +44,7 @@ Trạng thái: **NOT_READY** cho đến khi xử lý 2 blocker. Xem `07-pilot-su
 | Kết quả chi tiết | `05-pilot-results.md` |
 | Nhật ký lỗi | `06-defect-log.md` |
 | 6 lượt chính thức | `pilot-evidence/final/` |
-| Script điều khiển | `pilot-evidence/tools/run-scenario.sh`, `pilot-evidence/final/run-all.sh` |
+| Script điều khiển | `scripts/pilot/run-scenario.sh`, `scripts/pilot/run-all.sh` |
 | Ca lỗi | `pilot-evidence/faults/`, `pilot-evidence/faults-retry-config/` |
 | TC-06 | `pilot-evidence/tc06-swapped-patient/` |
 | Công cụ gửi lại | `backend/scripts/ops/requeue-failed.ts` (+ test `backend/scripts/ops/requeue-failed.test.ts`) |

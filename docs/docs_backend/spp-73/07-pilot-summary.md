@@ -107,4 +107,4 @@ Không phải blocker nhưng cần người phụ trách chấp nhận: OPS-03 (
 | Ca lỗi và kiểm tra lại | `pilot-evidence/faults/`, `pilot-evidence/faults-retry-config/` |
 | TC-06 | `pilot-evidence/tc06-swapped-patient/` |
 | Log test | `pilot-evidence/fault-tests/` |
-| Script điều khiển | `pilot-evidence/tools/run-scenario.sh` |
+| Script điều khiển | `scripts/pilot/run-scenario.sh` |
