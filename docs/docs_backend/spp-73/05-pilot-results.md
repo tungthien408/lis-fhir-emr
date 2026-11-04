@@ -1,7 +1,7 @@
 # SPP-73 — Kết quả pilot (Giai đoạn 2)
 
 Ngày chạy: 03/11/2026. Môi trường: Docker Compose cục bộ do người dùng xác nhận là **cô lập, được phép Publish và reset** (xác nhận bằng lời trong phiên). DB được gắn dấu guard `spp66-disposable:<uuid>` (token không lưu trong báo cáo).
-Cấu hình mọi lượt: 1 LIS Dispatcher, 1 Middleware Worker; `SPP82_MEASURE=1`; polling 1.000 ms; HTTP timeout 10.000 ms; `SPP82_RUN_TIMEOUT_MS=3.600.000`; observer concurrency 2; seed `DACN-MIMIC22-SOURCE-ALIGNED-V2`, oracle `spp65-v2` (SHA-256 manifest `55cb4256…7267`). Code: HEAD `763da66` + thay đổi chưa commit (xem `pilot-evidence/*/code-and-environment.txt`).
+Cấu hình mọi lượt: 1 LIS Dispatcher, 1 Middleware Worker; `SPP82_MEASURE=1`; polling 1.000 ms; HTTP timeout của client Publish (runner 82-B) 10.000 ms, của Dispatcher/Worker 3.000 ms (mặc định, không đặt biến); `SPP82_RUN_TIMEOUT_MS=3.600.000`; observer concurrency 2; seed `DACN-MIMIC22-SOURCE-ALIGNED-V2`, oracle `spp65-v2` (SHA-256 manifest `55cb4256…7267`). Code: HEAD `763da66` + thay đổi chưa commit (xem `pilot-evidence/*/code-and-environment.txt`).
 Phụ thuộc P4-01/P4-02/P4-03: người dùng xác nhận đã duyệt (không có tài liệu trong repo).
 
 ## Kết luận từng scenario
@@ -85,7 +85,7 @@ Hoán đổi `emr.patient_links` của MIMIC-P-10007928 ↔ MIMIC-P-10000032 (sa
 **Kết luận: PASS** (lỗi được phát hiện). Giới hạn: 1 lượt; chỉ một cặp bệnh nhân; mọi kết quả trong lượt đều thuộc một bệnh nhân.
 
 ## Ba lượt A và B (cùng code, dữ liệu, cấu hình) — `pilot-evidence/final/`
-Điều kiện chung (`final/*/code-and-environment.txt`): `source_tree_sha256=49e9ebcb…14e2e` (giống nhau cả 6 lượt; HEAD `763da66` + thay đổi chưa commit); seed/oracle cố định; 1 Dispatcher + 1 Worker, `RETRY_DELAYS_MS=2000,4000,8000,16000,32000,64000,64000` cho cả hai; polling 1.000 ms; HTTP timeout 10.000 ms; observer concurrency 2; reset bằng `reset.sql` và kiểm tra baseline (1 event/1 exchange/1 EMR demo; 1.000 seed; 0 `MUT-*`) trước mỗi lượt; thứ tự xen kẽ A1 B1 A2 B2 A3 B3 (`final/run-all.log`).
+Điều kiện chung (`final/*/code-and-environment.txt`): `source_tree_sha256=49e9ebcb…14e2e` (giống nhau cả 6 lượt; HEAD `763da66` + thay đổi chưa commit); seed/oracle cố định; 1 Dispatcher + 1 Worker, `RETRY_DELAYS_MS=2000,4000,8000,16000,32000,64000,64000` cho cả hai; polling 1.000 ms; HTTP timeout của client Publish (runner 82-B) 10.000 ms, của Dispatcher/Worker 3.000 ms (mặc định, không đặt biến); observer concurrency 2; reset bằng `reset.sql` và kiểm tra baseline (1 event/1 exchange/1 EMR demo; 1.000 seed; 0 `MUT-*`) trước mỗi lượt; thứ tự xen kẽ A1 B1 A2 B2 A3 B3 (`final/run-all.log`).
 
 | Lượt | c | Hoàn tất / lỗi / timeout / có trước | Đối chiếu độc lập | Tổng thời gian (s) | Thông lượng (kq/s) | p50 / p95 (s) |
 |---|---|---|---|---|---|---|

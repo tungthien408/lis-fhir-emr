@@ -22,7 +22,7 @@ Lưu ý: mọi lệnh dưới đây đã được chạy thật ngày 03/11/2026
 1. Mã nguồn: cùng phiên bản đã chạy (xem `source_tree_sha256` trong `pilot-evidence/final/A1/code-and-environment.txt`). Hiện chưa commit, nên cần người phụ trách cung cấp đúng snapshot (xem 07, mục 6).
 2. Phụ thuộc: cài đặt thư viện Node trong `backend/` (`npm install`). Lệnh này không nằm trong bằng chứng pilot, nên kiểm lại khi chạy đầu tiên.
 3. Docker: dựng các container từ gốc repo (lần pilot dùng `docker compose`; lệnh chính xác người dựng chưa ghi lại). PostgreSQL 17 chạy ở `127.0.0.1:5433`, DB `dacn_db`, container `lis-fhir-emr-db-1`.
-4. File môi trường `../.env` (npm tự nạp với `--env-file-if-exists`). Tạo file môi trường riêng cho thực nghiệm, chứa các biến có tên trong `pilot-evidence/tools/pilot.env.example`. **Giá trị không ghi trong repo.**
+4. File môi trường `../.env` (npm tự nạp với `--env-file-if-exists`). Tạo file môi trường riêng cho thực nghiệm, chứa các biến có tên trong `scripts/pilot/pilot.env.example`. **Giá trị không ghi trong repo.**
 
 ## 2. Kiểm tra dữ liệu và cấu hình
 
@@ -62,14 +62,14 @@ Kiểm trạng thái DB trước khi chạy: sau khi reset (mục 7), đếm ph�
 
 ## 4. Chạy kịch bản
 
-Dùng script đã lưu: `pilot-evidence/tools/run-scenario.sh <thư-mục-mới> <nhãn> <SEQUENTIAL|CONCURRENT> <concurrency>`. Script này cần file môi trường (mục 1, bước 4) và chạy theo thứ tự:
+Dùng script đã lưu: `scripts/pilot/run-scenario.sh <thư-mục-mới> <nhãn> <SEQUENTIAL|CONCURRENT> <concurrency>`. Script này cần file môi trường (mục 1, bước 4) và chạy theo thứ tự:
 
 1. `spp82:capture --phase before` → `before.json`
 2. `spp82:dry-run -- --confirm-publish --mode … --concurrency …` với `SPP82_MEASURE=1` → `artifact-82b/`
 3. `spp82:capture --phase after` → `after.json`
 4. `spp82:verify` → `verification/` (kết quả: `outcome`)
 
-Lệnh chạy 6 lượt chính thức (đã dùng): `pilot-evidence/final/run-all.sh`. Script từ chối chạy nếu thư mục đã tồn tại, nếu baseline sai, hoặc nếu số tiến trình không phải 1+1.
+Lệnh chạy 6 lượt chính thức (đã dùng): `scripts/pilot/run-all.sh`. Script từ chối chạy nếu thư mục đã tồn tại, nếu baseline sai, hoặc nếu số tiến trình không phải 1+1.
 
 Với kịch bản dịch lỗi (F1–F10): làm theo `pilot-evidence/faults/expected.md` (viết trước khi chạy) và `faults/lib.sh`. Dữ liệu lỗi nạp bằng `mutations.sql`, dọn bằng `cleanup-mut.sql`. Không trộn dữ liệu lỗi vào lượt chính thức.
 
@@ -98,7 +98,7 @@ docker exec lis-fhir-emr-db-1 psql -U postgres -d dacn_db -Atc "select status,co
 2. Dispatcher/Worker có thể vẫn chạy. Reset không cần dừng chúng, nhưng sau reset phải kiểm baseline (bước 4) để chắc không còn event đang chờ từ lượt trước.
 3. Chạy:
    ```bash
-   docker exec -i lis-fhir-emr-db-1 psql -U postgres -d dacn_db -v ON_ERROR_STOP=1 < docs/docs_backend/spp-73/pilot-evidence/reset.sql
+   docker exec -i lis-fhir-emr-db-1 psql -U postgres -d dacn_db -v ON_ERROR_STOP=1 < scripts/pilot/reset.sql
    ```
    Reset chạy trong một transaction, lỗi thì rollback. Đã xác minh: 3 lần COMMIT sau khi sửa DEF-01.
 4. Kiểm baseline (mục 2). Phải đúng `events=1 exch=1 emr=1 seed=1000 mut=0`.
@@ -122,3 +122,8 @@ Lượt đầu tiên sau khi bật lại máy cần chạy lại baseline trư�
 | `npm run spp82:capture` / `spp82:verify` | Chụp và đối chiếu | oracle SHA khớp | Có |
 | `npm run ops:requeue-failed -- lis\|middleware <id> --budget N [--confirm]` | Gửi lại `FAILED` | Không có `--confirm` thì chỉ xem trước | Có (R1–R4) |
 | `reset.sql` | Reset | Guard (mục 0) | Có |
+
+## Đính chính SPP-74 (04/11/2026)
+- Script nay chạy bằng biến môi trường `PILOT_ENV_FILE` (bắt buộc), `PILOT_EVIDENCE_DIR`, `PILOT_RUNS`, `PILOT_EXPECTED_BASELINE`. Hướng dẫn đầy đủ và đã kiểm chứng trên checkout sạch: `docs/docs_backend/spp-74/05-reproduction-check.md`.
+- Baseline: DB dựng sạch từ repo là `events=0 exch=0 emr=0 seed=1000 mut=0`; `events=1 exch=1 emr=1` chỉ đúng với DB pilot còn sót `DEMO-R1`.
+- `run-all.sh` nay kiểm guard cô lập trước khi reset (mã thoát 7 nếu không khớp).

@@ -18,7 +18,7 @@ Ký hiệu: **ĐÃ XÁC MINH** (có bằng chứng đo), **GIẢ ĐỊNH** (cấ
 | Đáp án chuẩn (oracle) | `scripts/spp82/reference/spp65-v2/manifest.json` | ĐÃ XÁC MINH | SHA-256 `55cb4256…7267`, khớp cả 6 lượt |
 | Dữ liệu lỗi (MUT-*) | Không được dùng trong lượt chính thức | Quy định | `pilot-evidence/faults/mutations.sql` |
 
-Cách kiểm nguồn trước mỗi lượt: `reset.sql` rồi đếm — phải đúng `events=1 exch=1 emr=1 seed=1000 mut=0` (`final/run-all.sh`). Sai là dừng, không chạy.
+Cách kiểm nguồn trước mỗi lượt: `reset.sql` rồi đếm — phải đúng `events=1 exch=1 emr=1 seed=1000 mut=0` (`scripts/pilot/run-all.sh`). Sai là dừng, không chạy.
 
 ## 2. Chế độ thực hiện
 
@@ -49,9 +49,9 @@ Trình chạy `run-all.sh` từ chối chạy nếu số tiến trình khác 1+1
 | Thử lại Dispatcher (LIS) | `LIS_DISPATCHER_RETRY_DELAYS_MS=2000,4000,8000,16000,32000,64000,64000` (8 lần thử, tổng thời gian chờ ~190 s) | ĐÃ XÁC MINH | `faults-retry-config/`, `final/*/code-and-environment.txt` |
 | Thử lại Worker (Middleware→EMR) | `MIDDLEWARE_WORKER_RETRY_DELAYS_MS=` cùng giá trị | ĐÃ XÁC MINH | như trên |
 | Cấu hình mặc định (không khuyến nghị) | `2000,4000,8000` (4 lần thử, ~14 s) | ĐÃ XÁC MINH là chưa đủ | DEF-04/05 |
-| Thời gian chờ HTTP | 10.000 ms | ĐÃ XÁC MINH (ghi trong run) | `05-pilot-results.md` |
+| Thời gian chờ HTTP | Runner 82-B (client Publish): 10.000 ms (`DEFAULT_HTTP_TIMEOUT_MS`). Dispatcher/Worker: 3.000 ms, lease 15.000 ms, poll 1.000 ms (mặc định trong `dispatcher-config.ts`/`worker-config.ts`, không đặt biến). *Đính chính SPP-74: bản trước ghi chung 10.000 ms.* | ĐÃ XÁC MINH (đọc từ mã nguồn và biến môi trường tiến trình đang chạy) | `04-experiment-config.md` (SPP-74) |
 | Polling (hỏi trạng thái) | 1.000 ms | ĐÃ XÁC MINH | như trên |
-| Thời gian tối đa một lượt | 3.600.000 ms (`SPP82_RUN_TIMEOUT_MS`) | ĐÃ XÁC MINH | `tools/run-scenario.sh` |
+| Thời gian tối đa một lượt | 3.600.000 ms (`SPP82_RUN_TIMEOUT_MS`) | ĐÃ XÁC MINH | `scripts/pilot/run-scenario.sh` |
 | Quan sát (observer) | concurrency 2 | ĐÃ XÁC MINH | |
 | Chống trùng | Publish lặp trả event cũ; EMR trả `ALREADY_EXISTS` | ĐÃ XÁC MINH | TC-07, F5 |
 | Gián đoạn vượt cửa sổ | Gửi lại thủ công `ops:requeue-failed --budget N --confirm` | ĐÃ XÁC MINH (R3, R4) | `faults-retry-config/` |
@@ -70,7 +70,7 @@ Chi tiết lệnh: [09-reproduction-guide.md](09-reproduction-guide.md).
 | Bước | Thông số | Trạng thái |
 |---|---|---|
 | Điều kiện an toàn | DB có comment `spp66-disposable:<token>`, token khớp `SPP82_VERIFICATION_ISOLATION_TOKEN` | ĐÃ XÁC MINH (bước đọc comment, không lộ token) |
-| Script reset | `pilot-evidence/reset.sql` (xóa theo thứ tự đúng, chỉ dữ liệu 1.000 seed) | ĐÃ XÁC MINH (DEF-01 đã sửa) |
+| Script reset | `scripts/pilot/reset.sql` (xóa theo thứ tự đúng, chỉ dữ liệu 1.000 seed) | ĐÃ XÁC MINH (DEF-01 đã sửa) |
 | Kiểm baseline | `events=1 exch=1 emr=1 seed=1000 mut=0` | ĐÃ XÁC MINH mỗi lượt |
 | Không reset khi | DB không có comment guard, hoặc không chắc là DB cô lập | Quy định |
 
@@ -94,3 +94,8 @@ Một lượt PASS khi công cụ đối chiếu độc lập (`spp82:verify`) t
 2. Quyết định cách lưu `pilot-evidence/` (khoảng 3,9 GB).
 3. Quyết định có chạy lại B2 để có số thời gian sạch không.
 4. Nếu muốn kết luận về c=5 hoặc nhiều Dispatcher/Worker, tạo thực nghiệm riêng với giả thuyết và tiêu chí trước khi chạy.
+
+## Đính chính SPP-74 (04/11/2026)
+- Baseline `events=1 exch=1 emr=1` ở trên là baseline của DB pilot, vốn còn sót dữ liệu `DEMO-R1`/`DEMO-P1` không nằm trong `database/seed/`. DB dựng sạch từ repo có baseline `events=0 exch=0 emr=0 seed=1000 mut=0` (đã đo ở SPP-74). Xem `docs/docs_backend/spp-74/02-data-manifest.md`.
+- Script nay nằm trong `scripts/pilot/` (được quản lý bởi Git); `pilot-evidence/` bị `.gitignore`.
+- Thời gian chờ HTTP của Dispatcher/Worker là 3.000 ms (xem hàng "Thời gian chờ HTTP" ở mục 4).
