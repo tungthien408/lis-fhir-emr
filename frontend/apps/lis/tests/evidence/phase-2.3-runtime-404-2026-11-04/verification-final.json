@@ -1,0 +1,77 @@
+{
+  "issue": "Runtime LIS image missing GET lookup route",
+  "fixed": true,
+  "sharedEnvironmentPost": false,
+  "checks": [
+    {
+      "name": "before-XyRzLK",
+      "report": "before-XyRzLK\\runtime-browser.json",
+      "completed": true,
+      "phases": 3,
+      "method": "GET only"
+    },
+    {
+      "name": "after-xO3gC8",
+      "report": "after-xO3gC8\\runtime-browser.json",
+      "completed": true,
+      "phases": 3,
+      "method": "GET only"
+    },
+    {
+      "name": "run-PIuLEm",
+      "report": "phase-2.3-2026-11-04\\run-PIuLEm\\chrome-mock\\browser-publish.json",
+      "completed": true,
+      "cases": 18
+    },
+    {
+      "name": "run-pI5VlE",
+      "report": "phase-2.3-2026-11-04\\run-pI5VlE\\chrome-real\\browser-publish.json",
+      "completed": true,
+      "cases": 16
+    }
+  ],
+  "regression": {
+    "suites": 12,
+    "report": "regression\\verification-uOp5oG\\verification.json",
+    "completed": true
+  },
+  "runtime": {
+    "lis": "5610d46c3fcd449494cad637bdb850f325aee856e7723069a42dc6f017e53449 sha256:c04c9b87d9c48a6e855f56b2b17adf62563c99d1dcaaab0c0f45cbb17d01a66e 2026-11-04T08:06:45.396957132Z 2026-11-04T08:06:47.171621682Z",
+    "readOnly": {
+      "readOnly": true,
+      "counts": {
+        "results": 1000,
+        "events": 0,
+        "attempts": 0
+      },
+      "controllerSha256": "4115f2ff8e7a16083c5754ecbb36791f2f03a9875658506a6c11099a1eb272df",
+      "hasLookup": true
+    },
+    "databaseRetained": true,
+    "volumeRetained": "lis-fhir-emr_postgres_data"
+  },
+  "httpGetChecks": 12,
+  "frontend": {
+    "unitTests": 43,
+    "pass": 43,
+    "checksFolder": "checks-d9f8aaea",
+    "typecheck": "PASS",
+    "lint": "PASS",
+    "finalLint": "lint-final.log",
+    "build": "PASS"
+  },
+  "git": {
+    "diffCheck": "PASS",
+    "staged": false,
+    "head": "1fcd46af6582921db6ac2b477f8014d649dfb0c3"
+  },
+  "changedFilesSha256": {
+    "frontend/apps/lis/src/api/publish.ts": "3dbaeda6b6a83f680d033079bbd81cc61e2287784c557020273e8c090064bc0f",
+    "frontend/apps/lis/src/components/PublishPanel.tsx": "81772a6a64788db7c8652c98e1fc3f9aa6153ca594724324fd0c70a487442e06",
+    "frontend/apps/lis/tests/publish.test.mjs": "881dcaa5b318894aa1d9117d03ab7cddc2b7bb3ecdcbcf0dfb09e195e8b183fd",
+    "frontend/apps/lis/tests/browser-publish.mjs": "954c5b57b08062cc58c8f7bca20b98bc332121237c8cdf5e4df78b7fa56a56a8",
+    "frontend/apps/lis/tests/browser-publish-runtime.mjs": "fb87ad864d8566dc16ed4990a5b201f619917df02662ed89936e87a55231e58c",
+    "frontend/apps/lis/README.md": "925a1c9d517dd7d428e5ef2e5389020d2928c2fc68185495ca64d11a2a29e117",
+    "docs/phase-2.3-publish-runtime-404-2026-11-04.md": "319f8d3171fce1263c77a65ff02084845aea0dae5a7e6eea2a25bb255529f94e"
+  }
+}

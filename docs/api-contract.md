@@ -17,6 +17,7 @@
 | LIS | `GET /api/results` | Xem/lọc kết quả xét nghiệm | Đã triển khai, kiểm thử A3 |
 | LIS | `GET /api/results/:resultId` | Xem chi tiết kết quả | Đã triển khai, kiểm thử A3 |
 | LIS | `POST /api/results/:resultId/publish` | Lưu yêu cầu gửi một kết quả | Đã triển khai, kiểm thử A3 |
+| LIS | `GET /api/results/:resultId/publish-event` | Tra cứu chỉ đọc trạng thái Publish theo kết quả, khôi phục sau F5 | Đã triển khai Giai đoạn 2.3 |
 | LIS | `GET /api/publish-events/:eventId` | Xem tình trạng gửi | Đã triển khai, kiểm thử A3 |
 | Middleware | `POST /api/exchanges` | Nhận dữ liệu từ LIS | Đã triển khai, kiểm thử B3 |
 | Middleware | `GET /api/exchanges` | Xem/lọc giao dịch | Đã triển khai, kiểm thử B3 |
@@ -38,7 +39,8 @@ liệu giả và bấm thử: [hướng dẫn A3](spp-66-a3-review.md#thử-api-
 `POST /api/results/:resultId/publish` **không cần body**; chỉ nhận kết quả `FINAL` hợp lệ.
 
 - **Lần đầu:** lưu `event_id`, bản chụp dữ liệu (`source_snapshot`), `source_hash`, thời điểm Publish trong một giao dịch LIS; trả **`202`**.
-- **Publish lại cùng kết quả:** trả **`200`** với `event_id` cũ, không tạo sự kiện mới.
+- **Publish lại cùng nội dung:** trả **`200`** với `event_id` cũ, không tạo sự kiện mới hay đặt lại dispatcher. Dựng lại snapshot theo định dạng JSON number/UTC hiện có; so sánh cả canonical JSON và SHA-256. `3.4000` và `3.4` là cùng nội dung. Thay đổi chính sách `accepted_units` không thuộc snapshot.
+- **Nội dung nguồn thay đổi sau Publish:** trả **`409 CONTENT_CONFLICT`**, giữ nguyên event/snapshot/hash và tiến trình cũ. Kết quả đã Publish rồi chuyển về READY cũng xung đột với snapshot FINAL. So sánh và tạo event nằm trong giao dịch giữ SHARE lock trên nguồn; unique constraint hiện có bảo vệ khi gọi đồng thời.
 - Không tìm thấy → **`404`**; không đủ điều kiện → **`422`**.
 - Body không bắt buộc; ID ở đường dẫn là ID được xử lý. Body JSON hợp lệ nếu
   gửi thêm không thay đổi nội dung Publish. JSON hỏng trả `400`, body JSON vượt
@@ -297,6 +299,47 @@ lần gửi lấy từ sự kiện đã lưu. Khi có lỗi gần nhất, API tr
 chung `The latest dispatch attempt failed.` thay vì nội dung chẩn đoán thô.
 Mã lỗi lưu không đúng dạng chữ hoa/số/gạch dưới (tối đa 64 ký tự, bắt đầu bằng
 chữ) được trình bày là `DISPATCH_ERROR`; không sửa bản ghi gốc.
+
+### Tra cứu Publish theo kết quả — Giai đoạn 2.3
+
+`GET /api/results/:resultId/publish-event` không cần body, không nhận query.
+`resultId` dùng cùng quy tắc chuỗi định danh như GET chi tiết; encode đúng một lần.
+Thao tác chỉ SELECT, không tạo event hoặc cập nhật tiến trình; trả `Cache-Control: no-store`.
+
+Chưa Publish trả **200**, khác với kết quả không tồn tại (**404 NOT_FOUND**):
+
+```json
+{"result_id":"R1","result_status":"FINAL","published":false,"event":null}
+```
+
+Đã Publish trả **200**:
+
+```json
+{
+  "result_id": "R1", "result_status": "FINAL", "published": true,
+  "event": {
+    "event_id": "00000000-0000-4000-8000-000000000001",
+    "result_id": "R1", "dispatch_status": "PENDING", "exchange_id": null,
+    "dispatch_attempt_count": 0, "last_error_code": null, "last_error_message": null,
+    "published_at": "2026-11-04T05:00:00.000Z", "acked_at": null, "next_retry_at": null
+  }
+}
+```
+
+`result_status` là nguồn hiện tại, không phải trạng thái trong snapshot cũ.
+Ba thời điểm lấy từ event đã lưu; `acked_at`/`next_retry_at` nullable.
+Thông tin lỗi được làm an toàn giống GET event theo UUID. ID/query sai trả
+**400 VALIDATION_ERROR**; lỗi truy cập database trả **503 DEPENDENCY_UNAVAILABLE**.
+Mọi lỗi dùng `{ "error": { "code": "...", "message": "..." } }`.
+GET lặp trả dữ liệu hiện tại, không phát sinh tác dụng phụ. GET theo UUID giữ
+nguyên bảy trường cũ và cũng được đánh dấu `no-store`.
+
+Frontend LIS đi qua tiền tố `/api/lis` cho các endpoint LIS; GET middleware
+`/api/middleware/exchanges/:exchangeId` đi qua proxy middleware sẵn có.
+`ACK` chỉ xác nhận tiếp nhận. UI chỉ hiển thị `DELIVERED` khi phản hồi MW khớp
+`exchange_id`, `event_id`, `source_result_id`, `source_system=lis-demo`, và có
+`verified_at`/`completed_at` hợp lệ. Lỗi đọc hoặc dữ liệu không khớp là **Chưa xác minh**.
+Không có API retry thủ công mới hoặc deep link Monitor.
 
 ### Phản hồi Middleware — đã triển khai ở B3
 

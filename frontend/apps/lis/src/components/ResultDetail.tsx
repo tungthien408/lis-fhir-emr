@@ -1,4 +1,5 @@
-﻿import { useState } from 'react'
+﻿import { useCallback, useState } from 'react'
+import { PublishPanel } from './PublishPanel.tsx'
 import { useLisResult } from '../hooks/useLisResult.ts'
 import { formatLisTimestamp } from '../state/results.ts'
 import type { LisResult } from '../types/lis.ts'
@@ -40,6 +41,7 @@ export function ResultDetailFields({ result }: { result: LisResult }) {
 export function ResultDetail({ resultId, onBack }: { resultId: string; onBack: () => void }) {
   const [request, setRequest] = useState(() => ({ resultId }))
   const detail = useLisResult(request)
+  const refreshSource = useCallback(() => setRequest({ resultId }), [resultId])
   return (
     <section className="results-section result-detail" aria-labelledby="detail-heading">
       <div className="detail-header">
@@ -58,7 +60,10 @@ export function ResultDetail({ resultId, onBack }: { resultId: string; onBack: (
           <p>{detail.message}</p>
           {detail.retryable && <button type="button" onClick={() => setRequest({ resultId })}>Thử tải lại</button>}
         </div>}
-        {detail.status === 'success' && <ResultDetailFields result={detail.result} />}
+        {detail.status === 'success' && <>
+          <ResultDetailFields result={detail.result} />
+          <PublishPanel result={detail.result} onSourceRefresh={refreshSource} />
+        </>}
       </div>
     </section>
   )

@@ -6,7 +6,7 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { createServer, preview } from 'vite'
 
 // CDP chặn HTTP trước khi tới proxy; không thay fetch hay mã ứng dụng.
-export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, onEvent } = {}) {
+export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, middlewareTarget, publishRequests = false, onEvent } = {}) {
   const appRoot = path.resolve(import.meta.dirname, '../..')
   assert.ok(existsSync(path.join(appRoot, 'dist/index.html')), 'Chạy npm run build:lis trước')
   const executable = process.env.CHROME_PATH || [
@@ -19,6 +19,8 @@ export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, 
   mkdirSync(cache, { recursive: true })
   const profile = mkdtempSync(path.join(cache, 'profile-'))
   const requests = []
+  const auxiliaryRequests = []
+  const legacySourceStatuses = new Map()
   const exceptions = []
   const interceptionErrors = []
   const pending = new Map()
@@ -55,7 +57,7 @@ export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, 
       cacheDir: path.join(cache, 'vite-' + mode),
       [mode === 'development' ? 'server' : 'preview']: {
         host: '127.0.0.1', port: 5183, strictPort: true, open: false,
-        ...(lisTarget ? { proxy: { '/api/lis': { target: lisTarget } } } : {}),
+        ...((lisTarget || middlewareTarget) ? { proxy: { ...(lisTarget ? { '/api/lis': { target: lisTarget } } : {}), ...(middlewareTarget ? { '/api/middleware': { target: middlewareTarget } } : {}) } } : {}),
       },
     }
     if (mode === 'development') {
@@ -97,17 +99,21 @@ export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, 
       }
       if (!onRequest && message.method === 'Network.requestWillBeSent' && message.params.request.url.includes('/api/')) {
         const { request } = message.params
-        requests.push({ method: request.method, url: request.url, query: Object.fromEntries(new URL(request.url).searchParams) })
+        const target = !publishRequests && new URL(request.url).pathname.endsWith('/publish-event') ? auxiliaryRequests : requests
+        target.push({ method: request.method, url: request.url, query: Object.fromEntries(new URL(request.url).searchParams) })
       }
       if (message.method === 'Runtime.exceptionThrown') exceptions.push(message.params.exceptionDetails)
       if (message.method === 'Fetch.requestPaused') {
         const { request, requestId } = message.params
         const entry = { method: request.method, url: request.url, query: Object.fromEntries(new URL(request.url).searchParams) }
-        requests.push(entry)
+        const auxiliary = !publishRequests && new URL(request.url).pathname.endsWith('/publish-event')
+        ;(auxiliary ? auxiliaryRequests : requests).push(entry)
         void (async () => {
-          assert.equal(request.method, 'GET', 'Chỉ cho phép GET')
-          assert.match(new URL(request.url).pathname, /^\/api\/lis\/results(?:\/[^/]+)?$/)
-          const response = await onRequest(entry)
+          assert.ok(request.method === 'GET' || (publishRequests && request.method === 'POST' && new URL(request.url).pathname.endsWith('/publish')), 'Unexpected write in browser test')
+          assert.match(new URL(request.url).pathname, /^\/api\/(?:lis\/results(?:\/[^/]+(?:\/(?:publish|publish-event))?)?|middleware\/exchanges\/[^/]+)$/)
+          // Legacy suites keep their original request oracle; this is an explicitly mocked auxiliary lookup.
+          const response = auxiliary ? { json: { result_id: decodeURIComponent(new URL(request.url).pathname.slice('/api/lis/results/'.length, -'/publish-event'.length)), result_status: legacySourceStatuses.get(decodeURIComponent(new URL(request.url).pathname.slice('/api/lis/results/'.length, -'/publish-event'.length))) ?? 'FINAL', published: false, event: null } } : await onRequest(entry)
+          if (!auxiliary && !publishRequests && response.json?.result_id && response.json?.result_status) legacySourceStatuses.set(response.json.result_id, response.json.result_status)
           if (response.networkError) {
             await send('Fetch.failRequest', { requestId, errorReason: 'InternetDisconnected' })
             entry.failed = true
@@ -141,7 +147,7 @@ export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, 
     await send('Network.setCacheDisabled', { cacheDisabled: true })
     const version = await send('Browser.getVersion', {}, null)
     return {
-      requests, exceptions, interceptionErrors, close, version, executable,
+      requests, auxiliaryRequests, exceptions, interceptionErrors, close, version, executable,
       async evaluate(fn, argument = null) {
         const response = await send('Runtime.evaluate', {
           expression: '(' + fn.toString() + ')(' + JSON.stringify(argument) + ')',

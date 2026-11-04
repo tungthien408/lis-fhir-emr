@@ -28,7 +28,7 @@ let browser, upstream, failId, heldId, releaseUpstream
 const heldResponses = []
 const requestMap = new Set()
 const onEvent = (event) => {
-  if (event.method === 'Network.requestWillBeSent' && event.params.request.url.includes('/api/')) {
+  if (event.method === 'Network.requestWillBeSent' && event.params.request.url.includes('/api/') && !event.params.request.url.includes('/publish-event')) {
     requestMap.add(event.params.requestId)
     report.protocol.push({ event: event.method, requestId: event.params.requestId, request: event.params.request })
   }
@@ -57,6 +57,7 @@ function observe() {
   window.dotDocument = crypto.randomUUID()
   window.dotHttp = []
   window.fetch = async function (url, options) {
+    if (String(url).includes('/publish-event')) return original.call(this, url, options)
     const entry = { url: new URL(url, location.href).href, headers: options?.headers ?? {}, signal: options?.signal, complete: false }
     window.dotHttp.push(entry)
     try {
@@ -151,6 +152,12 @@ try {
     upstream = http.createServer(async (req, res) => {
       const rawPath = req.url.split('?')[0]
       const id = rawPath.startsWith('/api/results/') ? decodeURIComponent(rawPath.slice('/api/results/'.length)) : null
+      if (rawPath.endsWith('/publish-event')) {
+        const resultId = decodeURIComponent(rawPath.slice('/api/results/'.length, -'/publish-event'.length))
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' })
+        res.end(JSON.stringify({ result_id: resultId, result_status: 'FINAL', published: false, event: null }))
+        return
+      }
       const entry = { rawPath: req.url, id, marker: req.headers[DOT_SEGMENT_HEADER.toLowerCase()] ?? null, method: req.method }
       report.upstream.push(entry)
       assert.equal(req.method, 'GET')

@@ -1,6 +1,6 @@
-# Kết quả xét nghiệm LIS – Giai đoạn 2.2
+# Kết quả xét nghiệm LIS – Giai đoạn 2.3
 
-Ứng dụng gọi API LIS thật qua Vite proxy, gồm danh sách có bộ lọc/phân trang và màn hình chi tiết riêng. Không triển khai Publish, Monitor hoặc EMR.
+Ứng dụng gọi API LIS thật qua Vite proxy, gồm danh sách có bộ lọc/phân trang và màn hình chi tiết riêng. Giai đoạn 2.3 bổ sung Publish trên trang chi tiết; không sửa frontend Monitor hoặc EMR.
 
 ## Chức năng và điều hướng
 
@@ -119,7 +119,7 @@ Nếu sandbox chặn Chrome/Vite, cần quyền chạy ngoài sandbox. Không x�
 - [Bằng chứng nghiệm thu 2.1](tests/evidence/phase-2.1-2026-11-03/BAO_CAO.md) được giữ nguyên.
 - Phân trang offset có thể đổi vị trí khi dữ liệu nguồn thay đổi giữa hai yêu cầu.
 - Chưa kiểm tra Firefox/Safari hoặc mọi kích thước màn hình.
-- Không sửa backend, database, SQL, Compose; không POST, Publish, commit, push hoặc merge.
+- Bằng chứng 2.1/2.2 trước đây chỉ GET; các POST của kiểm thử 2.3 chỉ chạy trên database tạm biệt lập. Không thay schema/Compose hoặc tự commit, push, merge.
 
 
 ## Kiểm thử dot ID qua proxy thật
@@ -154,3 +154,103 @@ node tests/verify-uiux.mjs --only=uiux-real,uiux-mock
 Runner tạo thư mục `tests/evidence/phase-2.2-uiux-2026-11-04/verification-<ngẫu-nhiên>` cho mỗi lượt, không ghi đè nghiệm thu trước. Chạy tuần tự 12 bộ Chrome: UI/UX mới (thật/mô phỏng), danh sách, chi tiết, bộ lọc kết hợp và dot ID qua dev/preview. Cần Chrome và API thật cổng 3101 đang có sẵn; chỉ GET. Nếu sandbox chặn Chrome/Vite cần quyền thực thi ngoài sandbox.
 
 Bằng chứng và giới hạn: [Báo cáo hoàn thiện UI/UX](tests/evidence/phase-2.2-uiux-2026-11-04/BAO_CAO.md).
+
+## Publish – Giai đoạn 2.3
+
+Khu vực “Trao đổi kết quả xét nghiệm” nằm dưới hai card 12 trường cũ.
+Chỉ FINAL và đã đọc được trạng thái Publish mới mở nút; backend quyết định
+hợp lệ dữ liệu. Xác nhận bằng dialog, Hủy không POST, khóa đồng bộ khi đang gửi.
+`202` là LIS ghi nhận yêu cầu mới; `200` là dùng lại event cùng nội dung;
+`409 CONTENT_CONFLICT` giữ nguyên bản đã phát hành. Publish lại không requeue
+Dispatcher. Lỗi mạng/503 hoặc phản hồi không rõ được đối soát bằng GET, không tự POST lại.
+
+`src/hooks/usePublishStatus.ts` đọc lookup theo result_id khi mở trang/F5,
+GET mỗi 5 giây khi cần theo dõi, dừng khi kết thúc, tạm dừng khi tab ẩn và hỗ trợ
+“Làm mới trạng thái”. Abort và định danh yêu cầu chặn phản hồi đến muộn.
+Nguồn READY/FINAL, Publish đã lưu, Dispatcher và middleware hiển thị riêng.
+Chỉ báo DELIVERED khi GET MW khớp event/result/source/exchange và có verified/completed.
+Không có deep link Monitor hoặc nút retry thủ công. Thời điểm hiển thị là
+`published_at` đã lưu (UTC), không tự dựng thời điểm trạng thái.
+
+API mới: `GET /api/lis/results/:resultId/publish-event`; POST
+`/api/lis/results/:resultId/publish`; xem [hợp đồng API](../../../docs/api-contract.md).
+Quy ước dot marker/header/Vary phía trên áp dụng thêm cho GET lookup và POST Publish,
+giữ nguyên literal `%2E`, slash, percent, plus và Unicode qua development/preview.
+Static hosting ngoài Vite phải có reverse proxy tương đương.
+
+Các file riêng: `src/api/publish.ts`, `src/types/publish.ts`,
+`src/hooks/usePublishStatus.ts`, `src/components/PublishPanel.tsx`;
+kiểm thử `tests/publish.test.mjs` và `tests/browser-publish.mjs`.
+
+Tại root repository (cần Chrome, Docker và hai image đã có
+`postgres:17`, `lis-fhir-emr-backend:local`; không tải dependency mới):
+
+```powershell
+node scripts/verify-publish-phase-2.3.mjs --mock-only
+node scripts/verify-publish-phase-2.3.mjs
+node scripts/verify-publish-phase-2.3.mjs --browser-only --dev
+```
+
+Runner mỗi lượt tạo thư mục bằng chứng mới trong `tests/evidence/phase-2.3-2026-11-04/`,
+PostgreSQL tmpfs mới, tài khoản ngẫu nhiên, cổng động, chỉ dữ liệu tổng hợp.
+Không dùng Compose volumes hoặc POST cổng dịch vụ nhóm 3101–3103.
+Các suite database được làm sạch giữa bộ; fixture trình duyệt có guard token và
+marker database, yêu cầu database rỗng trước seed. Dispatcher và worker chạy thành
+process riêng. Cleanup chỉ dừng container do chính lượt chạy tạo.
+Không chạy `browser-publish.mjs --real` thủ công với dịch vụ nhóm.
+
+Hồi quy 12 bộ cũ vẫn chỉ GET khi dùng API nhóm; lưu bằng chứng mới:
+
+```powershell
+# tại frontend/apps/lis
+$env:LIS_EVIDENCE_DIR = 'tests/evidence/phase-2.3-2026-11-04/regression'
+node tests/verify-uiux.mjs
+```
+
+Các fixture HTTP cũ mô phỏng lookup chưa Publish có cùng READY/FINAL với bản ghi,
+tách request phụ khỏi oracle danh sách/chi tiết cũ. Bộ Publish kiểm tra API mới riêng.
+Nếu Windows khóa thư mục assets, dùng `npm.cmd run build -- --emptyOutDir false`;
+index vẫn trỏ đúng bundle mới, assets cũ không được xóa.
+
+Báo cáo: [Triển khai và nghiệm thu 2.3](../../../docs/phase-2.3-publish-implementation-2026-11-04.md).
+
+## Khi lookup Publish trả 404 trên môi trường Compose
+
+Đối chiếu GET `/api/lis/results/<id>/publish-event` qua Vite với
+GET `http://127.0.0.1:3101/api/results/<id>/publish-event`.
+`404 NOT_FOUND` với message `API route not found` là backend đang chạy thiếu route;
+không có nghĩa kết quả chưa Publish. `Laboratory result not found` là thiếu bản ghi.
+Chỉ `200` với `published:false,event:null` hợp lệ mới hiển thị **Chưa Publish**.
+Nút vẫn khóa khi lookup lỗi/chưa xác minh. Lỗi route được hiển thị cùng hướng kiểm tra
+phiên bản dịch vụ/proxy; không tự bật Publish để né lỗi.
+
+Service LIS hiện dùng `npm run start:lis` → `dist/lis/main.js` trong image,
+không bind-mount source. Sửa source hoặc chỉ restart container chưa cập nhật bản build.
+Nếu đã đối chiếu source có route nhưng image cũ thiếu route, tại root repository:
+
+```powershell
+docker compose build lis
+docker compose up -d --no-deps --force-recreate lis
+# chỉ GET, không Publish dữ liệu MIMIC:
+Invoke-RestMethod 'http://127.0.0.1:3101/api/results/MIMIC-LAB-100142/publish-event'
+Invoke-RestMethod 'http://127.0.0.1:5173/api/lis/results/MIMIC-LAB-100142/publish-event'
+```
+
+Chỉ recreate `lis`; không chạy down, không xóa volume/reset DB, không recreate các
+service khác. Image tag backend được chia sẻ nhưng container đang chạy của dịch vụ
+khác vẫn giữ image ID cũ. Sau khi `/ready` đạt và hai GET trả 200, F5 trang hoặc bấm
+Làm mới trạng thái. Không dùng POST MIMIC để kiểm tra nút.
+
+Kiểm tra Chrome read-only vào đúng URL đang chạy (sử dụng helper preview riêng
+để quản lý Chrome nhưng điều hướng thực tế tới **5173**):
+
+```powershell
+# tại frontend/apps/lis; cần Chrome, Vite 5173 và backend 3101 đang có sẵn
+node tests/browser-publish-runtime.mjs
+# chỉ dùng khi cần tái hiện image thiếu route trước khi cập nhật:
+node tests/browser-publish-runtime.mjs --expect-route-missing
+```
+
+Mỗi lượt tạo bằng chứng mới trong `tests/evidence/phase-2.3-runtime-404-2026-11-04/`;
+kiểm tra Network response body, DOM, F5, Làm mới và từ chối request không phải GET.
+Báo cáo: [Sửa 404 runtime Publish](../../../docs/phase-2.3-publish-runtime-404-2026-11-04.md).

@@ -81,13 +81,13 @@ test("LIS Swagger UI (HTTP)", async (t) => {
     }
   });
 
-  await t.test("OpenAPI JSON describes only the six implemented LIS routes and uses the current origin", async () => {
+  await t.test("OpenAPI JSON describes only the seven implemented LIS routes and uses the current origin", async () => {
     const response = await requestJson(server.baseUrl, "/docs/api/openapi.json");
     assert.equal(response.status, 200);
     assert.deepEqual(response.body, lisOpenApiDocument);
     assert.deepEqual(Object.keys(lisOpenApiDocument.paths).sort(), [
       "/api/publish-events/{eventId}", "/api/results", "/api/results/{resultId}",
-      "/api/results/{resultId}/publish", "/health", "/ready",
+      "/api/results/{resultId}/publish", "/api/results/{resultId}/publish-event", "/health", "/ready",
     ]);
     assert.equal(lisOpenApiDocument.openapi, "3.0.3");
     assert.equal(lisOpenApiDocument.servers?.[0]?.url, "/");
@@ -109,7 +109,7 @@ test("LIS Swagger UI (HTTP)", async (t) => {
     const publish = lisOpenApiDocument.paths["/api/results/{resultId}/publish"]?.post;
     assert.ok(publish);
     assert.equal(publish.requestBody, undefined);
-    assert.deepEqual(Object.keys(publish.responses).sort(), ["200", "202", "400", "404", "413", "415", "422", "503"]);
+    assert.deepEqual(Object.keys(publish.responses).sort(), ["200", "202", "400", "404", "409", "413", "415", "422", "503"]);
     assert.deepEqual(schema("PublishResult").required?.slice().sort(), ["dispatch_status", "event_id", "exchange_id", "result_id"]);
   });
 
@@ -124,8 +124,8 @@ test("LIS Swagger UI (HTTP)", async (t) => {
         }
       }
     }
-    assert.equal(ids.length, 6);
-    assert.equal(new Set(ids).size, 6);
+    assert.equal(ids.length, 7);
+    assert.equal(new Set(ids).size, 7);
   });
 
   await t.test("UI loads the local specification and enables GET/POST without an external validator", async () => {

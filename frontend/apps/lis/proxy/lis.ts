@@ -11,10 +11,11 @@ export function withDotResultProxy(base: ProxyOptions): ProxyOptions {
     bypass(req, res, options) {
       const marker = req.headers[DOT_SEGMENT_HEADER.toLowerCase()]
       delete req.headers[DOT_SEGMENT_HEADER.toLowerCase()]
-      const match = /^\/api\/lis\/results\/(%252E(?:%252E)?)(\?.*)?$/i.exec(req.url ?? '')
-      if (req.method === 'GET' && match) {
+      const match = /^\/api\/lis\/results\/(%252E(?:%252E)?)(\/(?:publish|publish-event))?(\?.*)?$/i.exec(req.url ?? '')
+      if (match && ((req.method === 'GET' && (!match[2] || match[2] === '/publish-event'))
+        || (req.method === 'POST' && match[2] === '/publish'))) {
         varyRequests.add(req)
-        if (marker === '1') req.url = '/api/lis/results/' + match[1].replace(/%25/gi, '%') + (match[2] ?? '')
+        if (marker === '1') req.url = '/api/lis/results/' + match[1].replace(/%25/gi, '%') + (match[2] ?? '') + (match[3] ?? '')
       }
       return base.bypass?.(req, res, options)
     },
