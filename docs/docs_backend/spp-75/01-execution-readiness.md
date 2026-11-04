@@ -1,4 +1,4 @@
-# SPP-75 – Sẵn sàng thực thi (trạng thái: BLOCKED ở Phase 1)
+# SPP-75 – Sẵn sàng thực thi (lịch sử: ban đầu BLOCKED; đã được gỡ chặn ngày 04/11/2026, xem 02–10)
 
 Ngày: 04/11/2026. Tài liệu này chỉ ghi những gì đã làm và kiểm tra; **chưa có lượt chính thức nào được chạy**.
 
@@ -27,3 +27,6 @@ SHA-256 script runner: run-scenario.sh `986b8dff…aae43`; run-all.sh `b29eb26f�
 - Quyết định nơi lưu bản sao bằng chứng (tránh SINGLE_COPY_RISK).
 
 Các tài liệu 02–10 chưa tạo vì chưa có dữ liệu chính thức; không tạo số liệu thay thế.
+
+## 4. Cập nhật sau khi gỡ chặn (04/11/2026)
+Người dùng xác nhận bằng lời trong phiên: SPP-74 Pass/Done, cho phép chạy, và nhờ khởi động lại Dispatcher/Worker. Mục 2.1 và 2.2 được giải quyết (preflight PASS với 1+1 và retry khóa); mục 2.3 đã chạy (F8-R/F10-R PASS); 6 lượt + B1R đã chạy. Mục 2.4: baseline events=1 (DEMO-R1), xem 06 D3.
