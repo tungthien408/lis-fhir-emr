@@ -2,7 +2,7 @@
 # SPP-74: kiểm tra trước mỗi lượt thực nghiệm. CHỈ ĐỌC (không reset, không Publish, không ghi DB).
 # usage: PILOT_ENV_FILE=<file-môi-trường> scripts/pilot/preflight.sh
 # Biến tùy chọn: PILOT_DB_CONTAINER (mặc định lis-fhir-emr-db-1), PILOT_DB_NAME (dacn_db),
-#   PILOT_EXPECTED_TAG (mặc định spp75-runner-v1 = runner đã sửa; đặt rỗng để bỏ qua kiểm tag),
+#   PILOT_EXPECTED_TAG (mặc định spp75-runner-v2 = runner đã sửa; đặt rỗng để bỏ qua kiểm tag),
 #   PILOT_APP_TAG (mặc định spp74-experiment-v1: mã nguồn application/dữ liệu không được khác tag này),
 #   PILOT_EXPECTED_BASELINE (mặc định "events=0 exch=0 emr=0 seed=1000 mut=0"; DB pilot SPP-73 là "events=1 exch=1 emr=1 ..."),
 #   PILOT_EXPECT_CLEAN_DB=1 (mặc định) hoặc 0 để bỏ qua kiểm baseline (vd. ngay sau một lượt).
@@ -13,7 +13,7 @@ ROOT=${PILOT_ROOT:-$(cd "$HERE/../.." && pwd)}
 : "${PILOT_ENV_FILE:?Thiếu PILOT_ENV_FILE}"
 CT=${PILOT_DB_CONTAINER:-lis-fhir-emr-db-1}
 DBN=${PILOT_DB_NAME:-dacn_db}
-TAG=${PILOT_EXPECTED_TAG-spp75-runner-v1}
+TAG=${PILOT_EXPECTED_TAG-spp75-runner-v2}
 APP_TAG=${PILOT_APP_TAG-spp74-experiment-v1}   # SPP-75: application/data thuộc bản khóa SPP-74; runner thuộc TAG
 BASELINE=${PILOT_EXPECTED_BASELINE:-"events=0 exch=0 emr=0 seed=1000 mut=0"}
 CHECK_BASELINE=${PILOT_EXPECT_CLEAN_DB:-1}
@@ -43,8 +43,11 @@ DB() { docker exec "$CT" psql -U postgres -d "$DBN" -Atc "$1"; }
 # 1. Git
 if [ -z "$(git status --porcelain)" ]; then ok "git: working tree sạch"; else bad "git: còn thay đổi chưa commit"; fi
 if [ -n "$TAG" ]; then
-  d=$(git describe --tags --exact-match 2>/dev/null || true)
-  [ "$d" = "$TAG" ] && ok "git: HEAD đúng tag $TAG ($(git rev-parse --short HEAD))" || bad "git: HEAD không phải tag $TAG (describe='$d')"
+  # HEAD có thể đứng sau TAG (chỉ thêm tài liệu); runner (scripts/pilot) không được khác TAG.
+  if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null && git merge-base --is-ancestor "$TAG" HEAD \
+     && git diff --quiet "$TAG" HEAD -- scripts/pilot; then
+    ok "git: runner (scripts/pilot) đúng tag $TAG; HEAD=$(git rev-parse --short HEAD)"
+  else bad "git: runner khác tag $TAG hoặc tag không phải tổ tiên của HEAD"; fi
 else echo "SKIP  git: không kiểm tag (PILOT_EXPECTED_TAG rỗng); HEAD=$(git rev-parse --short HEAD)"; fi
 if [ -n "$APP_TAG" ]; then
   if git rev-parse -q --verify "refs/tags/$APP_TAG" >/dev/null && git merge-base --is-ancestor "$APP_TAG" HEAD \
