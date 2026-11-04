@@ -26,6 +26,8 @@ cd $ROOT
 # SPP-74: kiểm tra guard cô lập TRƯỚC khi reset (bản SPP-73 để người chạy tự kiểm tra bằng tay).
 TOKEN=$(. "$PILOT_ENV_FILE" >/dev/null 2>&1; echo "${SPP82_VERIFICATION_ISOLATION_TOKEN:-}")
 [ -n "$TOKEN" ] || { echo "THIẾU SPP82_VERIFICATION_ISOLATION_TOKEN trong PILOT_ENV_FILE"; exit 7; }
+# Công cụ spp82:capture chỉ chấp nhận token dạng UUID; sai định dạng thì capture hỏng sau khi đã Publish xong.
+[[ "$TOKEN" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ ]] || { echo "SPP82_VERIFICATION_ISOLATION_TOKEN phải là UUID (vd. từ uuidgen)"; exit 7; }
 [ "$(DB "select shobj_description(oid,'pg_database') from pg_database where datname='$DBN'")" = "spp66-disposable:$TOKEN" ] \
   || { echo "GUARD CÔ LẬP KHÔNG KHỚP: DB '$DBN' trong container '$CT' không được xác nhận là DB thử nghiệm; dừng, không reset"; exit 7; }
 mkdir -p $EV/final
