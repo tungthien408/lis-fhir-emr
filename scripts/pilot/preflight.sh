@@ -2,7 +2,7 @@
 # SPP-74: kiểm tra trước mỗi lượt thực nghiệm. CHỈ ĐỌC (không reset, không Publish, không ghi DB).
 # usage: PILOT_ENV_FILE=<file-môi-trường> scripts/pilot/preflight.sh
 # Biến tùy chọn: PILOT_DB_CONTAINER (mặc định lis-fhir-emr-db-1), PILOT_DB_NAME (dacn_db),
-#   PILOT_EXPECTED_TAG (mặc định spp75-runner-v2 = runner đã sửa; đặt rỗng để bỏ qua kiểm tag),
+#   PILOT_EXPECTED_TAG (mặc định spp75-runner-v3 = runner đã sửa; đặt rỗng để bỏ qua kiểm tag),
 #   PILOT_APP_TAG (mặc định spp74-experiment-v1: mã nguồn application/dữ liệu không được khác tag này),
 #   PILOT_EXPECTED_BASELINE (mặc định "events=0 exch=0 emr=0 seed=1000 mut=0"; DB pilot SPP-73 là "events=1 exch=1 emr=1 ..."),
 #   PILOT_EXPECT_CLEAN_DB=1 (mặc định) hoặc 0 để bỏ qua kiểm baseline (vd. ngay sau một lượt).
@@ -13,7 +13,7 @@ ROOT=${PILOT_ROOT:-$(cd "$HERE/../.." && pwd)}
 : "${PILOT_ENV_FILE:?Thiếu PILOT_ENV_FILE}"
 CT=${PILOT_DB_CONTAINER:-lis-fhir-emr-db-1}
 DBN=${PILOT_DB_NAME:-dacn_db}
-TAG=${PILOT_EXPECTED_TAG-spp75-runner-v2}
+TAG=${PILOT_EXPECTED_TAG-spp75-runner-v3}
 APP_TAG=${PILOT_APP_TAG-spp74-experiment-v1}   # SPP-75: application/data thuộc bản khóa SPP-74; runner thuộc TAG
 BASELINE=${PILOT_EXPECTED_BASELINE:-"events=0 exch=0 emr=0 seed=1000 mut=0"}
 CHECK_BASELINE=${PILOT_EXPECT_CLEAN_DB:-1}
