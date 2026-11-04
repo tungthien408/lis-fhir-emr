@@ -1,0 +1,30 @@
+{
+  "dataset": "SPP-65-MIMIC-IV-demo-2.2",
+  "files": {
+    "expected.jsonl": "a421c3c2facb4d45946d44d533365339fe4d4375b2d61a9551326130311fe772",
+    "patient-links.json": "a93970b2a011f3cb50295554feec2fed52e7fb499f3d36811e7529a4e5992adf",
+    "rules.json": "a3580b4c62caf2d28c33ecdcacbee27ab6209c12af5d7c5cb232bd81a0cdca80",
+    "upstream-answers.csv": "8e93c46edcab5a6d4e5d2e06fb8260958590a2b55c2242118fe89525e2fc318a"
+  },
+  "population": 1000,
+  "provenance": {
+    "kind": "handoff-oracle-crosschecked-against-raw-csv-and-versioned-seed",
+    "limitations": [
+      "Original manifest_1000.csv and upstream lock checksum were not found in available handoff.",
+      "This is a local reference freeze, not SPP-65 owner sign-off.",
+      "Raw charttime has no timezone: UTC and FINAL are declared project assumptions."
+    ],
+    "patient_links_crosschecked": 100,
+    "preparation_script_sha256": "4d44adf7fd75f6325247db097f60404619e2491916387ba48cd002aaea256817",
+    "source_rows_crosschecked": 1000,
+    "sources": {
+      "database/seed/01_reference_data.sql": "b66613cf2e1ed1f8d46ce6f0a0efc2efa976532e4e487bf6058ec43e835023e5",
+      "database/seed/02_lis_results.sql": "28b21b4e19f1df9b79d8ee10944e33e1f1fe20c0045abfd5b5d3fbcd89644fe7",
+      "datasets/hosp/d_labitems.csv.gz": "72ea5f020469fd24543bd98ab3bd0a4f645a5a4b7802d9d52af20d736f9d76db",
+      "datasets/hosp/labevents.csv.gz": "d51a4cf1ea63245abe7d544b0d50a928e9ee2ec5eb9a5ce85500aed0bd6c6dfc"
+    },
+    "upstream_filename": "DAP_AN_DOC_LAP_1000.csv",
+    "upstream_sha256": "8e93c46edcab5a6d4e5d2e06fb8260958590a2b55c2242118fe89525e2fc318a"
+  },
+  "schema_version": 1
+}
