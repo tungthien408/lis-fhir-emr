@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SPP-73 bước 3: 3 lượt A (tuần tự, c=1) và 3 lượt B (đồng thời, c=5), xen kẽ A1 B1 A2 B2 A3 B3.
 # Mỗi lượt: reset an toàn -> kiểm tra baseline -> ghi phiên bản/cấu hình -> before -> publish -> after -> verify.
+# SPP-75: lượt không PASS (mã thoát run-scenario.sh khác 0) làm dừng chuỗi với mã 10; ALL DONE chỉ khi mọi lượt PASS.
 # Logic giống bản đã chạy ở SPP-73. SPP-74 chỉ: (1) thay đường dẫn tuyệt đối/scratchpad bằng biến môi trường,
 # (2) cho chọn lượt (PILOT_RUNS) và baseline (PILOT_EXPECTED_BASELINE), (3) ghi thêm phiên bản công cụ vào code-and-environment.txt.
 #
@@ -31,6 +32,7 @@ TOKEN=$(. "$PILOT_ENV_FILE" >/dev/null 2>&1; echo "${SPP82_VERIFICATION_ISOLATIO
 [ "$(DB "select shobj_description(oid,'pg_database') from pg_database where datname='$DBN'")" = "spp66-disposable:$TOKEN" ] \
   || { echo "GUARD CÔ LẬP KHÔNG KHỚP: DB '$DBN' trong container '$CT' không được xác nhận là DB thử nghiệm; dừng, không reset"; exit 7; }
 mkdir -p $EV/final
+RESULTS=()
 for spec in "A1 A-seq-r1 SEQUENTIAL 1" "B1 B-con5-r1 CONCURRENT 5" "A2 A-seq-r2 SEQUENTIAL 1" "B2 B-con5-r2 CONCURRENT 5" "A3 A-seq-r3 SEQUENTIAL 1" "B3 B-con5-r3 CONCURRENT 5"; do
   set -- $spec; name=$1; scenario=$2; mode=$3; conc=$4; dir=$EV/final/$name
   case " $RUNS " in *" $name "*) ;; *) continue;; esac
@@ -49,7 +51,16 @@ for spec in "A1 A-seq-r1 SEQUENTIAL 1" "B1 B-con5-r1 CONCURRENT 5" "A2 A-seq-r2 
     for p in $(ps -eo pid,args | awk '/(dispatcher|worker)-main/ && !/awk/ {print $1}'); do echo "pid $p env: $(tr '\0' ' ' < /proc/$p/environ | grep -oE '(LIS_DISPATCHER|MIDDLEWARE_WORKER)_[A-Z_]+=[0-9,]+' | tr '\n' ' ')"; done;
     echo "node=$(node -v) npm=$(npm -v)"; echo "postgres=$(DB 'show server_version')"; docker ps --format 'container {{.Names}} {{.Image}} {{.Status}}'; } > $dir/code-and-environment.txt
   echo "[$(date -u +%FT%TZ)] START $name" >> $EV/final/run-all.log
-  $HERE/run-scenario.sh final/$name $scenario $mode $conc
-  echo "[$(date -u +%FT%TZ)] END $name :: $(grep -E 'verify_exit|publish_exit' $dir/orchestration.log | tr '\n' ' ') :: after: events=$(DB 'select count(*) from lis.publish_events') delivered=$(DB "select count(*) from integration.exchange_transactions where status='DELIVERED'") emr=$(DB 'select count(*) from emr.lab_results')" >> $EV/final/run-all.log
+  "$HERE/run-scenario.sh" final/$name $scenario $mode $conc; rc=$?
+  [ $rc -eq 0 ] && st=PASS || st="FAIL(exit=$rc)"
+  RESULTS+=("$name=$st")
+  echo "[$(date -u +%FT%TZ)] END $name status=$st ::  $(grep -E 'verify_exit|publish_exit' $dir/orchestration.log | tr '\n' ' ') :: after: events=$(DB 'select count(*) from lis.publish_events') delivered=$(DB "select count(*) from integration.exchange_transactions where status='DELIVERED'") emr=$(DB 'select count(*) from emr.lab_results')" >> $EV/final/run-all.log
+  # Dừng ngay khi một lượt không PASS: giữ nguyên bằng chứng, không chạy tiếp trên trạng thái không rõ.
+  if [ $rc -ne 0 ]; then
+    echo "[$(date -u +%FT%TZ)] ABORTED at $name (exit=$rc); xem $dir/orchestration.log và $dir/run-result.txt. Kết quả: ${RESULTS[*]}" | tee -a $EV/final/run-all.log >&2
+    exit 10
+  fi
 done
-echo "[$(date -u +%FT%TZ)] ALL DONE" >> $EV/final/run-all.log
+# ALL DONE chỉ ghi khi mọi lượt đã yêu cầu đều PASS (và có ít nhất một lượt đã chạy).
+[ ${#RESULTS[@]} -gt 0 ] || { echo "[$(date -u +%FT%TZ)] KHÔNG CÓ LƯỢT NÀO ĐƯỢC CHẠY (PILOT_RUNS='$RUNS')" | tee -a $EV/final/run-all.log >&2; exit 11; }
+echo "[$(date -u +%FT%TZ)] ALL DONE (mọi lượt PASS: ${RESULTS[*]})" >> $EV/final/run-all.log
