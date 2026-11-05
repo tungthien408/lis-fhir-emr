@@ -1,7 +1,7 @@
 # Hợp đồng API V1 — LIS → Middleware → EMR
 
 > **Mục đích:** Thống nhất dữ liệu gửi/nhận để hai thành viên có thể lập trình độc lập.  
-> **Trạng thái:** Các API LIS (A3), Middleware (B3), EMR (C3) và Dispatcher D2 đã triển khai. **D3 đã kiểm thử toàn luồng backend thật: LIS Publish → Dispatcher → Middleware → Worker/Mapper → EMR → đọc lại → DELIVERED**, với PostgreSQL cô lập và dữ liệu giả có đáp án riêng. Xem [review D3](spp-66-d3-review.md) cho bằng chứng, cách chạy và giới hạn. Các bộ [C4](spp-66-c4-review.md), [D2](spp-66-d2-review.md) và B4B được giữ riêng. Chưa kiểm thử bộ MIMIC/SPP-65 chính thức, chưa làm D4, frontend hoặc evaluator. `/health` và `/ready` giữ nguyên.
+> **Trạng thái:** Các API LIS (A3), Middleware (B3), EMR (C3) và Dispatcher D2 đã triển khai. **D3 đã kiểm thử toàn luồng backend thật: LIS Publish → Dispatcher → Middleware → Worker/Mapper → EMR → đọc lại → DELIVERED**, với PostgreSQL cô lập và dữ liệu giả có đáp án riêng. Xem [review D3](spp-66-d3-review.md) cho bằng chứng, cách chạy và giới hạn. Các bộ [C4](spp-66-c4-review.md), [D2](spp-66-d2-review.md) và B4B được giữ riêng. Chưa kiểm thử bộ MIMIC/SPP-65 chính thức, chưa làm D4 hoặc evaluator. Frontend LIS, Exchange Monitor và EMR đã có triển khai riêng; xem báo cáo nghiệm thu frontend tương ứng. `/health` và `/ready` giữ nguyên.
 
 ## 1. Quy ước chung
 
@@ -24,6 +24,7 @@
 | Middleware | `GET /api/exchanges/:exchangeId` | Xem chi tiết và lịch sử giao dịch | Đã triển khai, kiểm thử B3 |
 | EMR | `POST /api/observations` | Lưu kết quả theo FHIR R4 Observation | Đã triển khai C3; kiểm thử tích hợp Worker thật C4 |
 | EMR | `GET /api/lab-results` | Xem/đọc lại kết quả đã lưu | Đã triển khai C3; kiểm thử tích hợp Worker thật C4 |
+| EMR | `GET /api/patients` | Tra cứu chính xác một hồ sơ theo mã nguồn hoặc UUID | Bổ sung giao diện EMR; chỉ đọc, không danh sách toàn bộ |
 | Cả ba | `GET /health` | Kiểm tra HTTP đang chạy | Đã có |
 | Cả ba | `GET /ready` | Kiểm tra kết nối, tài khoản và bảng database | Đã có |
 
@@ -470,6 +471,47 @@ sai định dạng trả `400`, hợp lệ nhưng không tồn tại trả `404`
 POST và GET chi tiết không hỗ trợ query parameter, có query trả `400`.
 Lỗi database trên ba API trả `503`/`DEPENDENCY_UNAVAILABLE`, không lộ lỗi driver.
 Hướng dẫn thử bằng `curl` và kết quả test: [SPP-66 B3](spp-66-b3-review.md).
+
+### EMR — tra cứu bệnh nhân chỉ đọc (bổ sung giao diện)
+
+`GET /api/patients` có đúng hai chế độ, loại trừ nhau:
+
+- `identifier_system` + `identifier_value`: khớp chính xác cả namespace và mã nguồn.
+- `patient_key`: UUID dạng 8-4-4-4-12, không phân biệt hoa/thường theo kiểu UUID PostgreSQL.
+
+Không nhận pagination, tham số phụ, tham số lặp, array/object hoặc trộn hai chế độ.
+Identifier hợp lệ không rỗng/chỉ trắng, không có ký tự điều khiển; backend giữ nguyên case/khoảng trắng.
+Namespace LIS thực tế là `https://example.org/lis/patient`; frontend chỉ chuẩn hóa đầu vào
+`MIMIC-P-<hậu tố số>` đã nhận diện, không sửa định danh trong response.
+
+200 trả một hồ sơ đã tồn tại (không có kết quả xét nghiệm vẫn 200):
+
+```json
+{
+  "patient": {
+    "patient_key": "6eac20d5-c71c-50a6-8adb-17bd7b5677de",
+    "display_label": "Demo patient 10007928",
+    "identifiers": [
+      {"identifier_system": "https://example.org/lis/patient", "identifier_value": "MIMIC-P-10007928"}
+    ]
+  }
+}
+```
+
+`display_label` có thể null; `identifiers` chứa các cặp namespace/value liên kết của đúng hồ sơ,
+được sắp ổn định theo system/value, có thể rỗng. Chỉ công khai các cột nhận diện mô phỏng này;
+không bổ sung tuổi, giới tính, chẩn đoán, raw database/stack hoặc payload bệnh nhân.
+Repository dùng một câu SELECT với subquery liên kết ràng buộc đầy đủ vào `emr.patients.patient_key`,
+không ghép theo nhãn, không tự tạo hoặc cập nhật hồ sơ/liên kết.
+
+- 404 `NOT_FOUND`, message **`Patient not found`**: không tìm được hồ sơ theo tiêu chí đã chỉ định.
+  Khác 404 **`API route not found`** khi route chưa triển khai/container chưa cập nhật.
+- 400 `VALIDATION_ERROR`: thiếu/sai/lặp/trộn tham số, UUID sai hoặc query encoding hỏng.
+- 503 `DEPENDENCY_UNAVAILABLE`: không đọc được database; thông báo an toàn.
+- Phản hồi thành công có `Cache-Control: no-store`; frontend GET cũng dùng `cache: no-store`.
+
+GET kết quả theo patient_key rỗng không xác nhận hồ sơ tồn tại; UI phải dùng API này để phân biệt.
+Không thay hợp đồng `GET /api/lab-results` hoặc nghiệp vụ `POST /api/observations` bên dưới.
 
 ### Phản hồi EMR — đã triển khai ở C3
 

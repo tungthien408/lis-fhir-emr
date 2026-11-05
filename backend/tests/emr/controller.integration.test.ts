@@ -59,6 +59,26 @@ test("EMR Controller C3 (real HTTP + disposable PostgreSQL)", {
     } });
   });
 
+  await t.test("patient lookup resolves exact namespace independently of label and distinguishes an empty existing record", async t => {
+    const other = randomUUID();
+    await db.insert(patients).values({ patientKey: other, displayLabel: "C3 synthetic only" });
+    await db.insert(patientLinks).values({ identifierSystem: "urn:synthetic:other", identifierValue: patientId, patientKey: other });
+    t.after(async () => { await db.delete(patientLinks).where(eq(patientLinks.patientKey, other)); await db.delete(patients).where(eq(patients.patientKey, other)); });
+    for (const [system, key] of [["https://example.org/lis/patient", patientKey], ["urn:synthetic:other", other]]) {
+      const response = await request("/api/patients?" + new URLSearchParams({ identifier_system: system, identifier_value: patientId }));
+      assert.equal(response.status, 200); const body = response.body as { patient: { patient_key: string; display_label: string; identifiers: unknown[] } };
+      assert.equal(body.patient.patient_key, key); assert.equal(body.patient.display_label, "C3 synthetic only");
+      assert.deepEqual(body.patient.identifiers, [{ identifier_system: system, identifier_value: patientId }]);
+      assert.deepEqual(await request(`/api/patients?patient_key=${key}`), response);
+      assert.deepEqual(await request(`/api/lab-results?patient_key=${key}`), { status: 200, body: { items: [], limit: 20, offset: 0 } });
+    }
+    assert.equal((await request(`/api/patients?patient_key=${randomUUID()}`)).status, 404);
+    assert.equal((await request("/api/patients?" + new URLSearchParams({ identifier_system: "urn:missing", identifier_value: patientId }))).status, 404);
+    const before = await pool.query("select (select count(*) from emr.patients) as patients, (select count(*) from emr.patient_links) as links");
+    await request(`/api/patients?patient_key=${patientKey}`);
+    assert.deepEqual((await pool.query("select (select count(*) from emr.patients) as patients, (select count(*) from emr.patient_links) as links")).rows, before.rows);
+  });
+
   await t.test("201 is visible on a separate connection; retry is 200; conflict is 409 without overwrite", async () => {
     const observation = input(); observation.effectiveDateTime = "2026-10-29T15:00:00.123456+07:00";
     const response = await post(observation); const receipt = storageReceipt(response.status, response.body, observation);
@@ -164,6 +184,7 @@ test("EMR Controller C3 (real HTTP + disposable PostgreSQL)", {
     assertError(await post(input()), 503, "DEPENDENCY_UNAVAILABLE");
     assertError(await request(sourcePath(input())), 503, "DEPENDENCY_UNAVAILABLE");
     assertError(await request(patientPath), 503, "DEPENDENCY_UNAVAILABLE");
+    assertError(await request(`/api/patients?patient_key=${patientKey}`), 503, "DEPENDENCY_UNAVAILABLE");
     const ready = await request("/ready"); assert.equal(ready.status, 503);
     assert.ok(isRecord(ready.body)); assert.equal(ready.body.status, "unavailable");
     assert.deepEqual(await request("/health"), { status: 200, body: { service: "emr", status: "ok" } });

@@ -240,3 +240,31 @@ export async function listLabResults(
   try { return { kind: "found", items: await repository.listLabResults({ patientKey, limit, offset }), limit, offset }; }
   catch { return unavailable(); }
 }
+
+
+export type PatientOutcome = { kind: "found"; patient: labRepository.PatientRecord }
+  | { kind: "not_found"; error: { code: "NOT_FOUND"; message: string } }
+  | ObservationValidationFailure | Unavailable;
+/** Read-only patient lookup; no pagination, fuzzy match, inference or creation. */
+export async function findPatient(input: unknown,
+  repository: Pick<typeof labRepository, "findPatient"> = labRepository): Promise<PatientOutcome> {
+  let query: labRepository.PatientLookup;
+  try {
+    const value = record(input, "query", ["patient_key", "identifier_system", "identifier_value"]);
+    const read = (key: string) => {
+      const result = text(value[key], key);
+      if (/[\u0000-\u001f\u007f]/.test(result)) invalid(key, "Control characters are not supported");
+      return result;
+    };
+    if ("patient_key" in value) {
+      if ("identifier_system" in value || "identifier_value" in value) invalid("query", "Patient lookup modes cannot be combined");
+      const key = read("patient_key");
+      if (!uuid.test(key)) invalid("patient_key", "A UUID in 8-4-4-4-12 format is required");
+      query = { patient_key: key };
+    } else query = { identifier_system: read("identifier_system"), identifier_value: read("identifier_value") };
+  } catch (error) { if (error instanceof InvalidObservation) return failure(error); throw error; }
+  try {
+    const patient = await repository.findPatient(query);
+    return patient ? { kind: "found", patient } : { kind: "not_found", error: { code: "NOT_FOUND", message: "Patient not found" } };
+  } catch { return unavailable(); }
+}

@@ -1,9 +1,10 @@
 /** C3: HTTP parsing, query validation and response mapping; C2 owns business rules. */
 import express, { type Express, type NextFunction, type Request, type Response } from "express";
 import { emrDatabase } from "./db.js";
-import { getLabResultsBySource, listLabResults, storeObservation } from "./service.js";
+import { findPatient, getLabResultsBySource, listLabResults, storeObservation } from "./service.js";
 
 export interface EmrRouteDependencies {
+  findPatient: typeof findPatient;
   storeObservation: typeof storeObservation;
   getLabResultsBySource: typeof getLabResultsBySource;
   listLabResults: typeof listLabResults;
@@ -11,7 +12,7 @@ export interface EmrRouteDependencies {
 }
 
 const defaultDependencies: EmrRouteDependencies = {
-  storeObservation, getLabResultsBySource, listLabResults, checkDatabase: emrDatabase.check,
+  findPatient, storeObservation, getLabResultsBySource, listLabResults, checkDatabase: emrDatabase.check,
 };
 
 /** Shared by startup and HTTP tests. Parse JSON values; C2 requires an Observation object. */
@@ -127,6 +128,14 @@ export function registerEmrRoutes(app: Express, dependencies: EmrRouteDependenci
       case "unavailable":
         sendError(res, 503, outcome.error.code, outcome.error.message); return;
     }
+  });
+
+  app.get("/api/patients", async (req, res) => {
+    const outcome = await dependencies.findPatient(Object.fromEntries(queryParameters(req)));
+    res.set("Cache-Control", "no-store");
+    if (outcome.kind === "found") res.status(200).json({ patient: outcome.patient });
+    else sendError(res, outcome.kind === "not_found" ? 404 : outcome.kind === "unavailable" ? 503 : 400,
+      outcome.error.code, outcome.error.message);
   });
 
   app.get("/api/lab-results", async (req, res) => {
