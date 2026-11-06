@@ -1,4 +1,4 @@
-import { patientLabel, readableUtc } from '../src/state/presentation.ts'
+import { patientLabel, profileTitle, readableUtc } from '../src/state/presentation.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { readRoute, routeHash, normalizeInput } from '../src/state/routes.ts'
@@ -76,10 +76,16 @@ test('Mạng/JSON/schema/abort không thành rỗng hoặc kết quả đã lưu
 
 test('Thời gian dễ đọc giữ nguyên ngày MIMIC; không đưa microsecond qua Date', () => {
   const value = '2129-04-05T21:30:00.123456Z'
-  assert.equal(readableUtc(value), '05/04/2129 · 21:30:00 UTC')
+  assert.equal(readableUtc(value), '2129-04-05 21:30:00 UTC')
   assert.equal(value, '2129-04-05T21:30:00.123456Z')
-  assert.equal(readableUtc('2026-11-05T01:02:03.456789Z'), '05/11/2026 · 01:02:03 UTC')
+  assert.equal(readableUtc('2026-11-05T01:02:03.456789Z'), '2026-11-05 01:02:03 UTC')
 })
 test('Thời gian ngoài dạng UTC chuẩn được giữ nguyên, không đổi ngày hoặc tự gán múi giờ', () => {
   for (const value of ['2026-11-05T08:02:03.123456+07:00', 'not-a-timestamp']) assert.equal(readableUtc(value), value)
+})
+
+test('Tiêu đề hồ sơ không lặp cụm "Hồ sơ bệnh nhân"', () => {
+  assert.equal(profileTitle('Demo patient 10007928'), 'Hồ sơ bệnh nhân 10007928')
+  assert.equal(profileTitle('Nguyễn Văn An'), 'Hồ sơ bệnh nhân – Nguyễn Văn An')
+  assert.equal(profileTitle(null), 'Hồ sơ bệnh nhân – Chưa có nhãn hiển thị')
 })

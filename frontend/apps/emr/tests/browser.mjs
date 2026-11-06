@@ -5,7 +5,7 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { openHttpBrowser, until } from './helpers/browser.mjs'
 import { patient, result, uuid, patientKey, otherKey, patientId, patientSystem, resultSystem } from './fixtures.mjs'
 const live=process.argv.includes('--real'), mode=process.argv.includes('--dev')?'development':'preview'
-const parent=path.resolve(process.env.EMR_EVIDENCE_DIR||'tests/evidence/2026-11-05/browser');mkdirSync(parent,{recursive:true})
+const parent=path.resolve(process.env.EMR_EVIDENCE_DIR||path.join(import.meta.dirname,'evidence/2026-11-05/browser'));mkdirSync(parent,{recursive:true})
 const evidence=mkdtempSync(path.join(parent,(live?'real-':'mock-')+mode+'-'));console.log('Evidence: '+evidence)
 const report={startedAt:new Date().toISOString(),source:live?'Actual EMR API/proxy, GET only':'Chrome HTTP simulation, synthetic only',mode,cases:[],completed:false}
 const patients=[patient(),patient(otherKey,'Other/AbC'),patient(uuid(3),'MIMIC-P-00003')]
@@ -47,7 +47,7 @@ async function checkPatientLabel(original, expected) {
   summary:[...document.querySelectorAll('.result-summary .facts>div')].find(n=>n.querySelector('dt').textContent==='Bệnh nhân liên quan')?.querySelector('dd').textContent,
   original:document.querySelector('[data-emr="original-label"]')?.textContent,
   rawVisible:document.querySelector('[data-emr="original-label"]')?.checkVisibility()}))
- assert.equal(labels.card,expected);if(labels.profile!==undefined)assert.equal(labels.profile,'Hồ sơ bệnh nhân – '+expected)
+ assert.equal(labels.card,expected);if(labels.profile!==undefined)assert.equal(labels.profile,expected.startsWith('Hồ sơ bệnh nhân')?expected:'Hồ sơ bệnh nhân – '+expected)
  if(labels.summary!==undefined)assert.equal(labels.summary,expected)
  assert.equal(labels.original,original);assert.equal(labels.rawVisible,false)
  await evaluate(()=>document.querySelector('.patient-card summary').click())
@@ -98,7 +98,7 @@ try{
   await goto(savedHash)
  })
  await check('Hồ sơ đúng bệnh nhân: danh sách đúng ID, thứ tự, giá trị, 20 dòng và không total giả',async()=>{
-  await action(()=>click('Xem hồ sơ bệnh nhân'));const s=await state();assert.equal(s.patient,key);assert.deepEqual(s.rows,expectedRows.slice(0,20).map(r=>({target:r.target_id,source:r.external_id,quantity:r.quantity})));assert.ok(!s.body.includes('Tổng số'));assert.ok(await evaluate(()=>document.querySelector('main>section>.section-heading h2').textContent.startsWith('Hồ sơ bệnh nhân – ')));assert.equal(await evaluate(()=>document.querySelector('thead th').textContent),'Xét nghiệm');assert.ok(s.body.includes('Các kết quả xét nghiệm đã lưu'));if(expectedRows.length<20){assert.equal(await evaluate(()=>document.querySelectorAll('.pagination button').length),0);assert.ok(s.body.includes('Đang hiển thị '+expectedRows.length+' kết quả'))};await screenshot('profile-desktop')
+  await action(()=>click('Xem hồ sơ bệnh nhân'));const s=await state();assert.equal(s.patient,key);assert.deepEqual(s.rows,expectedRows.slice(0,20).map(r=>({target:r.target_id,source:r.external_id,quantity:r.quantity})));assert.ok(!s.body.includes('Tổng số'));assert.ok(await evaluate(()=>document.querySelector('main>section>.section-heading h2').textContent.startsWith('Hồ sơ bệnh nhân')));assert.equal(await evaluate(()=>document.querySelector('thead th').textContent),'Xét nghiệm');assert.ok(s.body.includes('Các kết quả xét nghiệm đã lưu'));if(expectedRows.length<20){assert.equal(await evaluate(()=>document.querySelectorAll('.pagination button').length),0);assert.ok(s.body.includes('Đang hiển thị '+expectedRows.length+' kết quả'))};await screenshot('profile-desktop')
  })
  await check('Chi tiết đúng cặp nguồn, chuỗi thập phân/microsecond, JSON thu gọn, không VERIFY giả',async()=>{
   await action(()=>evaluate(id=>{const row=[...document.querySelectorAll('tbody tr')].find(r=>r.dataset.source===id);row.querySelector('button').click()},expectedResult.external_id));const s=await state();assert.equal(s.target,expectedResult.target_id);assert.equal(s.patient,key);assert.equal(s.quantity,expectedResult.quantity);assert.ok(s.body.includes(expectedResult.effective_at));assert.ok(s.body.includes(expectedResult.received_at));assert.ok(s.body.includes(expectedResult.stored_at));assert.ok(s.body.includes('Đã lưu tại EMR'));assert.ok(!s.body.includes('Đã VERIFY'));assert.equal(await evaluate(()=>document.querySelector('.technical details').open),false);await screenshot('result-desktop')

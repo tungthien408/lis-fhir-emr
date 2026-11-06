@@ -5,7 +5,7 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { openHttpBrowser, until } from './helpers/browser.mjs'
 import { detail, attempts, uuid } from './fixtures.mjs'
 const live = process.argv.includes('--real'), mode = process.argv.includes('--dev') ? 'development' : 'preview'
-const parent = path.resolve(process.env.MONITOR_EVIDENCE_DIR || 'tests/evidence/2026-11-04/browser'); mkdirSync(parent, { recursive: true })
+const parent = path.resolve(process.env.MONITOR_EVIDENCE_DIR || path.join(import.meta.dirname, 'evidence/2026-11-04/browser')); mkdirSync(parent, { recursive: true })
 const evidence = mkdtempSync(path.join(parent, (live ? 'real-' : 'mock-') + mode + '-'))
 console.log('Evidence: ' + evidence)
 const report = { source: live ? 'Actual Monitor proxy + Middleware, GET only' : 'Chrome CDP HTTP simulation, no real writes', mode, cases: [], completed: false }
@@ -33,7 +33,7 @@ function simulated(req) {
   return { json: { items, limit, offset } }
 }
 const evaluate = (f, arg) => browser.evaluate(f, arg)
-async function state() { return evaluate(() => ({ hash: location.hash, rows: [...document.querySelectorAll('.results-card tbody tr')].map(r => ({ source: r.cells[0].textContent, id: r.cells[2].textContent })), page: document.querySelector('.pagination p')?.textContent,
+async function state() { return evaluate(() => ({ hash: location.hash, rows: [...document.querySelectorAll('.results-card tbody tr')].map(r => ({ source: r.cells[0].textContent, id: r.cells[3].textContent })), page: document.querySelector('.pagination p')?.textContent,
   detail: document.querySelector('.detail-id')?.textContent, status: document.querySelector('[data-monitor="status"]')?.textContent, verification: document.querySelector('[data-monitor="verification"]')?.textContent,
   body: document.querySelector('main')?.textContent, alerts: [...document.querySelectorAll('[role="alert"]')].map(n => n.textContent),
   loading: !!document.querySelector('.feedback[role="status"]'), overflow: document.documentElement.scrollWidth > innerWidth + 1,
