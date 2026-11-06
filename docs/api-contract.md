@@ -1,7 +1,7 @@
 # Hợp đồng API V1 — LIS → Middleware → EMR
 
 > **Mục đích:** Thống nhất dữ liệu gửi/nhận để hai thành viên có thể lập trình độc lập.  
-> **Trạng thái:** Các API LIS (A3), Middleware (B3), EMR (C3) và Dispatcher D2 đã triển khai. **D3 đã kiểm thử toàn luồng backend thật: LIS Publish → Dispatcher → Middleware → Worker/Mapper → EMR → đọc lại → DELIVERED**, với PostgreSQL cô lập và dữ liệu giả có đáp án riêng. Xem [review D3](spp-66-d3-review.md) cho bằng chứng, cách chạy và giới hạn. Các bộ [C4](spp-66-c4-review.md), [D2](spp-66-d2-review.md) và B4B được giữ riêng. Chưa kiểm thử bộ MIMIC/SPP-65 chính thức, chưa làm D4, frontend hoặc evaluator. `/health` và `/ready` giữ nguyên.
+> **Trạng thái:** Các API LIS (A3), Middleware (B3), EMR (C3) và Dispatcher D2 đã triển khai. **D3 đã kiểm thử toàn luồng backend thật: LIS Publish → Dispatcher → Middleware → Worker/Mapper → EMR → đọc lại → DELIVERED**, với PostgreSQL cô lập và dữ liệu giả có đáp án riêng. Xem [review D3](spp-66-d3-review.md) cho bằng chứng, cách chạy và giới hạn. Các bộ [C4](spp-66-c4-review.md), [D2](spp-66-d2-review.md) và B4B được giữ riêng. Chưa kiểm thử bộ MIMIC/SPP-65 chính thức, chưa làm D4 hoặc evaluator. Frontend LIS, Exchange Monitor và EMR đã có triển khai riêng; xem báo cáo nghiệm thu frontend tương ứng. `/health` và `/ready` giữ nguyên.
 
 ## 1. Quy ước chung
 
@@ -17,12 +17,14 @@
 | LIS | `GET /api/results` | Xem/lọc kết quả xét nghiệm | Đã triển khai, kiểm thử A3 |
 | LIS | `GET /api/results/:resultId` | Xem chi tiết kết quả | Đã triển khai, kiểm thử A3 |
 | LIS | `POST /api/results/:resultId/publish` | Lưu yêu cầu gửi một kết quả | Đã triển khai, kiểm thử A3 |
+| LIS | `GET /api/results/:resultId/publish-event` | Tra cứu chỉ đọc trạng thái Publish theo kết quả, khôi phục sau F5 | Đã triển khai Giai đoạn 2.3 |
 | LIS | `GET /api/publish-events/:eventId` | Xem tình trạng gửi | Đã triển khai, kiểm thử A3 |
 | Middleware | `POST /api/exchanges` | Nhận dữ liệu từ LIS | Đã triển khai, kiểm thử B3 |
 | Middleware | `GET /api/exchanges` | Xem/lọc giao dịch | Đã triển khai, kiểm thử B3 |
 | Middleware | `GET /api/exchanges/:exchangeId` | Xem chi tiết và lịch sử giao dịch | Đã triển khai, kiểm thử B3 |
 | EMR | `POST /api/observations` | Lưu kết quả theo FHIR R4 Observation | Đã triển khai C3; kiểm thử tích hợp Worker thật C4 |
 | EMR | `GET /api/lab-results` | Xem/đọc lại kết quả đã lưu | Đã triển khai C3; kiểm thử tích hợp Worker thật C4 |
+| EMR | `GET /api/patients` | Tra cứu chính xác một hồ sơ theo mã nguồn hoặc UUID | Bổ sung giao diện EMR; chỉ đọc, không danh sách toàn bộ |
 | Cả ba | `GET /health` | Kiểm tra HTTP đang chạy | Đã có |
 | Cả ba | `GET /ready` | Kiểm tra kết nối, tài khoản và bảng database | Đã có |
 
@@ -38,7 +40,8 @@ liệu giả và bấm thử: [hướng dẫn A3](spp-66-a3-review.md#thử-api-
 `POST /api/results/:resultId/publish` **không cần body**; chỉ nhận kết quả `FINAL` hợp lệ.
 
 - **Lần đầu:** lưu `event_id`, bản chụp dữ liệu (`source_snapshot`), `source_hash`, thời điểm Publish trong một giao dịch LIS; trả **`202`**.
-- **Publish lại cùng kết quả:** trả **`200`** với `event_id` cũ, không tạo sự kiện mới.
+- **Publish lại cùng nội dung:** trả **`200`** với `event_id` cũ, không tạo sự kiện mới hay đặt lại dispatcher. Dựng lại snapshot theo định dạng JSON number/UTC hiện có; so sánh cả canonical JSON và SHA-256. `3.4000` và `3.4` là cùng nội dung. Thay đổi chính sách `accepted_units` không thuộc snapshot.
+- **Nội dung nguồn thay đổi sau Publish:** trả **`409 CONTENT_CONFLICT`**, giữ nguyên event/snapshot/hash và tiến trình cũ. Kết quả đã Publish rồi chuyển về READY cũng xung đột với snapshot FINAL. So sánh và tạo event nằm trong giao dịch giữ SHARE lock trên nguồn; unique constraint hiện có bảo vệ khi gọi đồng thời.
 - Không tìm thấy → **`404`**; không đủ điều kiện → **`422`**.
 - Body không bắt buộc; ID ở đường dẫn là ID được xử lý. Body JSON hợp lệ nếu
   gửi thêm không thay đổi nội dung Publish. JSON hỏng trả `400`, body JSON vượt
@@ -298,6 +301,88 @@ chung `The latest dispatch attempt failed.` thay vì nội dung chẩn đoán th
 Mã lỗi lưu không đúng dạng chữ hoa/số/gạch dưới (tối đa 64 ký tự, bắt đầu bằng
 chữ) được trình bày là `DISPATCH_ERROR`; không sửa bản ghi gốc.
 
+### Tra cứu Publish theo kết quả — Giai đoạn 2.3
+
+`GET /api/results/:resultId/publish-event` không cần body, không nhận query.
+`resultId` dùng cùng quy tắc chuỗi định danh như GET chi tiết; encode đúng một lần.
+Thao tác chỉ SELECT, không tạo event hoặc cập nhật tiến trình; trả `Cache-Control: no-store`.
+
+Chưa Publish trả **200**, khác với kết quả không tồn tại (**404 NOT_FOUND**):
+
+```json
+{"result_id":"R1","result_status":"FINAL","published":false,"event":null}
+```
+
+Đã Publish trả **200**:
+
+```json
+{
+  "result_id": "R1", "result_status": "FINAL", "published": true,
+  "event": {
+    "event_id": "00000000-0000-4000-8000-000000000001",
+    "result_id": "R1", "dispatch_status": "PENDING", "exchange_id": null,
+    "dispatch_attempt_count": 0, "last_error_code": null, "last_error_message": null,
+    "published_at": "2026-11-04T05:00:00.000Z", "acked_at": null, "next_retry_at": null
+  }
+}
+```
+
+`result_status` là nguồn hiện tại, không phải trạng thái trong snapshot cũ.
+Ba thời điểm lấy từ event đã lưu; `acked_at`/`next_retry_at` nullable.
+Thông tin lỗi được làm an toàn giống GET event theo UUID. ID/query sai trả
+**400 VALIDATION_ERROR**; lỗi truy cập database trả **503 DEPENDENCY_UNAVAILABLE**.
+Mọi lỗi dùng `{ "error": { "code": "...", "message": "..." } }`.
+GET lặp trả dữ liệu hiện tại, không phát sinh tác dụng phụ. GET theo UUID giữ
+nguyên bảy trường cũ và cũng được đánh dấu `no-store`.
+
+Frontend LIS đi qua tiền tố `/api/lis` cho các endpoint LIS; GET middleware
+`/api/middleware/exchanges/:exchangeId` đi qua proxy middleware sẵn có.
+`ACK` chỉ xác nhận tiếp nhận. UI chỉ hiển thị `DELIVERED` khi phản hồi MW khớp
+`exchange_id`, `event_id`, `source_result_id`, `source_system=lis-demo`, và có
+`verified_at`/`completed_at` hợp lệ. Lỗi đọc hoặc dữ liệu không khớp là **Chưa xác minh**.
+Không có API retry thủ công mới hoặc deep link Monitor.
+
+### API lịch sử attempts — Exchange Monitor
+
+`GET /api/exchanges/:exchangeId/attempts` chỉ đọc. UUID 8-4-4-4-12; không nhận query/body.
+200 cho exchange có thật (items có thể rỗng), 400 `VALIDATION_ERROR`, 404 `NOT_FOUND`/`Exchange not found`,
+503 `DEPENDENCY_UNAVAILABLE`. Route thiếu có message `API route not found`, khác exchange thiếu.
+`Cache-Control: no-store`. Không tạo lượt thử, thay status/counters, gọi Worker hoặc reset retry.
+
+```json
+{
+  "exchange_id":"00000000-0000-4000-8000-000000000001",
+  "event_id":"00000000-0000-4000-8000-000000000002",
+  "source_system":"lis-demo","source_result_id":"R1",
+  "items":[{
+    "attempt_id":"00000000-0000-4000-8000-000000000003",
+    "exchange_id":"00000000-0000-4000-8000-000000000001",
+    "phase":"SEND","attempt_no":1,
+    "started_at":"2026-11-04T10:00:00.000Z","sent_at":null,
+    "response_at":null,"ended_at":null,"http_status":null,
+    "error_code":null,"error_message":null,"receipt":null
+  }],
+  "diagnostics":[]
+}
+```
+
+Items giữ thứ tự repository `started_at ASC, attempt_id ASC`, không đánh lại số lượt.
+`sent_at`, `response_at`, `ended_at`, `http_status`, `error_code`, `error_message`, `receipt` nullable.
+Pha SEND/VERIFY và attempt_no lấy từ bản ghi; không dựng từ timeline.
+
+`receipt` chỉ được trả cho SEND đã kết thúc, không lỗi, HTTP 201/STORED hoặc 200/ALREADY_EXISTS,
+identity khớp result và namespace FHIR dự án. Chỉ gồm `result`, `external_system`, `external_id`,
+`target_id`, `patient_key`; UUID phải hợp lệ. Không trả `response_body` thô. Receipt chưa phải DELIVERED.
+
+`diagnostics` trích code từ event detail, gồm `log_event_id`, `attempt_id` (nullable), `event_type`,
+`occurred_at`, `error_code`. Chỉ công khai mã Worker đã biết (INVALID_SOURCE, MAPPING_UNSUPPORTED,
+PAYLOAD_INTEGRITY, STORAGE_RECEIPT_MISSING, DUPLICATE_CONFLICT, REMOTE_VALIDATION_ERROR, HTTP_TEMPORARY,
+HTTP_PERMANENT, HTTP_TIMEOUT, NETWORK_ERROR, INVALID_STORAGE_RESPONSE, INVALID_VERIFY_RESPONSE,
+VERIFY_MISMATCH, LEASE_EXPIRED, RETRY_EXHAUSTED). Mã không nhận diện được thay DIAGNOSTIC_ERROR.
+Thông điệp lỗi attempts luôn là thông báo chung do server dựng, không lấy raw error_message.
+Không trả nguyên events.detail, mismatch values, stack, SQL, token hoặc body lỗi từ xa.
+Timestamp cột vẫn dùng ISO UTC millisecond theo hợp đồng hiện có. Không có API retry thủ công.
+
 ### Phản hồi Middleware — đã triển khai ở B3
 
 Trước B3, contract chưa chốt JSON cho từng phần tử danh sách/chi tiết và event.
@@ -386,6 +471,47 @@ sai định dạng trả `400`, hợp lệ nhưng không tồn tại trả `404`
 POST và GET chi tiết không hỗ trợ query parameter, có query trả `400`.
 Lỗi database trên ba API trả `503`/`DEPENDENCY_UNAVAILABLE`, không lộ lỗi driver.
 Hướng dẫn thử bằng `curl` và kết quả test: [SPP-66 B3](spp-66-b3-review.md).
+
+### EMR — tra cứu bệnh nhân chỉ đọc (bổ sung giao diện)
+
+`GET /api/patients` có đúng hai chế độ, loại trừ nhau:
+
+- `identifier_system` + `identifier_value`: khớp chính xác cả namespace và mã nguồn.
+- `patient_key`: UUID dạng 8-4-4-4-12, không phân biệt hoa/thường theo kiểu UUID PostgreSQL.
+
+Không nhận pagination, tham số phụ, tham số lặp, array/object hoặc trộn hai chế độ.
+Identifier hợp lệ không rỗng/chỉ trắng, không có ký tự điều khiển; backend giữ nguyên case/khoảng trắng.
+Namespace LIS thực tế là `https://example.org/lis/patient`; frontend chỉ chuẩn hóa đầu vào
+`MIMIC-P-<hậu tố số>` đã nhận diện, không sửa định danh trong response.
+
+200 trả một hồ sơ đã tồn tại (không có kết quả xét nghiệm vẫn 200):
+
+```json
+{
+  "patient": {
+    "patient_key": "6eac20d5-c71c-50a6-8adb-17bd7b5677de",
+    "display_label": "Demo patient 10007928",
+    "identifiers": [
+      {"identifier_system": "https://example.org/lis/patient", "identifier_value": "MIMIC-P-10007928"}
+    ]
+  }
+}
+```
+
+`display_label` có thể null; `identifiers` chứa các cặp namespace/value liên kết của đúng hồ sơ,
+được sắp ổn định theo system/value, có thể rỗng. Chỉ công khai các cột nhận diện mô phỏng này;
+không bổ sung tuổi, giới tính, chẩn đoán, raw database/stack hoặc payload bệnh nhân.
+Repository dùng một câu SELECT với subquery liên kết ràng buộc đầy đủ vào `emr.patients.patient_key`,
+không ghép theo nhãn, không tự tạo hoặc cập nhật hồ sơ/liên kết.
+
+- 404 `NOT_FOUND`, message **`Patient not found`**: không tìm được hồ sơ theo tiêu chí đã chỉ định.
+  Khác 404 **`API route not found`** khi route chưa triển khai/container chưa cập nhật.
+- 400 `VALIDATION_ERROR`: thiếu/sai/lặp/trộn tham số, UUID sai hoặc query encoding hỏng.
+- 503 `DEPENDENCY_UNAVAILABLE`: không đọc được database; thông báo an toàn.
+- Phản hồi thành công có `Cache-Control: no-store`; frontend GET cũng dùng `cache: no-store`.
+
+GET kết quả theo patient_key rỗng không xác nhận hồ sơ tồn tại; UI phải dùng API này để phân biệt.
+Không thay hợp đồng `GET /api/lab-results` hoặc nghiệp vụ `POST /api/observations` bên dưới.
 
 ### Phản hồi EMR — đã triển khai ở C3
 

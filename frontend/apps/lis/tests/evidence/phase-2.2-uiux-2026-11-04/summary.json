@@ -1,0 +1,87 @@
+{
+  "head": "e47af51a1fca10092e22297aadbdcc5e75297f6d",
+  "staged": [],
+  "chrome": [
+    {
+      "suite": "conditions-http",
+      "file": "verification-hQEfyw/conditions-http/conditions-mock.json",
+      "total": 10,
+      "passed": 10
+    },
+    {
+      "suite": "conditions-real",
+      "file": "verification-hQEfyw/conditions-real/conditions-real.json",
+      "total": 8,
+      "passed": 8
+    },
+    {
+      "suite": "detail-http",
+      "file": "verification-hQEfyw/detail-http/detail-http-browser.json",
+      "total": 6,
+      "passed": 6
+    },
+    {
+      "suite": "detail-real",
+      "file": "verification-hQEfyw/detail-real/detail-real-browser.json",
+      "total": 3,
+      "passed": 3
+    },
+    {
+      "suite": "dot-dev-http",
+      "file": "verification-hQEfyw/dot-dev-http/browser-dot.json",
+      "total": 22,
+      "passed": 22
+    },
+    {
+      "suite": "dot-dev-real",
+      "file": "verification-hQEfyw/dot-dev-real/browser-dot.json",
+      "total": 5,
+      "passed": 5
+    },
+    {
+      "suite": "dot-preview-http",
+      "file": "verification-hQEfyw/dot-preview-http/browser-dot.json",
+      "total": 22,
+      "passed": 22
+    },
+    {
+      "suite": "dot-preview-real",
+      "file": "verification-hQEfyw/dot-preview-real/browser-dot.json",
+      "total": 5,
+      "passed": 5
+    },
+    {
+      "suite": "list-http",
+      "file": "verification-hQEfyw/list-http/http-browser.json",
+      "total": 10,
+      "passed": 10
+    },
+    {
+      "suite": "list-real",
+      "file": "verification-hQEfyw/list-real/real-browser.json",
+      "total": 5,
+      "passed": 5
+    },
+    {
+      "suite": "uiux-mock",
+      "file": "verification-hQEfyw/uiux-mock/browser-uiux.json",
+      "total": 21,
+      "passed": 21
+    },
+    {
+      "suite": "uiux-real",
+      "file": "verification-hQEfyw/uiux-real/browser-uiux.json",
+      "total": 20,
+      "passed": 20
+    }
+  ],
+  "total": 137,
+  "passed": 137,
+  "unit": {
+    "total": 36,
+    "passed": 36
+  },
+  "typescript": "PASS",
+  "lint": "PASS",
+  "build": "PASS"
+}

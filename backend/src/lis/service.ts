@@ -4,7 +4,7 @@
  * Trả outcome cho Controller tương lai; không xử lý HTTP hoặc tự gửi dữ liệu.
  */
 import { randomUUID } from "node:crypto";
-import { hashCanonicalJson } from "./canonical-json.js";
+import { canonicalJson, hashCanonicalJson } from "./canonical-json.js";
 import {
   withPublishTransaction,
   type JsonObject,
@@ -34,6 +34,7 @@ export type PublishOutcome =
   | { kind: "created"; event: PublishEvent }
   | { kind: "existing"; event: PublishEvent }
   | { kind: "not_found"; resultId: string }
+  | { kind: "conflict"; resultId: string; error: { code: "CONTENT_CONFLICT"; message: string } }
   | {
     kind: "invalid";
     resultId: string;
@@ -94,7 +95,7 @@ function jsonNumber(value: string, field: string): number {
   return Object.is(number, -0) ? 0 : number;
 }
 
-function buildSnapshot(state: PublishResultState): SourceSnapshot {
+function buildSnapshot(state: PublishResultState, checkCatalog = true): SourceSnapshot {
   const { result, patient, test } = state;
   if (result.resultStatus !== "FINAL") {
     throw new InvalidPublishData("RESULT_NOT_READY", "result_status", "Only FINAL results can be published");
@@ -106,10 +107,10 @@ function buildSnapshot(state: PublishResultState): SourceSnapshot {
   if (patient.patientId !== result.patientId || test.testCode !== result.testCode) {
     throw new InvalidPublishData("VALIDATION_ERROR", "result_id", "Source data relationships do not match");
   }
-  if (!isAcceptedUnits(test.acceptedUnits)) {
+  if (checkCatalog && !isAcceptedUnits(test.acceptedUnits)) {
     throw new InvalidPublishData("INVALID_TEST_CODE", "accepted_units", "Test catalog has no valid accepted units");
   }
-  if (result.unit.trim().length === 0 || !test.acceptedUnits.includes(result.unit)) {
+  if (checkCatalog && (result.unit.trim().length === 0 || !(test.acceptedUnits as string[]).includes(result.unit))) {
     throw new InvalidPublishData("INVALID_UNIT", "unit", "Result unit is not accepted by its test catalog");
   }
 
@@ -142,36 +143,43 @@ function buildSnapshot(state: PublishResultState): SourceSnapshot {
   };
 }
 
-/** created/existing/not_found/invalid map to 202/200/404/422 in the future Controller. */
+/** Compare the original business snapshot; catalog policy is not part of its content.
+ * Keep the existing JSON-number/UTC/canonical SHA-256 format. No migration or rewrite.
+ */
+function matchesSnapshot(state: PublishResultState, event: PublishEvent): boolean {
+  try {
+    const snapshot = buildSnapshot(state, false);
+    return hashCanonicalJson(snapshot) === event.sourceHash
+      && canonicalJson(snapshot) === canonicalJson(event.sourceSnapshot as JsonObject);
+  } catch (error) {
+    if (error instanceof InvalidPublishData) return false;
+    throw error;
+  }
+}
+function conflict(resultId: string): Extract<PublishOutcome, { kind: "conflict" }> {
+  return { kind: "conflict", resultId, error: { code: "CONTENT_CONFLICT",
+    message: "Current result content differs from the published snapshot. The original event was preserved." } };
+}
+
 export async function publishResult(resultId: string): Promise<PublishOutcome> {
   return withPublishTransaction(resultId, async (repository) => {
-    const existing = await repository.getPublishEvent();
-    if (existing) return { kind: "existing", event: existing };
-
-    const state = await repository.getResult();
-    // A Publisher may have committed while we waited for a source writer's lock.
-    const racedEvent = await repository.getPublishEvent();
-    if (racedEvent) return { kind: "existing", event: racedEvent };
+    const state = await repository.getResult(); // SHARE locks source through comparison/commit.
     if (!state) return { kind: "not_found", resultId };
+    const existing = await repository.getPublishEvent(); // Fresh statement after any lock wait.
+    if (existing) return matchesSnapshot(state, existing) ? { kind: "existing", event: existing } : conflict(resultId);
 
     let snapshot: SourceSnapshot;
-    try {
-      snapshot = buildSnapshot(state);
-    } catch (error) {
+    try { snapshot = buildSnapshot(state); }
+    catch (error) {
       if (!(error instanceof InvalidPublishData)) throw error;
-      return {
-        kind: "invalid", resultId,
-        error: { code: error.code, field: error.field, message: error.message },
-      };
+      return { kind: "invalid", resultId, error: { code: error.code, field: error.field, message: error.message } };
     }
-
     const saved = await repository.createPublishEvent({
-      eventId: randomUUID(),
-      sourceSystem: SOURCE_SYSTEM,
-      sourceSnapshot: snapshot,
-      sourceHash: hashCanonicalJson(snapshot),
-      publishedAt: new Date(),
+      eventId: randomUUID(), sourceSystem: SOURCE_SYSTEM, sourceSnapshot: snapshot,
+      sourceHash: hashCanonicalJson(snapshot), publishedAt: new Date(),
     });
+    // Includes the loser of a concurrent INSERT; never silently accept other content.
+    if (!saved.created && !matchesSnapshot(state, saved.event)) return conflict(resultId);
     return { kind: saved.created ? "created" : "existing", event: saved.event };
   });
 }

@@ -186,11 +186,41 @@ test("Middleware Controller integration (HTTP + PostgreSQL)", {
     acceptedId(await post(input));
   });
 
+  await t.test("Monitor attempts: PostgreSQL order, safe receipt/errors, nulls and repeated GET leave rows unchanged", async () => {
+    const input = validEnvelope(); input.source_system = prefix + "-MONITOR";
+    input.source_result_id = " Kết quả/🧪+%?# "; input.source_snapshot.result_id = input.source_result_id; rehash(input);
+    const id = acceptedId(await post(input));
+    await pool.query("update integration.exchange_transactions set fhir_payload=$2::jsonb where exchange_id=$1", [id,
+      JSON.stringify({ identifier: [{ system: "https://example.org/lis/result", value: input.source_result_id }] })]);
+    const ids = [crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID()];
+    const receipt = { result: "STORED", external_system: "https://example.org/lis/result", external_id: input.source_result_id,
+      target_id: crypto.randomUUID(), patient_key: crypto.randomUUID(), secret: "must-not-leak" };
+    for (const [i, phase, code, body, status] of [
+      [2, "VERIFY", null, { outcome: "delivered" }, 200],
+      [0, "SEND", "HTTP_TEMPORARY", { raw: "SELECT secret" }, 503],
+      [1, "SEND", null, receipt, 201],
+    ] as const) await pool.query(`insert into integration.exchange_attempts(attempt_id,exchange_id,attempt_no,phase,started_at,ended_at,http_status,error_code,error_message,response_body)
+      values ($1,$2,$3,$4,('2026-11-04T10:00:00Z'::timestamptz + $8::integer * interval '1 second'),now(),$5,$6,'SELECT secret',$7::jsonb)`,
+      [ids[i], id, phase === "VERIFY" ? 1 : i + 1, phase, status, code, JSON.stringify(body), i + 1]);
+    await repository.appendExchangeEvent({ exchangeId: id, eventType: "FAILED", detail: { code: "INVALID_SOURCE", sql: "SELECT secret" } });
+    const before = { row: await repository.getExchangeById(id), attempts: await repository.getExchangeAttempts(id), events: await repository.getExchangeEvents(id) };
+    const response = await request(`/api/exchanges/${id}/attempts`);
+    assert.equal(response.status, 200); assert.ok(isRecord(response.body)); assert.ok(Array.isArray(response.body.items));
+    assert.deepEqual(response.body.items.map((x: { attempt_id: string }) => x.attempt_id), ids);
+    assert.equal(response.body.source_result_id, input.source_result_id);
+    assert.equal(response.body.items[0].error_code, "HTTP_TEMPORARY"); assert.equal(response.body.items[0].receipt, null);
+    assert.equal(response.body.items[1].receipt.target_id, receipt.target_id); assert.equal(response.body.items[2].sent_at, null);
+    assert.doesNotMatch(JSON.stringify(response.body), /SELECT|secret|must-not-leak|response_body|lease_token/);
+    assert.deepEqual(await request(`/api/exchanges/${id}/attempts`), response);
+    assert.deepEqual({ row: await repository.getExchangeById(id), attempts: await repository.getExchangeAttempts(id), events: await repository.getExchangeEvents(id) }, before);
+  });
+
   await t.test("closed PostgreSQL connections yield 503 for business routes/ready; health remains 200", async () => {
     await middlewareDatabase.close(); closed = true;
     assertError(await post(validEnvelope()), 503, "DEPENDENCY_UNAVAILABLE");
     assertError(await request("/api/exchanges"), 503, "DEPENDENCY_UNAVAILABLE");
     assertError(await request(`/api/exchanges/${ids[0]}`), 503, "DEPENDENCY_UNAVAILABLE");
+    assertError(await request(`/api/exchanges/${ids[0]}/attempts`), 503, "DEPENDENCY_UNAVAILABLE");
     const ready = await request("/ready"); assert.equal(ready.status, 503); assert.ok(isRecord(ready.body));
     assert.equal(ready.body.status, "unavailable");
     assert.deepEqual(await request("/health"), { status: 200, body: { service: "middleware", status: "ok" } });

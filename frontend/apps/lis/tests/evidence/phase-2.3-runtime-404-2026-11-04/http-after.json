@@ -1,0 +1,160 @@
+{
+  "completed": true,
+  "source": "Real GET only; no mutations",
+  "checks": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:3101/api/results/MIMIC-LAB-100142",
+      "status": 200,
+      "body": {
+        "result_id": "MIMIC-LAB-100142",
+        "patient_id": "MIMIC-P-10007928",
+        "test_code": "50912",
+        "test_name": "Creatinine",
+        "fluid": "Blood",
+        "category": "Chemistry",
+        "value_num": "0.9",
+        "unit": "mg/dL",
+        "reference_low": "0.4",
+        "reference_high": "1.1",
+        "effective_at": "2129-04-05T21:30:00.000000Z",
+        "result_status": "FINAL"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:3101/api/results/MIMIC-LAB-100142/publish-event",
+      "status": 200,
+      "body": {
+        "result_id": "MIMIC-LAB-100142",
+        "result_status": "FINAL",
+        "published": false,
+        "event": null
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:3101/api/results/PHASE23-NOT-EXIST/publish-event",
+      "status": 404,
+      "body": {
+        "error": {
+          "code": "NOT_FOUND",
+          "message": "Laboratory result not found"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:3101/api/results/MIMIC-LAB-100142/publish-events",
+      "status": 404,
+      "body": {
+        "error": {
+          "code": "NOT_FOUND",
+          "message": "API route not found"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:3101/api/results/%20/publish-event",
+      "status": 400,
+      "body": {
+        "error": {
+          "code": "VALIDATION_ERROR",
+          "message": "resultId must be a non-empty identifier without control characters"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/lis/results/MIMIC-LAB-100142",
+      "status": 200,
+      "body": {
+        "result_id": "MIMIC-LAB-100142",
+        "patient_id": "MIMIC-P-10007928",
+        "test_code": "50912",
+        "test_name": "Creatinine",
+        "fluid": "Blood",
+        "category": "Chemistry",
+        "value_num": "0.9",
+        "unit": "mg/dL",
+        "reference_low": "0.4",
+        "reference_high": "1.1",
+        "effective_at": "2129-04-05T21:30:00.000000Z",
+        "result_status": "FINAL"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/lis/results/MIMIC-LAB-100142/publish-event",
+      "status": 200,
+      "body": {
+        "result_id": "MIMIC-LAB-100142",
+        "result_status": "FINAL",
+        "published": false,
+        "event": null
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/lis/results/PHASE23-NOT-EXIST/publish-event",
+      "status": 404,
+      "body": {
+        "error": {
+          "code": "NOT_FOUND",
+          "message": "Laboratory result not found"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/lis/results/MIMIC-LAB-100142/publish-events",
+      "status": 404,
+      "body": {
+        "error": {
+          "code": "NOT_FOUND",
+          "message": "API route not found"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:5173/api/lis/results/%20/publish-event",
+      "status": 400,
+      "body": {
+        "error": {
+          "code": "VALIDATION_ERROR",
+          "message": "resultId must be a non-empty identifier without control characters"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:3101/ready",
+      "status": 200,
+      "body": {
+        "service": "lis",
+        "status": "ready",
+        "schema": "lis",
+        "database": "dacn_db",
+        "role": "lis_app"
+      }
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:3101/docs/api/openapi.json",
+      "status": 200,
+      "body": {
+        "paths": [
+          "/api/results",
+          "/api/results/{resultId}",
+          "/api/results/{resultId}/publish",
+          "/api/results/{resultId}/publish-event",
+          "/api/publish-events/{eventId}",
+          "/health",
+          "/ready"
+        ]
+      }
+    }
+  ]
+}

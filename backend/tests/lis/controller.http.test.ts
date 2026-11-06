@@ -53,6 +53,7 @@ function assertError(response: JsonResponse, status: number, code: string): void
 
 test("LIS Controller HTTP (isolated dependencies)", async (t) => {
   const dependencies: LisRouteDependencies = {
+    getResultPublishState: async (id) => id === row.result.resultId ? { resultId: id, resultStatus: row.result.resultStatus, event } : undefined,
     getResultById: async (id) => id === row.result.resultId ? row : undefined,
     listResults: async () => [row],
     getPublishEventByEventId: async (id) => id.toLowerCase() === eventId ? event : undefined,
@@ -152,6 +153,30 @@ test("LIS Controller HTTP (isolated dependencies)", async (t) => {
     }
   });
 
+  await t.test("changed source is a 409 CONTENT_CONFLICT, never a duplicate success", async (t) => {
+    t.mock.method(dependencies, "publishResult", async () => ({ kind: "conflict", resultId: event.resultId,
+      error: { code: "CONTENT_CONFLICT", message: "Original snapshot preserved" } }));
+    assertError(await request("/api/results/SYNTHETIC-R1/publish", { method: "POST" }), 409, "CONTENT_CONFLICT");
+  });
+
+  await t.test("lookup distinguishes published/unpublished/missing and rejects query without mutation", async (t) => {
+    const post = t.mock.method(dependencies, "publishResult", async () => ({ kind: "created", event }));
+    const published = await request("/api/results/SYNTHETIC-R1/publish-event");
+    assert.equal(published.status, 200);
+    assert.ok(isRecord(published.body));
+    assert.equal(published.body.published, true);
+    assert.ok(isRecord(published.body.event)); assert.equal(published.body.event.event_id, eventId);
+    assert.equal(published.body.event.published_at, event.publishedAt.toISOString());
+    t.mock.method(dependencies, "getResultPublishState", async (id: string) => id === row.result.resultId
+      ? { resultId: id, resultStatus: "FINAL", event: null } : undefined);
+    assert.deepEqual(await request("/api/results/SYNTHETIC-R1/publish-event"), { status: 200,
+      body: { result_id: event.resultId, result_status: "FINAL", published: false, event: null } });
+    assertError(await request("/api/results/missing/publish-event"), 404, "NOT_FOUND");
+    assertError(await request("/api/results/%00/publish-event"), 400, "VALIDATION_ERROR");
+    assertError(await request("/api/results/SYNTHETIC-R1/publish-event?retry=1"), 400, "VALIDATION_ERROR");
+    assert.equal(post.mock.callCount(), 0);
+  });
+
   await t.test("optional body cannot replace the result ID in the path", async (t) => {
     let received = "";
     t.mock.method(dependencies, "publishResult", async (id: string) => {
@@ -199,6 +224,7 @@ test("LIS Controller HTTP (isolated dependencies)", async (t) => {
       ["getResultById", "/api/results/SYNTHETIC-R1", "GET"],
       ["getPublishEventByEventId", `/api/publish-events/${eventId}`, "GET"],
       ["publishResult", "/api/results/SYNTHETIC-R1/publish", "POST"],
+      ["getResultPublishState", "/api/results/SYNTHETIC-R1/publish-event", "GET"],
     ] as const) {
       const failure = t.mock.method(dependencies, method, async () => {
         throw new Error("SELECT patient_data; postgresql://admin:secret@db/dacn_db; private-stack-marker");

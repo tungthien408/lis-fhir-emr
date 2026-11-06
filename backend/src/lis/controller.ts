@@ -6,7 +6,7 @@
 import type { Express, NextFunction, Request, Response } from "express";
 import { lisDatabase } from "./db.js";
 import {
-  getPublishEventByEventId, getResultById, listResults,
+  getPublishEventByEventId, getResultPublishState, getResultById, listResults,
   type ListResultsOptions, type PublishEvent, type ResultWithDetails,
 } from "./repository.js";
 import { publishResult } from "./service.js";
@@ -16,12 +16,13 @@ export interface LisRouteDependencies {
   getResultById: typeof getResultById;
   listResults: typeof listResults;
   getPublishEventByEventId: typeof getPublishEventByEventId;
+  getResultPublishState: typeof getResultPublishState;
   publishResult: typeof publishResult;
   checkDatabase: typeof lisDatabase.check;
 }
 
 const defaultDependencies: LisRouteDependencies = {
-  getResultById, listResults, getPublishEventByEventId, publishResult,
+  getResultById, listResults, getPublishEventByEventId, getResultPublishState, publishResult,
   checkDatabase: lisDatabase.check,
 };
 
@@ -84,6 +85,13 @@ function publishResponse(event: PublishEvent) {
   };
 }
 
+function publishStatusResponse(event: PublishEvent) {
+  const code = event.lastErrorCode === null ? null
+    : /^[A-Z][A-Z0-9_]{0,63}$/.test(event.lastErrorCode) ? event.lastErrorCode : "DISPATCH_ERROR";
+  return { ...publishResponse(event), dispatch_attempt_count: event.dispatchAttemptCount,
+    last_error_code: code, last_error_message: event.lastErrorMessage === null ? null : "The latest dispatch attempt failed." };
+}
+
 function sendError(res: Response, status: number, code: string, message: string): void {
   res.status(status).json({ error: { code, message } });
 }
@@ -115,6 +123,20 @@ export function registerLisRoutes(app: Express, dependencies: LisRouteDependenci
     res.status(200).json(resultResponse(row));
   });
 
+  app.get("/api/results/:resultId/publish-event", async (req, res) => {
+    const resultId = identifier(req.params.resultId, "resultId");
+    if (Object.keys(req.query).length) throw new InvalidHttpInput("This endpoint does not support query parameters");
+    const state = await dependencies.getResultPublishState(resultId);
+    if (!state) { sendError(res, 404, "NOT_FOUND", "Laboratory result not found"); return; }
+    res.set("Cache-Control", "no-store").status(200).json({
+      result_id: state.resultId, result_status: state.resultStatus, published: state.event !== null,
+      event: state.event === null ? null : { ...publishStatusResponse(state.event),
+        published_at: state.event.publishedAt.toISOString(),
+        acked_at: state.event.ackedAt?.toISOString() ?? null,
+        next_retry_at: state.event.nextRetryAt?.toISOString() ?? null },
+    });
+  });
+
   app.post("/api/results/:resultId/publish", async (req, res) => {
     const resultId = identifier(req.params.resultId, "resultId");
     // The path identifies the result. A body is optional and cannot override it.
@@ -128,6 +150,9 @@ export function registerLisRoutes(app: Express, dependencies: LisRouteDependenci
         return;
       case "not_found":
         sendError(res, 404, "NOT_FOUND", "Laboratory result not found");
+        return;
+      case "conflict":
+        sendError(res, 409, outcome.error.code, outcome.error.message);
         return;
       case "invalid":
         sendError(res, 422, outcome.error.code, outcome.error.message);
@@ -145,16 +170,7 @@ export function registerLisRoutes(app: Express, dependencies: LisRouteDependenci
       sendError(res, 404, "NOT_FOUND", "Publish event not found");
       return;
     }
-    // Persisted diagnostic messages may contain upstream details. Expose a safe
-    // summary plus the error code, rather than SQL/credentials from a raw message.
-    const errorCode = event.lastErrorCode === null ? null
-      : /^[A-Z][A-Z0-9_]{0,63}$/.test(event.lastErrorCode) ? event.lastErrorCode : "DISPATCH_ERROR";
-    res.status(200).json({
-      ...publishResponse(event),
-      dispatch_attempt_count: event.dispatchAttemptCount,
-      last_error_code: errorCode,
-      last_error_message: event.lastErrorMessage === null ? null : "The latest dispatch attempt failed.",
-    });
+    res.set("Cache-Control", "no-store").status(200).json(publishStatusResponse(event));
   });
 
   app.use("/api", (_req, res) => {

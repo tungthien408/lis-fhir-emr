@@ -125,6 +125,17 @@ export async function listResults(options: ListResultsOptions = {}): Promise<Res
     .offset(options.offset ?? 0);
 }
 
+/** One read-only statement distinguishes missing source, unpublished and published.
+ * LEFT JOIN does not hide READY/invalid source data or create/reset an outbox event.
+ */
+export async function getResultPublishState(resultId: string): Promise<{ resultId: string; resultStatus: string; event: PublishEvent | null } | undefined> {
+  const [row] = await getDatabase().select({ resultId: results.resultId,
+    resultStatus: results.resultStatus, event: publishEvents }).from(results)
+    .leftJoin(publishEvents, eq(results.resultId, publishEvents.resultId))
+    .where(eq(results.resultId, resultId));
+  return row;
+}
+
 export async function getPublishEventByResultId(resultId: string): Promise<PublishEvent | undefined> {
   const [event] = await getDatabase()
     .select()

@@ -17,6 +17,7 @@ test("EMR Controller C3 (real HTTP, isolated dependencies)", async (t) => {
   const receipt = { result: "STORED" as const, external_system: observation.identifier[0].system,
     external_id: observation.identifier[0].value, target_id: row.target_id, patient_key: patientKey };
   const dependencies: EmrRouteDependencies = {
+    findPatient: service.findPatient,
     storeObservation: async () => ({ kind: "stored", ...receipt }),
     getLabResultsBySource: async () => ({ kind: "found", items: [row] }),
     listLabResults: async () => ({ kind: "found", items: [row], limit: 20, offset: 0 }),

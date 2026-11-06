@@ -96,7 +96,7 @@ test("D2 LIS Dispatcher + D1 Repository (isolated PostgreSQL, fake Middleware HT
     assert.ok(attempt.startedAt <= attempt.sentAt && attempt.sentAt <= attempt.responseAt && attempt.responseAt <= attempt.endedAt);
     assert.deepEqual(attempt.responseBody, ack); assert.equal(attempt.errorCode, null);
     assert.equal(await dispatcher.runOnce(), "idle");
-    const again = await publishResult(c.resultId); assert.ok(again.kind === "existing"); assert.deepEqual(again.event, saved);
+    const again = await publishResult(c.resultId); assert.equal(again.kind, "conflict"); assert.deepEqual(await c.row(), saved);
   });
 
   for (const patch of [{ event_id: randomUUID() }, { source_hash: "b".repeat(64) }, { exchange_id: "invalid" },

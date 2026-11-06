@@ -246,13 +246,22 @@ test("C4: real Middleware → HTTP → real EMR → PostgreSQL → read-back", {
         MIDDLEWARE_WORKER_POLL_MS: "10", MIDDLEWARE_WORKER_HTTP_TIMEOUT_MS: "3000", MIDDLEWARE_WORKER_LEASE_MS: "15000" },
       stdio: ["ignore", "pipe", "pipe"],
     });
-    let output = "";
-    child.stdout.on("data", (chunk: Buffer) => { output += chunk.toString(); });
+    const started = performance.now();
+    let output = "", startupMs: number | null = null;
+    child.stdout.on("data", (chunk: Buffer) => {
+      output += chunk.toString();
+      if (startupMs === null && output.includes("[Middleware Worker] Started.")) startupMs = performance.now() - started;
+    });
     child.stderr.on("data", (chunk: Buffer) => { output += chunk.toString(); });
     const exited = once(child, "exit");
     t.after(() => { if (child.exitCode === null && child.signalCode === null) child.kill("SIGKILL"); });
-    for (let attempt = 0; attempt < 1000 && (await c.row()).status !== "DELIVERED"; attempt++) await pause(10);
-    assert.equal((await c.row()).status, "DELIVERED"); child.kill("SIGTERM");
+    // Cold tsx startup over a Windows bind mount can exceed the old ~10 second poll budget.
+    // Keep all delivery assertions; stop immediately if the process exits before delivering.
+    const deadline = started + 60000;
+    while ((await c.row()).status !== "DELIVERED" && performance.now() < deadline
+      && child.exitCode === null && child.signalCode === null) await pause(50);
+    t.diagnostic(`Worker startup=${startupMs === null ? "not observed" : Math.round(startupMs)}ms; delivery wait=${Math.round(performance.now() - started)}ms; exit=${child.exitCode}; signal=${child.signalCode}`);
+    assert.equal((await c.row()).status, "DELIVERED", `Worker did not deliver: ${output}`); child.kill("SIGTERM");
     const timer = setTimeout(() => child.kill("SIGKILL"), 3000);
     try { assert.deepEqual(await exited, [0, null]); } finally { clearTimeout(timer); }
     assert.ok(output.includes("[Middleware Worker] Started."));
