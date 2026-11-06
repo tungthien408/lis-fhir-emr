@@ -13,3 +13,12 @@ dist/
 coverage/
 
 # Bao cao/chung cu thuc nghiem se quy dinh rieng khi trien khai
+# Evidence sinh ra khi chạy test browser/verify: chỉ giữ báo cáo .md đã commit
+frontend/tests/
+frontend/apps/*/tests/evidence/**/*.png
+frontend/apps/*/tests/evidence/**/*.json
+frontend/apps/*/tests/evidence/**/*.txt
+frontend/apps/*/tests/evidence/**/*.log
+frontend/apps/*/tests/evidence/**/*.jsonl
+frontend/apps/emr/tests/evidence/
+frontend/apps/middleware-monitor/tests/evidence/

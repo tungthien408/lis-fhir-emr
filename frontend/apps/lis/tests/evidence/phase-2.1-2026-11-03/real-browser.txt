@@ -1,7 +1,0 @@
-﻿Sử dụng máy chủ LIS đang chạy trên cổng 5173
-PASS: danh sách thật, 10 dòng, tám cột, thời gian UTC và nút chi tiết vô hiệu hóa
-PASS: không gọi khi gõ, Enter tìm kiếm, lọc kết hợp và phân trang giữ bộ lọc đã áp dụng
-PASS: xóa bộ lọc, danh sách rỗng, mất kết nối và thử tải lại
-PASS: phản hồi cũ đến sau không ghi đè kết quả mới
-PASS: màn hình 375px, bảng cuộn ngang và không có lỗi JavaScript chưa xử lý
-Ảnh kiểm tra: E:\SGU\Ky1_4\DACN\lis-fhir-emr\frontend\apps\lis\tests\evidence\phase-2.1-2026-11-03\lis-mobile.png
