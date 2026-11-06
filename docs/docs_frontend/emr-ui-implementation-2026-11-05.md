@@ -229,7 +229,7 @@ logic liên kết bệnh nhân, API client, hash routing và hook đọc dữ li
 - Nhãn kỹ thuật đổi thành **Khóa hồ sơ bệnh nhân tại EMR**, **Mã bản ghi kết quả tại EMR**,
   **Hệ thống định danh nguồn**, **Mã kết quả nguồn LIS**. Namespace/UUID và FHIR đóng mặc định;
   khi mở vẫn đầy đủ, chọn văn bản và sao chép được, JSON không bị sửa hoặc rút gọn dữ liệu.
-- Thời gian dạng `05/04/2129 · 21:30:00 UTC` được dựng từ chuỗi, không qua Date hay đổi múi giờ.
+- Thời gian dạng `2129-04-05 21:30:00 UTC` được dựng từ chuỗi, không qua Date hay đổi múi giờ.
   datetime/title giữ ISO gốc; chi tiết hiển thị thêm UTC gốc đầy đủ microsecond ngay dưới dạng dễ đọc.
   Năm/ngày MIMIC không đổi. Chỉ ghi chú dữ liệu mô phỏng, không khẳng định nguyên nhân dịch chuyển ngày.
 - “Đã hoàn tất (final)” chỉ là nhãn dễ hiểu cho trạng thái kết quả. Giải thích Middleware đối soát

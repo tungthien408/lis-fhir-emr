@@ -212,7 +212,7 @@ tách request phụ khỏi oracle danh sách/chi tiết cũ. Bộ Publish kiểm
 Nếu Windows khóa thư mục assets, dùng `npm.cmd run build -- --emptyOutDir false`;
 index vẫn trỏ đúng bundle mới, assets cũ không được xóa.
 
-Báo cáo: [Triển khai và nghiệm thu 2.3](../../../docs/phase-2.3-publish-implementation-2026-11-04.md).
+Báo cáo: [Triển khai và nghiệm thu 2.3](../../../docs/docs_frontend/phase-2.3-publish-implementation-2026-11-04.md).
 
 ## Khi lookup Publish trả 404 trên môi trường Compose
 
@@ -253,4 +253,4 @@ node tests/browser-publish-runtime.mjs --expect-route-missing
 
 Mỗi lượt tạo bằng chứng mới trong `tests/evidence/phase-2.3-runtime-404-2026-11-04/`;
 kiểm tra Network response body, DOM, F5, Làm mới và từ chối request không phải GET.
-Báo cáo: [Sửa 404 runtime Publish](../../../docs/phase-2.3-publish-runtime-404-2026-11-04.md).
+Báo cáo: [Sửa 404 runtime Publish](../../../docs/docs_frontend/phase-2.3-publish-runtime-404-2026-11-04.md).

@@ -2,12 +2,12 @@
 
 Ba ứng dụng React + TypeScript + Vite độc lập, quản lý bằng npm workspaces trong thư mục `frontend/`. Workspace là một gói npm con được quản lý cùng các gói khác từ thư mục cha.
 
-Ứng dụng LIS đã được bổ sung màn hình danh sách ở Giai đoạn 2.1. Xem [hướng dẫn và kết quả kiểm tra LIS](apps/lis/README.md). Các mục Giai đoạn 1 bên dưới ghi nhận đợt chuyển đổi cấu trúc trước đó.
+Trạng thái hiện tại: **LIS** có danh sách, chi tiết và Publish (Giai đoạn 2.1–2.3); **Middleware Monitor** theo dõi exchange và các lượt thử; **EMR** tra cứu bệnh nhân và xem kết quả xét nghiệm. Cả ba đều gọi API thật qua proxy và có test trình duyệt riêng. Xem README từng ứng dụng: [LIS](apps/lis/README.md), [Monitor](apps/middleware-monitor/README.md), [EMR](apps/emr/README.md). Các mục Giai đoạn 1 bên dưới ghi nhận đợt chuyển đổi cấu trúc trước đó.
 
 ## Phạm vi giai đoạn 1
 
 - Di chuyển nguyên trạng ứng dụng thử nghiệm LIS vào `apps/lis/`.
-- Tạo trang giới thiệu bằng tiếng Việt cho Middleware Monitor và EMR.
+- Tạo khung ứng dụng cho Middleware Monitor và EMR (khi đó mới là trang giới thiệu; các màn hình nghiệp vụ được bổ sung ở giai đoạn sau).
 - Mỗi ứng dụng có điểm khởi động React, cấu hình Vite, cổng và bản build riêng.
 - Chỉ dùng chung cấu hình Vite thực sự cần cho cả ba ứng dụng tại `config/vite.ts`.
 - Chưa cần tạo gói trong `packages/`; chưa bổ sung thư viện giao diện hoặc chức năng nghiệp vụ.
@@ -26,14 +26,14 @@ frontend/
 │   │   ├── vite.config.ts
 │   │   └── dist/               # Sinh ra khi build LIS
 │   ├── middleware-monitor/
-│   │   ├── src/                # Trang giới thiệu, chưa gọi API nghiệp vụ
+│   │   ├── src/                # Danh sách/chi tiết exchange, lượt thử (attempts)
 │   │   ├── index.html
 │   │   ├── package.json
 │   │   ├── tsconfig*.json
 │   │   ├── vite.config.ts
 │   │   └── dist/               # Sinh ra khi build Monitor
 │   └── emr/
-│       ├── src/                # Trang giới thiệu, chưa gọi API nghiệp vụ
+│       ├── src/                # Tra cứu bệnh nhân, hồ sơ và kết quả xét nghiệm
 │       ├── index.html
 │       ├── package.json
 │       ├── tsconfig*.json
@@ -51,7 +51,7 @@ Mỗi ứng dụng khai báo React và React DOM trong `dependencies`. Công c�
 
 ## Cài đặt
 
-Yêu cầu Node.js tương thích các thư viện hiện có; môi trường kiểm tra giai đoạn này dùng Node.js `24.11.0` và npm `11.12.1`.
+Yêu cầu Node.js tương thích các thư viện hiện có; `engines` yêu cầu Node.js ≥ 22.16.0. Đã kiểm tra trên Node.js `24.11.0` (giai đoạn chuyển đổi) và `26.13.0` (review 07/11/2026).
 
 Từ thư mục gốc repository:
 
@@ -136,7 +136,7 @@ Ví dụ LIS gọi `/api/lis/results?limit=11&offset=0`; Vite chuyển tiếp đ
 
 Cấu hình này dành cho frontend chạy trực tiếp trên host, gọi các cổng backend Docker đã công bố. Không sửa backend để xử lý CORS. Proxy này không ánh xạ `/health` hoặc `/ready`; kiểm tra hai endpoint đó trực tiếp tại địa chỉ backend khi cần.
 
-Nếu LIS báo lỗi tải dữ liệu, kiểm tra backend LIS đang hoạt động và truy cập được ở cổng 3101. Hai trang giới thiệu Monitor và EMR chưa gửi yêu cầu API nghiệp vụ.
+Nếu LIS báo lỗi tải dữ liệu, kiểm tra backend LIS đang hoạt động và truy cập được ở cổng 3101. Monitor gọi `/api/middleware/...` và EMR gọi `/api/emr/...`; nếu một trong hai báo lỗi tải dữ liệu, kiểm tra backend tương ứng ở cổng 3102 hoặc 3103.
 
 ## Các tệp đã chuyển đổi
 
@@ -151,16 +151,16 @@ Nếu LIS báo lỗi tải dữ liệu, kiểm tra backend LIS đang hoạt đ�
 
 Thư mục `dist/` và `node_modules/` cũ tại frontend cha là sản phẩm sinh tự động, không phải mã nguồn được chuyển. Bản build mới nằm riêng trong mỗi ứng dụng. Không dùng lại `frontend/dist/` cũ.
 
-## Chức năng LIS hiện tại – Giai đoạn 2.2
+## Chức năng LIS – Giai đoạn 2.2 (Publish bổ sung ở 2.3)
 
 - Danh sách dùng GET với `limit=11`, hiển thị 10 dòng; dòng thứ 11 xác định có trang sau.
 - Bộ lọc mã bệnh nhân, mã xét nghiệm, READY/FINAL; tách bản nháp và bộ lọc áp dụng.
 - Hash routing lưu bộ lọc và trang trong URL, hỗ trợ F5 và Back/Forward.
 - Màn hình chi tiết riêng gọi GET `/api/lis/results/<encodedResultId>`, đủ 12 trường, bố cục rộng/hẹp.
 - Giữ chuỗi số/đơn vị, thời gian UTC và ISO gốc, nullable; hủy yêu cầu và chặn phản hồi cũ.
-- Có trạng thái đang tải/rỗng/lỗi/thử lại, không triển khai Publish, Monitor hoặc EMR.
+- Có trạng thái đang tải/rỗng/lỗi/thử lại. Publish (xác nhận, theo dõi ACK/exchange) được thêm ở Giai đoạn 2.3, xem README LIS.
 
-Xem [README LIS](apps/lis/README.md) để chạy kiểm thử và [báo cáo 2.2](apps/lis/tests/evidence/phase-2.2-2026-11-03/BAO_CAO.md) để xem bằng chứng mới. Phần kiểm tra ngày 02/11/2026 bên dưới là lịch sử chuyển đổi workspace, không mô tả trạng thái chức năng/nghiệm thu hiện tại.
+Xem [README LIS](apps/lis/README.md) để chạy kiểm thử và [báo cáo 2.2](apps/lis/tests/evidence/phase-2.2-2026-11-03/BAO_CAO.md) để xem bằng chứng mới. Phần kiểm tra ngày 02/11/2026 bên dưới là lịch sử chuyển đổi workspace, không mô tả trạng thái chức năng/nghiệm thu hiện tại. Mô tả Monitor/EMR là "trang giới thiệu" trong phần đó chỉ đúng tại thời điểm đó.
 
 ## Kết quả kiểm tra ngày 02/11/2026
 
@@ -187,7 +187,7 @@ Lượt kiểm tra các lệnh chạy gặp lỗi quyền khi dọn tiến trìn
 ## Các điểm còn lại
 
 - Cần chạy lại bước kiểm tra dữ liệu LIS khi backend tại `127.0.0.1:3101` truy cập được. Không dùng kết quả build hoặc HTTP 200 của trang để kết luận API đã trả dữ liệu thật.
-- Chưa kiểm tra giao diện bằng trình duyệt; kiểm tra chạy hiện tại bao gồm HTTP, module, bản build và nội dung hai trang giới thiệu được React kết xuất.
+- Giao diện đã được kiểm tra bằng Chrome thật ở các giai đoạn sau (`tests/browser*.mjs` của từng ứng dụng); mục này chỉ phản ánh lượt kiểm tra chuyển đổi ngày 02/11/2026.
 - Các giới hạn của bản thử nghiệm LIS như xử lý `effective_at = null` và kiểu nullable được giữ nguyên để giới hạn giai đoạn này ở chuyển đổi cấu trúc.
 - Cần cấu hình phục vụ tệp tĩnh và proxy khi triển khai thực tế; giai đoạn này chưa sửa Compose hoặc thêm hạ tầng triển khai.
 - Không có thay đổi ngoài phạm vi `frontend/`; không bổ sung tính năng nghiệp vụ hay nâng cấp dependency.

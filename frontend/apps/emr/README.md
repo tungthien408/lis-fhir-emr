@@ -46,7 +46,7 @@ Hồ sơ 200 nhưng danh sách rỗng khác với hồ sơ lookup 404. Lỗi kh�
 Abort + request identity ngăn phản hồi muộn; Làm mới/Thử tải lại chỉ GET, không polling tự động.
 
 Quantity/low/high giữ chuỗi thập phân; null hiện “Không có”, 0 vẫn là 0. Thời gian chính hiển thị
-ngày/tháng/năm và giờ UTC dễ đọc; datetime/title giữ nguyên. Chi tiết có UTC gốc đầy đủ microsecond.
+`YYYY-MM-DD HH:MM:SS UTC` (cùng dạng với LIS và Monitor); datetime/title giữ nguyên. Chi tiết có UTC gốc đầy đủ microsecond.
 UUID, namespace và FHIR nằm trong mục kỹ thuật thu gọn, có thể mở xem/sao chép đầy đủ.
 Nhãn “Đã lưu tại EMR” không xác nhận Worker đã VERIFY; xem trạng thái trao đổi ở Monitor.
 
@@ -109,4 +109,4 @@ trên cả ba trang; các nhãn khác giữ nguyên, không suy diễn tên từ
 Mở **Xem mã định danh và dữ liệu FHIR** để xem mã bản ghi EMR, namespace và JSON nguyên vẹn.
 “Đã hoàn tất (final)” là trạng thái kết quả; “Đã lưu tại EMR” không xác nhận Middleware đã VERIFY.
 
-[Báo cáo triển khai và UI/UX](../../../docs/emr-ui-implementation-2026-11-05.md).
+[Báo cáo triển khai và UI/UX](../../../docs/docs_frontend/emr-ui-implementation-2026-11-05.md).

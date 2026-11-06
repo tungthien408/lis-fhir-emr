@@ -124,4 +124,4 @@ Raw logs/runs giữ cục bộ trong tests/evidence và được ignore. `tests/
 tổng hợp kiểm chứng và hai ảnh thực tế được chọn để review. Bằng chứng LIS hồi quy đặt thư mục mới riêng;
 không ghi đè nghiệm thu 2.1/2.2/2.3.
 
-[Báo cáo nghiệm thu](../../../docs/exchange-monitor-implementation-2026-11-04.md).
+[Báo cáo nghiệm thu](../../../docs/docs_frontend/exchange-monitor-implementation-2026-11-04.md).

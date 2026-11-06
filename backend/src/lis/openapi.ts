@@ -76,7 +76,8 @@ export const lisOpenApiDocument: OpenAPIV3.Document = {
         tags: ["Publish"], operationId: "publishResult", summary: "Publish kết quả",
         description: "Chỉ kết quả FINAL hợp lệ mới được Publish lần đầu. Không cần nhập body. "
           + "Lần đầu trả 202; cùng snapshot trả 200 với sự kiện cũ, khác nội dung trả 409 CONTENT_CONFLICT. PENDING nghĩa là đang chờ gửi. "
-          + "A3-DEMO-R1 dùng để thử thành công; A3-DEMO-R2 còn READY nên trả 422.",
+          + "A3-DEMO-R1 (FINAL) thử thành công và A3-DEMO-R2 (READY) trả 422, nhưng hai mã này chỉ có sau khi thêm dữ liệu giả theo hướng dẫn A3; trong DB seed MIMIC hãy dùng một result_id có thật lấy từ GET /api/results. "
+          + "Nếu kết quả đã Publish bị đổi nội dung hoặc quay về READY, Publish lại trả 409 CONTENT_CONFLICT (không phải 422).",
         parameters: [resultId],
         responses: {
           "202": response("Đã lưu sự kiện mới, đang chờ gửi.", "PublishResult"),
