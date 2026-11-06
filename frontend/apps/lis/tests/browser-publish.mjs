@@ -5,7 +5,7 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { openHttpBrowser, until } from './helpers/http-browser.mjs'
 
 const real = process.argv.includes('--real'), mode = process.argv.includes('--dev') ? 'development' : 'preview'
-const evidence = path.resolve(process.env.LIS_EVIDENCE_DIR || 'tests/evidence/phase-2.3-2026-11-04/manual-' + Date.now())
+const evidence = path.resolve(process.env.LIS_EVIDENCE_DIR || path.join(import.meta.dirname, 'evidence/phase-2.3-2026-11-04/manual-' + Date.now()))
 mkdirSync(evidence, { recursive: true })
 const targets = { lis: process.env.LIS_TEST_TARGET, middleware: process.env.MIDDLEWARE_TEST_TARGET, emr: process.env.EMR_TEST_TARGET }
 if (real) for (const value of Object.values(targets)) {
@@ -45,6 +45,7 @@ function observe() {
     try {
       const response = await original(...args); entry.status = response.status
       response.clone().text().then((text) => { try { entry.body = JSON.parse(text) } catch { entry.body = text }; entry.complete = true })
+        .catch((error) => { entry.readError = String(error); entry.complete = true }) // request bị abort giữa chừng không phải lỗi của app
       return response
     } catch (error) { entry.error = String(error); entry.complete = true; throw error }
   }

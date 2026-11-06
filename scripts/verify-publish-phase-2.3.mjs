@@ -59,6 +59,8 @@ async function resetFixtureData() {
 }
 console.log('Evidence: ' + evidence)
 try {
+  // Bước Chrome cần frontend/apps/lis/dist; build trước để không chạy hết suite backend rồi mới dừng ở bước cuối.
+  if (!process.argv.includes('--backend-only')) await step('Build LIS frontend', () => command('npm', ['run', 'build:lis'], { cwd: path.join(root, 'frontend'), log: 'build-lis.log', quiet: true }))
   if (process.argv.includes('--mock-only')) {
     await step('Chrome mock Publish', () => command(process.execPath, ['tests/browser-publish.mjs'], { cwd: path.join(root, 'frontend/apps/lis'),
       env: { LIS_EVIDENCE_DIR: path.join(evidence, 'chrome-mock') }, log: 'chrome-mock.log' }))

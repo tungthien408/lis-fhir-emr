@@ -12,7 +12,7 @@ export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, 
   const executable = process.env.CHROME_PATH || [
     'C:/Program Files/Google/Chrome/Application/chrome.exe',
     'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
-    '/usr/bin/google-chrome', '/usr/bin/chromium',
+    '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium',
   ].find(existsSync)
   assert.ok(executable, 'Cần Chrome/Chromium hoặc CHROME_PATH')
   const cache = path.join(appRoot, 'node_modules/.cache/lis-http-browser')

@@ -40,7 +40,7 @@ function observe() {
       response.clone().text().then((text) => {
         try { entry.body = JSON.parse(text) } catch { entry.body = text }
         entry.complete = true
-      })
+      }).catch((error) => { entry.readError = String(error); entry.complete = true })
       return response
     } catch (error) { entry.error = String(error); entry.complete = true; throw error }
   }

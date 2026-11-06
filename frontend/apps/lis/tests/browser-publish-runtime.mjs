@@ -5,7 +5,7 @@ import path from 'node:path'
 import { openHttpBrowser, until } from './helpers/http-browser.mjs'
 
 const missing = process.argv.includes('--expect-route-missing')
-const parent = path.resolve('tests/evidence/phase-2.3-runtime-404-2026-11-04')
+const parent = path.resolve(import.meta.dirname, 'evidence/phase-2.3-runtime-404-2026-11-04')
 mkdirSync(parent, { recursive: true })
 const evidence = mkdtempSync(path.join(parent, missing ? 'before-' : 'after-'))
 console.log('Evidence: ' + evidence)

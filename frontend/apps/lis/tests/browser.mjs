@@ -9,6 +9,7 @@ const chromePath = process.env.CHROME_PATH || [
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
   'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
   '/usr/bin/google-chrome',
+  '/usr/bin/google-chrome-stable',
   '/usr/bin/chromium',
 ].find(existsSync)
 if (!chromePath) throw new Error('Cần Chrome/Chromium hoặc đặt CHROME_PATH để chạy kiểm thử trình duyệt.')
