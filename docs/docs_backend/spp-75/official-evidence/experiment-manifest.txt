@@ -1,0 +1,13 @@
+started=2026-11-04T03:44:09Z
+runner_tag=spp75-runner-v3 head=11fe688721bc4e61b36e9160924685224279462d
+app_tag=spp74-experiment-v1 64e6265c72eb92fb2868c7d3fe6d3f44db05c468
+baseline=events=1 exch=1 emr=1 seed=1000 mut=0 (DEMO-R1 còn sót từ trước, như SPP-73)
+Linux archlinux 7.2.11-arch1-1 #1 SMP PREEMPT_DYNAMIC Fri, 16 Oct 2026 00:28:58 +0000 x86_64 GNU/Linux
+12
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi        11Gi       423Mi       1.7Gi       4.3Gi       3.8Gi
+98f96d6450d6f47c864612276ed215763b184776a9ae8019609ac513c5c43075  scripts/pilot/fault-retry.sh
+f588c3e345402f8c0d36e67bd6bb4c9539a051f289c6890e86cc69dc297cf20d  scripts/pilot/preflight.sh
+b29eb26f65f8cf53043840ef9b26e4f0eef5289623241b1a52c39ceb43778a92  scripts/pilot/run-all.sh
+986b8dff0f85c911c1cff04c54d8404cad0eb886b7d297c4257be3988b3aae43  scripts/pilot/run-scenario.sh
+685e4056971a6901c01d74502a7c00314e732861b6d84cda36d0de1518b57c36  scripts/pilot/reset.sql

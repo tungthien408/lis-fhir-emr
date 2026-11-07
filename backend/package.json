@@ -36,7 +36,14 @@
     "start:emr": "node --env-file-if-exists=../.env dist/emr/main.js",
     "smoke": "node --env-file-if-exists=../.env ../scripts/smoke-test.mjs",
     "db:check": "node --env-file-if-exists=../.env ../scripts/db-check.mjs",
-    "verify:sql": "node ../scripts/verify-sql.mjs"
+    "verify:sql": "node ../scripts/verify-sql.mjs",
+    "spp82:dry-run": "node --env-file-if-exists=../.env --import tsx scripts/spp82/publish-runner-main.ts --dry-run",
+    "ops:requeue-failed": "node --env-file-if-exists=../.env --import tsx scripts/ops/requeue-failed.ts",
+    "spp82:verify": "node --import tsx scripts/spp82/verification/verification-main.ts verify",
+    "spp82:capture": "node --import tsx scripts/spp82/verification/verification-main.ts capture",
+    "test:ops": "node --import tsx --test scripts/ops/*.test.ts",
+    "test:spp82:verify": "node --import tsx --test scripts/spp82/verification/*.test.ts",
+    "test:spp82": "node --import tsx --test --test-concurrency=1 scripts/spp82/*.test.ts scripts/spp82/verification/*.test.ts"
   },
   "dependencies": {
     "drizzle-orm": "0.45.4",

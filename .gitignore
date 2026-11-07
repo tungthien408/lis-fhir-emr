@@ -22,3 +22,4 @@ frontend/apps/*/tests/evidence/**/*.log
 frontend/apps/*/tests/evidence/**/*.jsonl
 frontend/apps/emr/tests/evidence/
 frontend/apps/middleware-monitor/tests/evidence/
+docs/docs_backend/spp-73/pilot-evidence/

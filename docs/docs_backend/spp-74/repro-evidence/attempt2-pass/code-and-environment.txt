@@ -1,0 +1,18 @@
+run=A1 scenario=A-seq-r1 mode=SEQUENTIAL concurrency=1
+baseline_before_run: events=0 exch=0 emr=0 seed=1000 mut=0
+git_head=110a07d1dabff39b7c0456d08d7072ba326f9f0d
+git_describe=110a07d
+source_tree_sha256=49e9ebcb66b099760e2b8a6431a01bff66a5e1bbc774cb8ca02213f89cd14e2e
+oracle_manifest_sha256=55cb4256c77d731bff7e8ea1c1ad7f9788df889b4833d9a6b501282c169c7267
+b66613cf2e1ed1f8d46ce6f0a0efc2efa976532e4e487bf6058ec43e835023e5  database/seed/01_reference_data.sql
+28b21b4e19f1df9b79d8ee10944e33e1f1fe20c0045abfd5b5d3fbcd89644fe7  database/seed/02_lis_results.sql
+dispatcher_processes=1 worker_processes=1
+pid 866210 env: LIS_DISPATCHER_RETRY_DELAYS_MS=2000,4000,8000,16000,32000,64000,64000 
+pid 866212 env: MIDDLEWARE_WORKER_RETRY_DELAYS_MS=2000,4000,8000,16000,32000,64000,64000 
+node=v26.13.0 npm=12.2.1
+postgres=17.11 (Debian 17.11-1.pgdg13+2)
+container spp74-repro-db postgres:17 Up 23 minutes
+container lis-fhir-emr-lis-1 lis-fhir-emr-backend:local Up 18 hours
+container lis-fhir-emr-middleware-1 lis-fhir-emr-backend:local Up 16 hours
+container lis-fhir-emr-emr-1 lis-fhir-emr-backend:local Up 16 hours
+container lis-fhir-emr-db-1 postgres:17 Up 18 hours (healthy)
