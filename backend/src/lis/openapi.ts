@@ -75,18 +75,29 @@ export const lisOpenApiDocument: OpenAPIV3.Document = {
       post: {
         tags: ["Publish"], operationId: "publishResult", summary: "Publish kết quả",
         description: "Chỉ kết quả FINAL hợp lệ mới được Publish lần đầu. Không cần nhập body. "
-          + "Lần đầu trả 202; gọi lại trả 200 với sự kiện cũ. PENDING nghĩa là đang chờ gửi. "
-          + "A3-DEMO-R1 dùng để thử thành công; A3-DEMO-R2 còn READY nên trả 422.",
+          + "Lần đầu trả 202; cùng snapshot trả 200 với sự kiện cũ, khác nội dung trả 409 CONTENT_CONFLICT. PENDING nghĩa là đang chờ gửi. "
+          + "A3-DEMO-R1 (FINAL) thử thành công và A3-DEMO-R2 (READY) trả 422, nhưng hai mã này chỉ có sau khi thêm dữ liệu giả theo hướng dẫn A3; trong DB seed MIMIC hãy dùng một result_id có thật lấy từ GET /api/results. "
+          + "Nếu kết quả đã Publish bị đổi nội dung hoặc quay về READY, Publish lại trả 409 CONTENT_CONFLICT (không phải 422).",
         parameters: [resultId],
         responses: {
           "202": response("Đã lưu sự kiện mới, đang chờ gửi.", "PublishResult"),
           "200": response("Trả lại sự kiện cũ, không tạo thêm hoặc đặt lại trạng thái.", "PublishResult"),
+          "409": error("Nội dung nguồn khác snapshot đã phát hành; giữ nguyên event cũ.", "CONTENT_CONFLICT"),
           "400": badRequest, "404": notFound,
           "422": error("Kết quả chưa đủ điều kiện Publish (FINAL, đơn vị, số liệu hoặc thời gian).", "RESULT_NOT_READY"),
           "413": error("JSON gửi kèm vượt giới hạn 1mb.", "VALIDATION_ERROR"),
           "415": error("Cách mã hóa body không được hỗ trợ.", "VALIDATION_ERROR"),
           "503": unavailable,
         },
+      },
+    },
+    "/api/results/{resultId}/publish-event": {
+      get: {
+        tags: ["Publish"], operationId: "getResultPublishState", summary: "Tra cứu Publish theo mã kết quả (chỉ đọc)",
+        description: "200 published=false/event=null khi chưa Publish; 404 nếu kết quả không tồn tại. Không tạo hoặc reset event; không nhận query.",
+        parameters: [resultId],
+        responses: { "200": response("Nguồn và event đã lưu, hoặc event=null.", "ResultPublishState"),
+          "400": badRequest, "404": notFound, "503": unavailable },
       },
     },
     "/api/publish-events/{eventId}": {
@@ -151,6 +162,21 @@ export const lisOpenApiDocument: OpenAPIV3.Document = {
           dispatch_attempt_count: { type: "integer", minimum: 0, example: 0 },
           last_error_code: { type: "string", nullable: true, example: null },
           last_error_message: { type: "string", nullable: true, example: null, description: "Thông báo chung, không chứa lỗi SQL hoặc thông tin kết nối." },
+        },
+      },
+      ResultPublishState: {
+        type: "object", required: ["result_id", "result_status", "published", "event"],
+        properties: {
+          result_id: { type: "string" }, result_status: { type: "string", enum: ["READY", "FINAL"] },
+          published: { type: "boolean" },
+          event: { type: "object", nullable: true,
+            required: [...Object.keys(publishProperties), "dispatch_attempt_count", "last_error_code", "last_error_message", "published_at", "acked_at", "next_retry_at"],
+            properties: { ...publishProperties,
+              dispatch_attempt_count: { type: "integer", minimum: 0 },
+              last_error_code: { type: "string", nullable: true }, last_error_message: { type: "string", nullable: true },
+              published_at: { type: "string", format: "date-time" }, acked_at: { type: "string", format: "date-time", nullable: true },
+              next_retry_at: { type: "string", format: "date-time", nullable: true },
+            } },
         },
       },
       ApiError: {

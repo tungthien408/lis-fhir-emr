@@ -3,15 +3,27 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22.16.0"
   },
-  "dependencies": {
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+  "scripts": {
+    "dev": "npm run dev:lis",
+    "dev:lis": "npm run dev --workspace apps/lis",
+    "dev:monitor": "npm run dev --workspace apps/middleware-monitor",
+    "dev:emr": "npm run dev --workspace apps/emr",
+    "build": "npm run build --workspaces",
+    "build:lis": "npm run build --workspace apps/lis",
+    "build:monitor": "npm run build --workspace apps/middleware-monitor",
+    "build:emr": "npm run build --workspace apps/emr",
+    "check": "npm run check --workspaces",
+    "lint": "eslint .",
+    "preview": "npm run preview:lis",
+    "preview:lis": "npm run preview --workspace apps/lis",
+    "preview:monitor": "npm run preview --workspace apps/middleware-monitor",
+    "preview:emr": "npm run preview --workspace apps/emr"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

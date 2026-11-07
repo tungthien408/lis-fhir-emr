@@ -183,7 +183,7 @@ test("LIS Controller integration (HTTP + PostgreSQL)", {
     assert.equal(saved.dispatchAttemptCount, 0);
   });
 
-  await t.test("repeated Publish returns 200 and keeps the original event after source/status changes", async () => {
+  await t.test("changed source returns CONTENT_CONFLICT and keeps every original event field", async () => {
     await fixtureDb.update(results).set({ resultStatus: "READY", valueNum: "99", unit: "changed" })
       .where(eq(results.resultId, resultIds[0]));
     await fixtureDb.update(publishEvents).set({
@@ -192,11 +192,23 @@ test("LIS Controller integration (HTTP + PostgreSQL)", {
     }).where(eq(publishEvents.eventId, firstEventId));
     const original = await repository.getPublishEventByEventId(firstEventId);
     const response = await publish(resultIds[0]);
-    assert.equal(publishedId(response, 200), firstEventId);
-    assert.deepEqual(response.body, {
-      event_id: firstEventId, result_id: resultIds[0], dispatch_status: "RETRY_WAIT", exchange_id: null,
-    });
+    assertError(response, 409, "CONTENT_CONFLICT");
     assert.deepEqual(await repository.getPublishEventByEventId(firstEventId), original);
+  });
+
+  await t.test("read-only lookup finds the old event even after source changes; unpublished/missing stay distinct", async () => {
+    const original = await repository.getPublishEventByEventId(firstEventId);
+    for (let i = 0; i < 3; i++) {
+      const state = await request(`/api/results/${resultIds[0]}/publish-event`);
+      assert.equal(state.status, 200); assert.ok(isRecord(state.body));
+      assert.equal(state.body.result_status, "READY"); assert.equal(state.body.published, true);
+      assert.ok(isRecord(state.body.event)); assert.equal(state.body.event.event_id, firstEventId);
+    }
+    assert.deepEqual(await repository.getPublishEventByEventId(firstEventId), original);
+    assert.deepEqual(await request(`/api/results/${resultIds[1]}/publish-event`), { status: 200,
+      body: { result_id: resultIds[1], result_status: "READY", published: false, event: null } });
+    assertError(await request(`/api/results/${prefix}-missing/publish-event`), 404, "NOT_FOUND");
+    assert.equal(await repository.getPublishEventByResultId(resultIds[1]), undefined);
   });
 
   await t.test("event lookup reports persisted attempts/status, safe errors, unknown and malformed UUIDs", async () => {
@@ -260,7 +272,7 @@ test("LIS Controller integration (HTTP + PostgreSQL)", {
     lisClosed = true;
     for (const [path, method] of [
       ["/api/results", "GET"], [`/api/results/${resultIds[0]}`, "GET"],
-      [`/api/publish-events/${firstEventId}`, "GET"], [`/api/results/${resultIds[7]}/publish`, "POST"],
+      [`/api/publish-events/${firstEventId}`, "GET"], [`/api/results/${resultIds[0]}/publish-event`, "GET"], [`/api/results/${resultIds[7]}/publish`, "POST"],
     ]) {
       assertError(await request(path, { method }), 503, "DEPENDENCY_UNAVAILABLE");
     }

@@ -10,6 +10,7 @@ const { emrDatabase } = await import("../../src/emr/db.js");
 
 test("all operations reject an unconfigured database", async () => {
   for (const operation of [
+    () => repository.findPatient({ identifier_system: "synthetic", identifier_value: "missing" }),
     () => repository.getPatientKeyByIdentifier("synthetic", "missing"),
     () => repository.getLabResultsBySource("synthetic", "missing"),
     () => repository.listLabResults({ patientKey: newLabResult().patientKey }),
@@ -77,6 +78,7 @@ test("read failures remain rejected promises rather than missing links or empty 
   emrDatabase.db = drizzle({ client: pool });
   t.after(async () => { emrDatabase.db = null; await pool.end(); });
   for (const operation of [
+    () => repository.findPatient({ identifier_system: "synthetic", identifier_value: "missing" }),
     () => repository.getPatientKeyByIdentifier("synthetic", "missing"),
     () => repository.getLabResultsBySource("synthetic", "missing"),
     () => repository.listLabResults({ patientKey: newLabResult().patientKey }),

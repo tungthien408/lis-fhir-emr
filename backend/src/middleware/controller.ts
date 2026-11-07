@@ -2,10 +2,11 @@
 import type { Express, NextFunction, Request, Response } from "express";
 import { middlewareDatabase } from "./db.js";
 import {
-  getExchangeById, getExchangeEvents, listExchanges,
+  getExchangeById, getExchangeEvents, getExchangeAttempts, listExchanges,
   type ExchangeEvent, type ExchangeTransaction, type ListExchangesOptions,
 } from "./repository.js";
 import { acceptExchange } from "./service.js";
+import { monitorAttempt, monitorDiagnostics } from "./monitor-diagnostics.js";
 
 /** Optional dependencies support HTTP tests without touching a real database. */
 export interface MiddlewareRouteDependencies {
@@ -13,11 +14,12 @@ export interface MiddlewareRouteDependencies {
   listExchanges: typeof listExchanges;
   getExchangeById: typeof getExchangeById;
   getExchangeEvents: typeof getExchangeEvents;
+  getExchangeAttempts: typeof getExchangeAttempts;
   checkDatabase: typeof middlewareDatabase.check;
 }
 
 const defaultDependencies: MiddlewareRouteDependencies = {
-  acceptExchange, listExchanges, getExchangeById, getExchangeEvents,
+  acceptExchange, listExchanges, getExchangeById, getExchangeEvents, getExchangeAttempts,
   checkDatabase: middlewareDatabase.check,
 };
 
@@ -129,6 +131,22 @@ export function registerMiddlewareRoutes(app: Express, dependencies: MiddlewareR
     const options = listOptions(req.query);
     const rows = await dependencies.listExchanges(options);
     res.status(200).json({ items: rows.map(summary), limit: options.limit, offset: options.offset });
+  });
+
+  app.get("/api/exchanges/:exchangeId/attempts", async (req, res) => {
+    noQuery(req.query);
+    const exchangeId = req.params.exchangeId;
+    if (typeof exchangeId !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(exchangeId)) {
+      throw new InvalidHttpInput("exchangeId must be a UUID in 8-4-4-4-12 format");
+    }
+    const row = await dependencies.getExchangeById(exchangeId);
+    if (!row) { sendError(res, 404, "NOT_FOUND", "Exchange not found"); return; }
+    const [attempts, events] = await Promise.all([
+      dependencies.getExchangeAttempts(row.exchangeId), dependencies.getExchangeEvents(row.exchangeId),
+    ]);
+    res.set("Cache-Control", "no-store").status(200).json({ exchange_id: row.exchangeId, event_id: row.eventId,
+      source_system: row.sourceSystem, source_result_id: row.sourceResultId,
+      items: attempts.map(attempt => monitorAttempt(row, attempt)), diagnostics: monitorDiagnostics(events) });
   });
 
   app.get("/api/exchanges/:exchangeId", async (req, res) => {

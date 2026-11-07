@@ -1,0 +1,88 @@
+/** Disposable PostgreSQL + existing cached backend image. Never attaches to Compose data. */
+import { randomBytes, randomUUID } from 'node:crypto'
+import { spawn } from 'node:child_process'
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import path from 'node:path'
+import { setTimeout as delay } from 'node:timers/promises'
+
+const root = path.resolve(import.meta.dirname, '..')
+const parent = path.resolve(root, process.env.MONITOR_EVIDENCE_DIR || 'frontend/apps/middleware-monitor/tests/evidence/2026-11-04/backend')
+mkdirSync(parent, { recursive: true })
+const evidence = mkdtempSync(path.join(parent, 'run-'))
+if (process.argv.slice(2).some(arg => !arg.startsWith('--suites='))) throw new Error('Only --suites=... is supported')
+const allSuites = ['test', 'test:middleware', 'test:emr', 'test:integration', 'test:e2e']
+const selectedSuites = process.argv.find((arg) => arg.startsWith('--suites='))?.slice(9).split(',')
+if (selectedSuites?.some((suite) => !allSuites.includes(suite))) throw new Error('Unsupported test suite')
+const token = randomUUID(), dbName = 'monitor-test-db-' + token
+const secrets = Object.fromEntries(['admin', 'lis', 'middleware', 'emr'].map((key) => [key, randomBytes(24).toString('hex')]))
+const clean = (text) => Object.values(secrets).reduce((s, value) => s.replaceAll(value, '[redacted]'), text)
+const report = { startedAt: new Date().toISOString(), evidence, isolation: { databaseContainer: dbName, storage: 'tmpfs, no Compose volumes', fixture: 'synthetic only' }, steps: [], completed: false }
+let dbStarted = false
+async function command(executable, args, { env = {}, input, log, quiet = false, cwd = root } = {}) {
+  let output = ''
+  const child = spawn(executable, args, { cwd, env: { ...process.env, ...env }, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] })
+  child.stdin.on('error', () => {})
+  child.stdin.end(input)
+  for (const stream of [child.stdout, child.stderr]) stream.on('data', (chunk) => {
+    const text = clean(chunk.toString()); output += text; if (!quiet) process.stdout.write(text)
+  })
+  const code = await new Promise((resolve, reject) => { child.on('error', reject); child.on('close', resolve) })
+  if (log) writeFileSync(path.join(evidence, log), output)
+  if (code !== 0) throw new Error('Command failed (' + code + '): ' + clean(output).slice(-3000))
+  return output.trim()
+}
+const docker = (args, options = {}) => command('docker', args, { quiet: true, ...options })
+const bindings = [...['src', 'tests'].flatMap((name) => ['--mount', 'type=bind,src=' + path.join(root, 'backend', name) + ',target=/app/' + name + ',readonly']), '--mount', 'type=bind,src=' + path.join(root, 'scripts') + ',target=/scripts,readonly', '--mount', 'type=bind,src=' + path.join(root, 'database') + ',target=/database,readonly']
+const env = {}
+for (const [name, role, password] of [['LIS', 'lis_app', secrets.lis], ['MIDDLEWARE', 'integration_app', secrets.middleware], ['EMR', 'emr_app', secrets.emr]]) {
+  env[name + '_REPOSITORY_TEST_DATABASE_URL'] = 'postgresql://' + role + ':' + password + '@127.0.0.1:5432/dacn_db'
+}
+Object.assign(env, { LIS_REPOSITORY_TEST_DISPOSABLE_TOKEN: token, EMR_REPOSITORY_TEST_DISPOSABLE: '1', C4_DATABASE_ISOLATION_TOKEN: token, D3_DATABASE_ISOLATION_TOKEN: token,
+  C4_EVIDENCE_PATH: '/evidence/c4.json', D3_EVIDENCE_PATH: '/evidence/d3.json', PHASE23_ISOLATION_TOKEN: token })
+const containerArgs = () => ['--network', 'container:' + dbName, ...bindings,
+  '--mount', 'type=bind,src=' + evidence + ',target=/evidence',
+  ...Object.keys(env).flatMap((key) => ['-e', key]), 'lis-fhir-emr-backend:local']
+async function step(name, action) {
+  console.log('RUN: ' + name)
+  const entry = { name, startedAt: new Date().toISOString() }; report.steps.push(entry)
+  try { await action(); entry.result = 'PASS' } catch (error) { entry.result = 'FAIL'; entry.error = clean(String(error.stack ?? error)); throw error }
+  finally { entry.finishedAt = new Date().toISOString() }
+}
+// This command can only reach the uniquely named database container owned by this run.
+async function resetFixtureData() {
+  await docker(['exec', '-i', dbName, 'psql', '-U', 'postgres', '-d', 'dacn_db', '-v', 'ON_ERROR_STOP=1'], {
+    input: `DO $$ DECLARE targets text; BEGIN
+      SELECT string_agg(format('%I.%I', schemaname, tablename), ', ') INTO targets
+      FROM pg_tables WHERE schemaname IN ('lis', 'integration', 'emr');
+      IF targets IS NOT NULL THEN EXECUTE 'TRUNCATE ' || targets || ' RESTART IDENTITY CASCADE'; END IF;
+    END $$;`,
+  })
+}
+process.argv.push('--backend-only')
+console.log('Evidence: ' + evidence)
+try {
+    await docker(['run', '--detach', '--rm', '--pull=never', '--name', dbName, '--tmpfs', '/var/lib/postgresql/data',
+      '-e', 'POSTGRES_DB=dacn_db', '-e', 'POSTGRES_PASSWORD', 'postgres:17'], { env: { POSTGRES_PASSWORD: secrets.admin } })
+    dbStarted = true
+    let ready = false
+    for (let i = 0; i < 80; i++) { try { await docker(['exec', dbName, 'pg_isready', '-h', '127.0.0.1', '-U', 'postgres', '-d', 'dacn_db']); ready = true; break } catch { await delay(250) } }
+    if (!ready) throw new Error('Disposable PostgreSQL not ready')
+    for (const file of ['dacn_db_init_v2.sql', 'access_roles.sql']) await docker(['exec', '-i', dbName, 'psql', '-U', 'postgres', '-d', 'dacn_db', '-v', 'ON_ERROR_STOP=1'], { input: readFileSync(path.join(root, 'database', file), 'utf8') })
+    await docker(['exec', '-i', dbName, 'psql', '-U', 'postgres', '-d', 'dacn_db', '-v', 'ON_ERROR_STOP=1'], {
+      input: `ALTER ROLE lis_app PASSWORD '${secrets.lis}'; ALTER ROLE integration_app PASSWORD '${secrets.middleware}'; ALTER ROLE emr_app PASSWORD '${secrets.emr}'; COMMENT ON DATABASE dacn_db IS 'spp66-disposable:${token}';`,
+    })
+    if (!process.argv.includes('--browser-only')) {
+      if (!selectedSuites) await step('Backend TypeScript', () => docker(['run', '--rm', '--pull=never', ...containerArgs(), 'npm', 'run', 'check'], { env, log: 'backend-typescript.log', quiet: false }))
+      if (!selectedSuites) await step('Backend build', () => docker(['run', '--rm', '--pull=never', ...containerArgs(), 'npm', 'run', 'build'], { env, log: 'backend-build.log', quiet: false }))
+      for (const suite of selectedSuites ?? allSuites) {
+        await resetFixtureData()
+        await step(suite, () => docker(['run', '--rm', '--pull=never', ...containerArgs(), 'npm', 'run', suite], { env, log: suite.replaceAll(':', '-') + '.log', quiet: false }))
+      }
+    }
+  report.completed = true
+} catch (error) { console.error(clean(String(error.stack ?? error))); process.exitCode = 1 }
+finally {
+  if (dbStarted) await docker(['stop', dbName])
+  report.finishedAt = new Date().toISOString()
+  writeFileSync(path.join(evidence, 'verification.json'), JSON.stringify(report, null, 2) + '\n')
+}

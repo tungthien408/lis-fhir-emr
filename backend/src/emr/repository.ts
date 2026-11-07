@@ -4,9 +4,9 @@
  * it also decides whether an existing row is an identical retry or a conflict.
  * No FHIR mapping/validation, HTTP handling, or cross-service imports here.
  */
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { emrDatabase } from "./db.js";
-import { labResults, patientLinks } from "./schema.js";
+import { labResults, patientLinks, patients } from "./schema.js";
 
 export type JsonValue = string | number | boolean | null | JsonObject | JsonValue[];
 export type JsonObject = { [key: string]: JsonValue };
@@ -181,4 +181,26 @@ async function persistLabResult(tx: DatabaseTransaction, input: NewLabResult): P
     throw new Error("Expected exactly one existing EMR lab result after source conflict");
   }
   return { kind: "existing", record: existing[0] };
+}
+
+
+export type PatientLookup = { patient_key: string } | { identifier_system: string; identifier_value: string };
+export interface PatientRecord {
+  patient_key: string;
+  display_label: string | null;
+  identifiers: { identifier_system: string; identifier_value: string }[];
+}
+/** One statement snapshot; exact namespace/value, never joins by display label. */
+export async function findPatient(input: PatientLookup): Promise<PatientRecord | undefined> {
+  const db = getDatabase();
+  const condition = "patient_key" in input ? eq(patients.patientKey, input.patient_key)
+    : inArray(patients.patientKey, db.select({ key: patientLinks.patientKey }).from(patientLinks).where(and(
+      eq(patientLinks.identifierSystem, input.identifier_system), eq(patientLinks.identifierValue, input.identifier_value))));
+  const [patient] = await db.select({ patient_key: patients.patientKey, display_label: patients.displayLabel,
+    identifiers: sql<PatientRecord["identifiers"]>`coalesce((select jsonb_agg(jsonb_build_object(
+      'identifier_system', links.identifier_system, 'identifier_value', links.identifier_value)
+      order by links.identifier_system, links.identifier_value)
+      from emr.patient_links links where links.patient_key = emr.patients.patient_key), '[]'::jsonb)`,
+  }).from(patients).where(condition);
+  return patient;
 }

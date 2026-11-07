@@ -156,7 +156,7 @@ test("LIS Publish Service integration (PostgreSQL)", {
     assert.deepEqual(await repository.getPublishEventByEventId(event.eventId), event);
   });
 
-  await t.test("repeated Publish returns the original event even after the source becomes invalid", async () => {
+  await t.test("changed source returns CONTENT_CONFLICT without changing the original event", async () => {
     const ids = await source();
     const first = createdEvent(await service.publishResult(ids.resultId));
     await fixtureDb.update(results).set({ resultStatus: "READY", valueNum: "99", unit: "changed" })
@@ -167,8 +167,21 @@ test("LIS Publish Service integration (PostgreSQL)", {
       .where(eq(publishEvents.eventId, first.eventId));
     const original = await repository.getPublishEventByEventId(first.eventId);
     const repeated = await service.publishResult(ids.resultId);
-    assert.ok(repeated.kind === "existing");
-    assert.deepEqual(repeated.event, original);
+    assert.equal(repeated.kind, "conflict");
+    assert.deepEqual(await repository.getPublishEventByEventId(first.eventId), original);
+  });
+
+  await t.test("persisted snapshot remains compatible: decimal scale and catalog-only policy changes are not content changes", async () => {
+    const ids = await source({ valueNum: "3.4000" });
+    const first = createdEvent(await service.publishResult(ids.resultId));
+    await fixtureDb.update(results).set({ valueNum: "3.4" }).where(eq(results.resultId, ids.resultId));
+    await fixtureDb.update(testCatalog).set({ acceptedUnits: ["different-policy"] }).where(eq(testCatalog.testCode, ids.testCode));
+    const same = await service.publishResult(ids.resultId);
+    assert.ok(same.kind === "existing"); assert.deepEqual(same.event, first);
+    await fixtureDb.update(testCatalog).set({ testName: "Changed display" }).where(eq(testCatalog.testCode, ids.testCode));
+    const changed = await service.publishResult(ids.resultId);
+    assert.equal(changed.kind, "conflict");
+    assert.deepEqual(await repository.getPublishEventByEventId(first.eventId), first);
   });
 
   await t.test("missing result returns a typed not_found outcome", async () => {
