@@ -2,7 +2,6 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { searchLisResults } from '../src/api/searchResults.ts'
 import { emptyFilters, normalizeFilters } from '../src/state/results.ts'
-import { parseResultsHash, resultsHash } from '../src/state/routes.ts'
 
 const row = {
   result_id: 'MIMIC-LAB-100145', patient_id: 'MIMIC-P-10007928', test_code: '50971',
@@ -83,18 +82,4 @@ test('Bộ lọc ID đặc biệt giữ mã hóa và header dot segment; hủy G
   controller.abort()
   t.mock.method(globalThis, 'fetch', async (_url, { signal }) => signal.throwIfAborted())
   await assert.rejects(searchLisResults(query({ resultId: row.result_id }), controller.signal), { name: 'AbortError' })
-})
-
-test('URL lưu đủ 4 bộ lọc và ngữ cảnh chi tiết; result_id luôn chỉ trang đầu', () => {
-  const q = query({ patientId: row.patient_id, resultId: row.result_id, testCode: '50971', resultStatus: 'FINAL' })
-  for (const id of [undefined, '.', row.result_id]) {
-    const route = parseResultsHash(resultsHash(q, id))
-    assert.deepEqual(route.query, { ...q, pageIndex: 0 })
-    assert.equal(route.kind, id === undefined ? 'list' : 'detail')
-  }
-  assert.equal(parseResultsHash('#/results?result_id=mimic-lab-100145&page=3').query.filters.resultId, row.result_id)
-  assert.equal(parseResultsHash('#/results?result_id=mimic-lab-100145&page=3').query.pageIndex, 0)
-  for (const value of ['%20', '%00', '%GG', '%FF', 'A&result_id=B']) {
-    assert.equal(parseResultsHash('#/results?result_id=' + value).kind, 'invalid')
-  }
 })

@@ -6,8 +6,12 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { createServer, preview } from 'vite'
 
 // CDP chặn HTTP trước khi tới proxy; không thay fetch hay mã ứng dụng.
-export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, middlewareTarget, publishRequests = false, onEvent } = {}) {
-  const appRoot = path.resolve(import.meta.dirname, '../..')
+export async function openHttpBrowser(onRequest, { mode = 'preview', app = 'lis', reuseServer = false, lisTarget, middlewareTarget, publishRequests = false, flowRequests = false, onEvent } = {}) {
+  const index = ['lis', 'middleware-monitor', 'emr'].indexOf(app)
+  assert.ok(index >= 0, 'Unknown frontend entry point')
+  const appRoot = path.resolve(import.meta.dirname, '../../..', app)
+  const port = (mode === 'development' ? 5173 : 4173) + index
+  const origin = 'http://127.0.0.1:' + port
   assert.ok(existsSync(path.join(appRoot, 'dist/index.html')), 'Chạy npm run build:lis trước')
   const executable = process.env.CHROME_PATH || [
     'C:/Program Files/Google/Chrome/Application/chrome.exe',
@@ -23,6 +27,7 @@ export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, 
   const legacySourceStatuses = new Map()
   const exceptions = []
   const interceptionErrors = []
+  const cancelledNetwork = new Set()
   const pending = new Map()
   let server, browser, socket, sequence = 0, sessionId
   let closed = false
@@ -56,11 +61,16 @@ export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, 
       root: appRoot, configFile: path.join(appRoot, 'vite.config.ts'), logLevel: 'silent',
       cacheDir: path.join(cache, 'vite-' + mode),
       [mode === 'development' ? 'server' : 'preview']: {
-        host: '127.0.0.1', port: 5183, strictPort: true, open: false,
+        host: '127.0.0.1', port, strictPort: true, open: false,
         ...((lisTarget || middlewareTarget) ? { proxy: { ...(lisTarget ? { '/api/lis': { target: lisTarget } } : {}), ...(middlewareTarget ? { '/api/middleware': { target: middlewareTarget } } : {}) } } : {}),
       },
     }
-    if (mode === 'development') {
+    if (reuseServer) {
+      assert.equal(mode, 'development', 'Only reuse a verifiable development server')
+      const response = await fetch(origin + '/src/App.tsx', { signal: AbortSignal.timeout(5000) })
+      const source = await response.text()
+      assert.ok(response.ok && source.includes(app === 'lis' ? 'readFlowRoute' : 'lis/src/App.tsx'), 'Existing server must serve this Flow Console entry point')
+    } else if (mode === 'development') {
       server = await createServer(settings)
       await server.listen()
     } else server = await preview(settings)
@@ -97,24 +107,28 @@ export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, 
         if (message.error) command.reject(new Error(JSON.stringify(message.error)))
         else command.resolve(message.result)
       }
-      if (!onRequest && message.method === 'Network.requestWillBeSent' && message.params.request.url.includes('/api/')) {
+      if (!onRequest && message.method === 'Network.requestWillBeSent' && new URL(message.params.request.url).pathname.startsWith('/api/')) {
         const { request } = message.params
         const apiPath = new URL(request.url).pathname
         const target = !publishRequests && (apiPath.endsWith('/publish-event') || apiPath.startsWith('/api/middleware/')) ? auxiliaryRequests : requests
         target.push({ method: request.method, url: request.url, query: Object.fromEntries(new URL(request.url).searchParams) })
       }
+      if (message.method === 'Network.loadingFailed' && (message.params.canceled || message.params.errorText === 'net::ERR_ABORTED')) cancelledNetwork.add(message.params.requestId)
       if (message.method === 'Runtime.exceptionThrown') exceptions.push(message.params.exceptionDetails)
       if (message.method === 'Fetch.requestPaused') {
-        const { request, requestId } = message.params
+        const { request, requestId, networkId } = message.params
         const entry = { method: request.method, url: request.url, query: Object.fromEntries(new URL(request.url).searchParams) }
         const auxiliary = !publishRequests && new URL(request.url).pathname.endsWith('/publish-event')
         ;(auxiliary ? auxiliaryRequests : requests).push(entry)
         void (async () => {
           assert.ok(request.method === 'GET' || (publishRequests && request.method === 'POST' && new URL(request.url).pathname.endsWith('/publish')), 'Unexpected write in browser test')
-          assert.match(new URL(request.url).pathname, /^\/api\/(?:lis\/results(?:\/[^/]+(?:\/(?:publish|publish-event))?)?|middleware\/exchanges\/[^/]+)$/)
+          assert.match(new URL(request.url).pathname, flowRequests
+            ? /^\/api\/(?:lis\/results(?:\/[^/]+(?:\/(?:publish|publish-event))?)?|middleware\/exchanges(?:\/[^/]+(?:\/attempts)?)?|emr\/(?:patients|lab-results))$/
+            : /^\/api\/(?:lis\/results(?:\/[^/]+(?:\/(?:publish|publish-event))?)?|middleware\/exchanges\/[^/]+)$/)
           // Legacy suites keep their original request oracle; this is an explicitly mocked auxiliary lookup.
           const response = auxiliary ? { json: { result_id: decodeURIComponent(new URL(request.url).pathname.slice('/api/lis/results/'.length, -'/publish-event'.length)), result_status: legacySourceStatuses.get(decodeURIComponent(new URL(request.url).pathname.slice('/api/lis/results/'.length, -'/publish-event'.length))) ?? 'FINAL', published: false, event: null } } : await onRequest(entry)
           if (!auxiliary && !publishRequests && response.json?.result_id && response.json?.result_status) legacySourceStatuses.set(response.json.result_id, response.json.result_status)
+          if (networkId && cancelledNetwork.has(networkId)) { entry.cancelled = true; return }
           if (response.networkError) {
             await send('Fetch.failRequest', { requestId, errorReason: 'InternetDisconnected' })
             entry.failed = true
@@ -129,7 +143,10 @@ export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, 
             body: Buffer.from(response.html ?? JSON.stringify(response.json)).toString('base64'),
           })
           entry.fulfilled = true
-        })().catch((error) => { if (!closed) interceptionErrors.push(String(error.stack ?? error)) })
+        })().catch((error) => {
+          if (networkId && cancelledNetwork.has(networkId) && String(error).includes('Invalid InterceptionId')) entry.cancelled = true
+          else if (!closed) interceptionErrors.push(String(error.stack ?? error))
+        })
       }
     })
     socket.addEventListener('close', () => {
@@ -143,12 +160,12 @@ export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, 
     ;({ sessionId } = await send('Target.attachToTarget', { targetId, flatten: true }, null))
     await send('Runtime.enable')
     await send('Page.enable')
-    if (onRequest) await send('Fetch.enable', { patterns: [{ urlPattern: '*/api/*', requestStage: 'Request' }] })
+    if (onRequest) await send('Fetch.enable', { patterns: [{ urlPattern: origin + '/api/*', requestStage: 'Request' }] })
     await send('Network.enable')
     await send('Network.setCacheDisabled', { cacheDisabled: true })
     const version = await send('Browser.getVersion', {}, null)
     return {
-      requests, auxiliaryRequests, exceptions, interceptionErrors, close, version, executable,
+      requests, auxiliaryRequests, exceptions, interceptionErrors, close, version, executable, origin,
       async evaluate(fn, argument = null) {
         const response = await send('Runtime.evaluate', {
           expression: '(' + fn.toString() + ')(' + JSON.stringify(argument) + ')',
@@ -157,7 +174,8 @@ export async function openHttpBrowser(onRequest, { mode = 'preview', lisTarget, 
         if (response.exceptionDetails) throw new Error(JSON.stringify(response.exceptionDetails))
         return response.result.value
       },
-      async navigate(hash = '') { await send('Page.navigate', { url: 'http://127.0.0.1:5183/' + hash }) },
+      async navigate(hash = '#/flow') { await send('Page.navigate', { url: origin + '/' + hash }) },
+      async navigatePath(pathname) { await send('Page.navigate', { url: origin + pathname }) },
       command: send,
       async screenshot() { return (await send('Page.captureScreenshot', { format: 'png' })).data },
     }

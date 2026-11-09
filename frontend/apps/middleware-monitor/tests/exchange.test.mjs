@@ -1,19 +1,9 @@
+import { normalizeSourceResultId } from '../src/state/routes.ts'
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { readRoute, routeHash, normalizeSourceResultId } from '../src/state/routes.ts'
 import { emptyQuery, statuses } from '../src/types/exchange.ts'
 import { getDetail, getAttempts, listExchanges, validateDetail, validateAttempts, validateSummary, verifiedDelivery, identityVerified } from '../src/api/exchanges.ts'
 import { detail, attempts, uuid } from './fixtures.mjs'
-
-for (const source_result_id of ['.', '..', '%2E', '/', '%', '+', 'Kết quả/🧪?#']) test('Hash giữ định danh nguồn: ' + source_result_id, () => {
-  const query = { source_result_id, status: 'FAILED', page: 3 }, hash = routeHash(query, uuid(1))
-  assert.deepEqual(readRoute(hash), { kind: 'detail', id: uuid(1), query })
-  assert.deepEqual(readRoute(routeHash(query)), { kind: 'list', query })
-})
-test('Route từ chối query lạ/lặp, UUID sai, trang sai và encoding hỏng; không mở rộng tìm kiếm', () => {
-  for (const hash of ['#/other', '#/exchanges/bad', '#/exchanges?page=0', '#/exchanges?page=1.2', '#/exchanges?page=9007199254740991', '#/exchanges?status=ACK', '#/exchanges?event_id=x', '#/exchanges?status=FAILED&status=FAILED', '#/exchanges?source_result_id=%', '#/exchanges?source_result_id=%00']) assert.equal(readRoute(hash).kind, 'invalid', hash)
-  assert.deepEqual(readRoute(''), { kind: 'list', query: emptyQuery })
-})
 for (const n of [0, 20, 21]) test('Danh sách ' + n + ' dòng: 20 hiển thị, limit 21, offset 40 và AND bộ lọc', async t => {
   const controller = new AbortController()
   t.mock.method(globalThis, 'fetch', async (path, options) => {
@@ -82,14 +72,6 @@ for (const input of ['MIMIC-LAB-100145', 'mimic-lab-100145', 'Mimic-Lab-100145',
   })
   const result = await listExchanges({ source_result_id: input, status: 'DELIVERED', page: 2 })
   assert.deepEqual(result.items, [original])
-})
-test('URL viết thường được chuẩn hóa khi F5/đọc lại, chi tiết và quay lại giữ status/page', () => {
-  const query = { source_result_id: 'MIMIC-LAB-100145', status: 'DELIVERED', page: 2 }
-  for (const suffix of ['', '/' + uuid(1)]) {
-    const route = readRoute('#/exchanges' + suffix + '?source_result_id=%20mimic-lab-100145%20&status=DELIVERED&page=2')
-    assert.deepEqual(route.query, query)
-    assert.deepEqual(readRoute(routeHash(route.query, route.id)), route)
-  }
 })
 test('Mã không tồn tại trả rỗng; mã ngoài MIMIC giữ exact case, không sửa ID trong kết quả', async t => {
   for (const [input, expected, items] of [

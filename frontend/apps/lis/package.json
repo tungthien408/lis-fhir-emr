@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
-    "test:browser": "node tests/browser.mjs"
+    "test:browser": "node tests/browser-flow.mjs",
+    "test:stitch": "node tests/browser-flow.mjs",
+    "test:stitch:live": "node tests/browser-flow.mjs --real"
   },
   "dependencies": {
     "react": "^19.3.1",
