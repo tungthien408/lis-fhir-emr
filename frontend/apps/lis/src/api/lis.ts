@@ -4,6 +4,8 @@ import { lisResultRequest } from './resultRequest.ts'
 import { emptyFilters, normalizeFilters } from '../state/results.ts'
 
 interface GetLisResultsParams {
+  search?: string
+  resultId?: string
   limit?: number
   offset?: number
   patientId?: string
@@ -46,6 +48,8 @@ function isLisResult(value: unknown): value is LisResult {
 export async function getLisResults({
   limit = 11,
   offset = 0,
+  search,
+  resultId,
   patientId,
   testCode,
   resultStatus,
@@ -56,7 +60,9 @@ export async function getLisResults({
     offset: String(offset),
   })
 
-  const filters = normalizeFilters({ ...emptyFilters, patientId: patientId ?? '', testCode: testCode ?? '' })
+  const filters = normalizeFilters({ ...emptyFilters, resultId: resultId ?? '', patientId: patientId ?? '', testCode: testCode ?? '' })
+  if (search?.trim()) params.set('search', search.trim())
+  if (filters.resultId) params.set('result_id', filters.resultId)
   if (filters.patientId) params.set('patient_id', filters.patientId)
   if (filters.testCode) params.set('test_code', filters.testCode)
   if (resultStatus) params.set('result_status', resultStatus)

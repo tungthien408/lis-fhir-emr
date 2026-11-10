@@ -29,7 +29,7 @@ export function validatePublishState(value: unknown, resultId: string): PublishS
   return value as unknown as PublishState
 }
 const messages: Record<string, string> = {
-  CONTENT_CONFLICT: 'Nội dung nguồn đã thay đổi so với bản đã phát hành. Sự kiện và snapshot cũ được giữ nguyên.',
+  CONTENT_CONFLICT: 'Phát hiện xung đột dữ liệu. Không thể ghi đè kết quả đã gửi. Sự kiện và snapshot cũ được giữ nguyên.',
   RESULT_NOT_READY: 'Kết quả hiện chưa FINAL nên chưa thể Publish.',
   INVALID_TEST_CODE: 'Danh mục xét nghiệm chưa hợp lệ để Publish.',
   INVALID_UNIT: 'Đơn vị không phù hợp với danh mục xét nghiệm.',

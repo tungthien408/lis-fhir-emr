@@ -2,7 +2,8 @@ import { hashJson } from '../src/flow/model.ts'
 export const id = 'STITCH-TEST-1', eventId = '00000000-0000-4000-8000-000000000001', exchangeId = '00000000-0000-4000-8000-000000000002'
 const uuid = n => '00000000-0000-4000-8000-' + String(n).padStart(12, '0')
 export const at = '2026-11-09T01:00:00.123456Z'
-export async function fixture(state = 'DELIVERED') {
+export async function fixture(state = 'DELIVERED', resultId = id) {
+  const id = resultId
   const source = { result_id: id, patient_id: 'STITCH-PATIENT', test_code: 'TEST', test_name: 'Synthetic test', fluid: 'Blood', category: 'Chemistry', value_num: '3.6', unit: 'mg/dL', reference_low: '0', reference_high: null, effective_at: at, result_status: 'FINAL' }
   const snapshot = { ...source, value_num: 3.6, reference_low: 0 }
   const fhir = { resourceType: 'Observation', status: 'final', identifier: [{ system: 'https://example.org/lis/result', value: id }], subject: { type: 'Patient', identifier: { system: 'https://example.org/lis/patient', value: source.patient_id } }, code: { coding: [{ system: 'https://example.org/lis/test-code', code: 'TEST', display: source.test_name }], text: source.test_name }, valueQuantity: { value: 3.6, unit: 'mg/dL' }, referenceRange: [{ low: { value: 0, unit: 'mg/dL' } }], effectiveDateTime: at }

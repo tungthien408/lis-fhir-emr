@@ -3,6 +3,7 @@ import type { LisResult, LisResultStatus } from '../types/lis.ts'
 export const PAGE_SIZE = 10
 
 export interface ResultFilters {
+  search?: string
   patientId: string
   resultId: string
   testCode: string
@@ -39,6 +40,7 @@ export function normalizeFilters(filters: ResultFilters): ResultFilters {
   const patientId = filters.patientId.trim()
   const resultId = (filters.resultId ?? '').trim()
   return {
+    ...(filters.search !== undefined ? { search: filters.search.trim() } : {}),
     patientId: /^MIMIC-P-[0-9]+$/i.test(patientId) ? patientId.toUpperCase() : patientId,
     resultId: /^MIMIC-LAB-[0-9]+$/i.test(resultId) ? resultId.toUpperCase() : resultId,
     testCode: filters.testCode.trim(),

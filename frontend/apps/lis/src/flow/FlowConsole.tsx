@@ -5,6 +5,8 @@ import { publishResult } from '../api/publish.ts'
 import { LisApiError } from '../api/lis.ts'
 import { diagnosticLabels } from '../../../middleware-monitor/src/state/presentation.ts'
 import { useFlow } from './useFlow.ts'
+import { loadFlow, message } from './api.ts'
+import { existingPublishNotice, publishFeedback } from './publishFeedback.ts'
 import { flowModel, sourceSnapshot, stationLabels, type FlowData } from './model.ts'
 
 export function Icon({ name }: { name: string }) {
@@ -81,11 +83,31 @@ function Evidence({ data, sending }: { data: FlowData | null; sending: boolean }
 export function FlowConsole({ resultId = '' }: { resultId?: string }) {
   const [query, setQuery] = useState<ResultsQuery>({ filters: { ...emptyFilters, resultStatus: 'FINAL' }, pageIndex: 0 })
   const [search, setSearch] = useState('')
+  const searchTimer = useRef<number | undefined>(undefined)
+  const searchInput = useRef<HTMLInputElement>(null)
+  const [defaultSelection, setDefaultSelection] = useState('')
+  useEffect(() => () => window.clearTimeout(searchTimer.current), [])
+  function applySearch(value: string) {
+    window.clearTimeout(searchTimer.current)
+    setQuery(previous => ({
+      filters: normalizeFilters({ ...previous.filters, patientId: '', resultId: '', search: value }),
+      pageIndex: 0,
+    }))
+  }
+  function changeSearch(value: string) {
+    setSearch(value)
+    window.clearTimeout(searchTimer.current)
+    if (!value.trim()) applySearch('')
+    else searchTimer.current = window.setTimeout(() => applySearch(value), 250)
+  }
   const list = useLisResults(query)
-  const selected = resultId || (list.status === 'success' ? list.items[0]?.result_id ?? '' : '')
-  return <div className="flow-console"><FlowSelection key={selected} selected={selected} list={<>
-    <form className="flow-search" onSubmit={e => { e.preventDefault(); setQuery({ filters: normalizeFilters({ ...emptyFilters, resultStatus: 'FINAL', ...(/^MIMIC-P-/i.test(search.trim()) ? { patientId: search } : { resultId: search }) }), pageIndex: 0 }) }}>
-      <button type="submit" aria-label="Tìm kết quả"><Icon name="search" /></button><label className="sr-only" htmlFor="flow-search">Mã cần tìm</label><input id="flow-search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm theo mã bệnh nhân hoặc mã kết quả" />
+  const firstId = list.status === 'success' ? list.items[0]?.result_id ?? '' : ''
+  if (!resultId && !defaultSelection && firstId) setDefaultSelection(firstId)
+  const selected = resultId || defaultSelection || firstId
+  return <div className="flow-console"><FlowSelection selected={selected} list={<>
+    <form className="flow-search" role="search" autoComplete="off" onSubmit={e => { e.preventDefault(); applySearch(search) }}>
+      <button type="submit" aria-label="Tìm kết quả"><Icon name="search" /></button><label className="sr-only" htmlFor="flow-search">Mã cần tìm</label><input id="flow-search" name="lis-result-filter" type="search" autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck={false} ref={searchInput} value={search} onChange={e => changeSearch(e.target.value)} placeholder="Tìm mã bệnh nhân/mã kết quả" />
+      {search.length > 0 && <button type="button" className="clear-search" aria-label="Xóa tìm kiếm" title="Xóa tìm kiếm" onClick={() => { changeSearch(''); searchInput.current?.focus() }}><Icon name="close" /></button>}
     </form><div className="list-caption"><span>DANH SÁCH KẾT QUẢ FINAL</span><span className="list-page-controls"><button aria-label="Trang trước" disabled={query.pageIndex === 0} onClick={() => setQuery({ ...query, pageIndex: query.pageIndex - 1 })}>‹</button>{list.status === 'success' ? list.items.length + ' BẢN GHI' : list.status === 'loading' ? 'ĐANG TẢI' : 'LỖI TẢI'}<button aria-label="Trang sau" disabled={list.status !== 'success' || !list.hasNext} onClick={() => setQuery({ ...query, pageIndex: query.pageIndex + 1 })}>›</button></span></div>
     <div className="flow-result-list" aria-label="Chọn kết quả FINAL">
       {list.status === 'loading' && <p role="status">Đang tải kết quả LIS…</p>}
@@ -99,26 +121,46 @@ export function FlowConsole({ resultId = '' }: { resultId?: string }) {
 }
 
 function FlowSelection({ selected, list }: { selected: string; list: React.ReactNode }) {
-  const [revision, setRevision] = useState(0), [sending, setSending] = useState(false)
-  const [notice, setNotice] = useState<{ text: string; error: boolean } | null>(null)
+  const [revision, setRevision] = useState(0)
+  const [action, setAction] = useState<{ resultId: string; busy: boolean; sending: boolean; notice: { text: string; error: boolean } | null }>({ resultId: selected, busy: false, sending: false, notice: null })
+  const sending = action.resultId === selected && action.sending
+  const busy = action.resultId === selected && action.busy
+  const notice = action.resultId === selected ? action.notice : null
   const inFlight = useRef<AbortController | null>(null)
-  useEffect(() => () => inFlight.current?.abort(), [])
+  useEffect(() => () => { inFlight.current?.abort(); inFlight.current = null }, [selected])
   const state = useFlow(selected, revision), data = state.data, result = data?.source, event = data?.publish.event
+  // Reset per-result interaction state without remounting the scroll container.
+  if (action.resultId !== selected) setAction({ resultId: selected, busy: false, sending: false, notice: null })
   const model = flowModel(data, sending)
   const processing = !!event && !model.delivered && !model.terminal && !['BLOCKED', 'FAILED'].includes(event.dispatch_status)
-  const canPublish = !!result && result.result_status === 'FINAL' && data?.publish.result_status === 'FINAL' && !sending && !processing && !state.loading && !state.error
+  const canPublish = !!result && result.result_status === 'FINAL' && data?.publish.result_status === 'FINAL' && !event && !busy && !state.loading && !state.error
+  async function inspect() {
+    if (inFlight.current || busy) return
+    const controller = new AbortController(); inFlight.current = controller
+    setAction({ resultId: selected, busy: true, sending: false, notice: null })
+    try {
+      const latest = await loadFlow(selected, AbortSignal.any([controller.signal, AbortSignal.timeout(15_000)]))
+      if (!controller.signal.aborted) setAction({ resultId: selected, busy: false, sending: false, notice: { error: false, text: existingPublishNotice(latest) + (latest.warnings.length ? ' ' + latest.warnings.join(' ') : '') } })
+    } catch (error) {
+      if (!controller.signal.aborted) setAction({ resultId: selected, busy: false, sending: false, notice: { error: true, text: 'Không thể kiểm tra trạng thái: ' + message(error) } })
+    } finally { if (!controller.signal.aborted) { inFlight.current = null; setRevision(n => n + 1) } }
+  }
   async function send() {
     if (!canPublish || inFlight.current) return
-    const controller = new AbortController(); inFlight.current = controller; setSending(true); setNotice(null)
+    const controller = new AbortController(); inFlight.current = controller
+    setAction({ resultId: selected, busy: true, sending: true, notice: null })
     try {
       const response = await publishResult(selected, AbortSignal.any([controller.signal, AbortSignal.timeout(15_000)]))
-      if (!controller.signal.aborted) setNotice({ error: false, text: response.created ? 'LIS đã lưu yêu cầu phát hành.' : 'Sự kiện đã tồn tại. Không tạo trùng, không đặt lại lượt thử.' })
+      if (controller.signal.aborted) return
+      setAction(prev => ({ ...prev, sending: false }))
+      const text = await publishFeedback(response, AbortSignal.any([controller.signal, AbortSignal.timeout(15_000)]))
+      if (!controller.signal.aborted) setAction({ resultId: selected, busy: false, sending: false, notice: { error: false, text } })
     } catch (error) {
       if (!controller.signal.aborted) {
         const definite = error instanceof LisApiError && [400, 404, 409, 413, 415, 422].includes(error.status)
-        setNotice({ error: true, text: (definite ? '' : 'Chưa rõ yêu cầu đã được lưu hay chưa. Đang đọc lại trạng thái; không tự gửi lại. ') + (error instanceof Error ? error.message : 'Không gửi được yêu cầu.') })
+        setAction({ resultId: selected, busy: false, sending: false, notice: { error: true, text: (definite ? '' : 'Chưa rõ yêu cầu đã được lưu hay chưa. Đang đọc lại trạng thái; không tự gửi lại. ') + message(error) } })
       }
-    } finally { if (!controller.signal.aborted) { setSending(false); inFlight.current = null; setRevision(n => n + 1) } }
+    } finally { if (!controller.signal.aborted) { inFlight.current = null; setRevision(n => n + 1) } }
   }
   return <>
     <div className="flow-columns">
@@ -129,9 +171,10 @@ function FlowSelection({ selected, list }: { selected: string; list: React.React
           {result && <><dl className="source-facts">{[['RESULT ID', result.result_id], ['PATIENT MRN', result.patient_id], ['MÃ XÉT NGHIỆM', `${result.test_name} (${result.test_code})`], ['TIME SPECIMEN', displayTime(result.effective_at)], ['REFERENCE RANGE', `${result.reference_low ?? '—'} – ${result.reference_high ?? '—'} ${result.unit}`]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd title={label === 'TIME SPECIMEN' ? result.effective_at ?? undefined : value}>{value}</dd></div>)}</dl>
             <div className="source-value"><div><span className="caps">GIÁ TRỊ XÁC NHẬN</span><strong>{result.value_num} <small>{result.unit}</small></strong></div><span className={'flow-badge ' + (result.result_status === 'FINAL' ? 'done' : 'idle')}>{result.result_status}</span></div></>}
         </div>
-        <button className={'dispatch-button ' + (event && !processing ? 'published' : '')} disabled={!canPublish} title={event ? 'Publish lại trả về sự kiện đã có; không tạo trùng hoặc khởi động lại giao dịch.' : 'Phát hành kết quả FINAL tới EMR'} onClick={() => void send()}><Icon name={sending || processing ? 'flow' : event ? 'check' : 'send'} />{sending || processing ? 'Đang gửi…' : event ? 'Đã gửi' : 'Gửi sang EMR'}{event?.dispatch_status === 'ACK' && !processing && <span className="flow-badge done">ACK</span>}</button>
+        <button className={'dispatch-button ' + (event && !processing ? 'published' : '')} disabled={event ? busy || state.loading : !canPublish} title={event ? 'Đọc lại trạng thái trao đổi từ backend.' : 'Phát hành kết quả FINAL tới EMR'} onClick={() => void (event ? inspect() : send())}><Icon name={sending || processing ? 'flow' : event ? 'check' : 'send'} />{model.delivered ? 'Đã gửi' : sending ? 'Đang gửi…' : processing ? 'Đang xử lý…' : event ? 'Đã phát hành' : 'Gửi sang EMR'}{event?.dispatch_status === 'ACK' && !processing && <span className="flow-badge done">ACK</span>}</button>
+        {busy && !sending && <p className="flow-note" role="status">Đang kiểm tra trạng thái…</p>}
         {event && <p className="event-id">Event ID <span className="mono" title={event.event_id}>{short(event.event_id)}</span></p>}
-        {notice && <p role={notice.error ? 'alert' : 'status'} className={notice.error ? 'flow-note error-text' : 'sr-only'}>{notice.text}</p>}
+        {notice && <p role={notice.error ? 'alert' : 'status'} className={notice.error ? 'flow-note error-text' : 'flow-note'}>{notice.text}</p>}
       </section>
       <section className="stitch-panel pipeline-panel">
         <div className="pipeline-header"><PanelTitle name="tree" title="Luồng trao đổi" color="middleware" refresh={() => setRevision(n => n + 1)} /><span className={'flow-badge ' + model.tone} data-flow-status={model.label} role="status">TRẠNG THÁI: {model.delivered ? 'THÀNH CÔNG' : model.label === 'REJECTED' ? 'TỪ CHỐI (REJECTED)' : model.tone === 'active' && model.label !== 'CHƯA ĐỦ BẰNG CHỨNG' ? 'ĐANG XỬ LÝ' : model.label}</span></div>
@@ -154,6 +197,6 @@ function FlowSelection({ selected, list }: { selected: string; list: React.React
         </>}
       </section>
     </div>
-    <Evidence data={data} sending={sending} />
+    <Evidence key={selected} data={data} sending={sending} />
   </>
 }

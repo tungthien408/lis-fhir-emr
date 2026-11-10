@@ -11,6 +11,8 @@
     "preview": "vite preview",
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "test:browser": "node tests/browser-flow.mjs",
+    "test:regressions": "node tests/browser-regressions.mjs",
+    "test:search": "node tests/browser-search.mjs",
     "test:stitch": "node tests/browser-flow.mjs",
     "test:stitch:live": "node tests/browser-flow.mjs --real"
   },

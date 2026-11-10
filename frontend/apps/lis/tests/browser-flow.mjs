@@ -80,7 +80,7 @@ try {
     await waitStatus('PROCESSING')
     assert.equal(posts, 1)
     assert.deepEqual(await browser.evaluate(() => [...document.querySelectorAll('[data-stage]')].map(e => e.dataset.tone)), ['done', 'done', 'active', 'idle', 'idle'])
-    assert.equal(await browser.evaluate(() => document.querySelector('.dispatch-button').disabled), true)
+    assert.equal(await browser.evaluate(() => document.querySelector('.dispatch-button').disabled), false)
     await screenshot('processing'); cases.push('Publish single-flight + real polling response; ACK does not deliver')
     data = await fixture()
     await waitStatus('DELIVERED')

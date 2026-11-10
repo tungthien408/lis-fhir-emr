@@ -21,22 +21,22 @@ test('Chuẩn hóa: chỉ mẫu MIMIC đúng loại/hậu tố số, trim, giữ
   assert.equal(normalizeFilters({ ...emptyFilters, patientId: 'mimic-lab-123', resultId: 'mimic-p-123' }).resultId, 'mimic-p-123')
 })
 
-test('Tra cứu trực tiếp ngoài trang hiện tại, không gọi GET danh sách; AND đủ ba điều kiện', async (t) => {
+test('Mã kết quả được lọc tại server trước phân trang, kết hợp AND các điều kiện', async (t) => {
   let count = 0
   const controller = new AbortController()
   t.mock.method(globalThis, 'fetch', async (url, options) => {
     count++
-    assert.equal(url, '/api/lis/results/MIMIC-LAB-100145')
+    const parsed = new URL(url, 'http://localhost')
+    assert.equal(parsed.pathname, '/api/lis/results')
+    assert.equal(parsed.searchParams.get('result_id'), row.result_id)
+    assert.equal(parsed.searchParams.get('offset'), '40')
     assert.equal(options.signal, controller.signal)
-    return Response.json(row)
+    return Response.json({ items: [row], limit: 11, offset: 40 })
   })
   for (const extra of [{}, { patientId: ' mimic-p-10007928 ', testCode: ' 50971 ', resultStatus: 'FINAL' }]) {
     assert.deepEqual(await searchLisResults(query({ resultId: ' mimic-lab-100145 ', ...extra }), controller.signal), { items: [row], hasNext: false })
   }
-  for (const extra of [{ patientId: 'OTHER' }, { testCode: 'OTHER' }, { resultStatus: 'READY' }]) {
-    assert.deepEqual(await searchLisResults(query({ resultId: row.result_id, ...extra }), controller.signal), { items: [], hasNext: false })
-  }
-  assert.equal(count, 5)
+  assert.equal(count, 2)
 })
 
 test('Không có result_id vẫn dùng lọc backend, limit 11, offset và chuẩn hóa bệnh nhân', async (t) => {
@@ -50,8 +50,8 @@ test('Không có result_id vẫn dùng lọc backend, limit 11, offset và chu�
   assert.equal(data.hasNext, true)
 })
 
-test('404 bản ghi là rỗng; 404 route/HTML, 400, 503, mạng và cấu trúc sai vẫn là lỗi', async (t) => {
-  t.mock.method(globalThis, 'fetch', async () => Response.json({ error: { code: 'NOT_FOUND', message: 'Laboratory result not found' } }, { status: 404 }))
+test('Danh sách rỗng khác 404 route/HTML, 400, 503, mạng và cấu trúc sai', async (t) => {
+  t.mock.method(globalThis, 'fetch', async () => Response.json({ items: [], limit: 11, offset: 40 }))
   assert.deepEqual(await searchLisResults(query({ resultId: 'MISSING' })), { items: [], hasNext: false })
   t.mock.restoreAll()
   const failures = [
@@ -68,12 +68,12 @@ test('404 bản ghi là rỗng; 404 route/HTML, 400, 503, mạng và cấu trúc
   }
 })
 
-test('Bộ lọc ID đặc biệt giữ mã hóa và header dot segment; hủy GET được truyền tiếp', async (t) => {
-  for (const id of ['.', '..', '%2E', 'AbC+%?#/🧪']) {
+test('Mã đầy đủ/rút gọn, chữ thường và ký tự đặc biệt đi qua query nguyên vẹn; chuyển tiếp abort', async (t) => {
+  for (const id of ['.', '..', '%2E', 'AbC+%?#/🧪', 'lab-100', '100145']) {
     t.mock.method(globalThis, 'fetch', async (url, options) => {
-      assert.equal(url, '/api/lis/results/' + (['.', '..'].includes(id) ? id.replaceAll('.', '%252E') : encodeURIComponent(id)))
-      assert.equal(options.headers?.['X-LIS-Dot-Segment'], ['.', '..'].includes(id) ? '1' : undefined)
-      return Response.json({ ...row, result_id: id })
+      assert.equal(new URL(url, 'http://localhost').searchParams.get('result_id'), id)
+      assert.equal(options.headers, undefined)
+      return Response.json({ items: [{ ...row, result_id: id }], limit: 11, offset: 40 })
     })
     assert.equal((await searchLisResults(query({ resultId: id }))).items[0].result_id, id)
     t.mock.restoreAll()
@@ -82,4 +82,28 @@ test('Bộ lọc ID đặc biệt giữ mã hóa và header dot segment; hủy G
   controller.abort()
   t.mock.method(globalThis, 'fetch', async (_url, { signal }) => signal.throwIfAborted())
   await assert.rejects(searchLisResults(query({ resultId: row.result_id }), controller.signal), { name: 'AbortError' })
+})
+
+test('Search chung gửi nguyên mã bệnh nhân/kết quả và một phần mã, cùng FINAL và phân trang', async (t) => {
+  for (const search of [' MIMIC-P-10007928 ', ' mimic-lab-100142 ', 'P-10007', '100142', '%_']) {
+    t.mock.method(globalThis, 'fetch', async url => {
+      assert.deepEqual(Object.fromEntries(new URL(url, 'http://localhost').searchParams),
+        { limit: '11', offset: '40', search: search.trim(), result_status: 'FINAL' })
+      return Response.json({ items: [row], limit: 11, offset: 40 })
+    })
+    assert.deepEqual(await searchLisResults(query({ search, resultStatus: 'FINAL' })), { items: [row], hasNext: false })
+    t.mock.restoreAll()
+  }
+})
+
+test('Xóa search bỏ tham số khỏi request và khôi phục FINAL; không biến rỗng thành lỗi', async (t) => {
+  for (const search of ['', '  ']) {
+    t.mock.method(globalThis, 'fetch', async url => {
+      assert.deepEqual(Object.fromEntries(new URL(url, 'http://localhost').searchParams),
+        { limit: '11', offset: '0', result_status: 'FINAL' })
+      return Response.json({ items: [], limit: 11, offset: 0 })
+    })
+    assert.deepEqual(await searchLisResults({ filters: { ...emptyFilters, search, resultStatus: 'FINAL' }, pageIndex: 0 }), { items: [], hasNext: false })
+    t.mock.restoreAll()
+  }
 })

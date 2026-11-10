@@ -96,10 +96,10 @@ test("LIS Controller HTTP (isolated dependencies)", async (t) => {
       received = options;
       return [];
     });
-    assert.deepEqual(await request("/api/results?patient_id=P1&test_code=T1&result_status=FINAL&limit=100&offset=2"), {
+    assert.deepEqual(await request("/api/results?result_id=%20r1%20&patient_id=P1&test_code=T1&result_status=FINAL&limit=100&offset=2"), {
       status: 200, body: { items: [], limit: 100, offset: 2 },
     });
-    assert.deepEqual(received, { patientId: "P1", testCode: "T1", resultStatus: "FINAL", limit: 100, offset: 2 });
+    assert.deepEqual(received, { resultId: "r1", patientId: "P1", testCode: "T1", resultStatus: "FINAL", limit: 100, offset: 2 });
   });
 
   await t.test("invalid pagination, repeated/structured filters and unsupported parameters return 400 before querying", async (t) => {
@@ -109,10 +109,22 @@ test("LIS Controller HTTP (isolated dependencies)", async (t) => {
       "limit=1&limit=2", "limit[x]=1", "offset=-1", "offset=1.5", "offset=", "offset=9007199254740992",
       "offset=0&offset=1", "patient_id=", "patient_id=P1&patient_id=P2", "patient_id[x]=P1", "test_code=",
       "result_status=final", "result_status=UNKNOWN", "result_status=FINAL&result_status=READY", "unknown=1",
+      "result_id=", "result_id=%20", "result_id=%00", "result_id=R1&result_id=R2", "result_id[x]=R1",
+      "search=R1&search=R2", "search[x]=R1", "search=R%00X",
     ]) {
       assertError(await request(`/api/results?${params}`), 400, "VALIDATION_ERROR");
     }
     assert.equal(query.mock.callCount(), 0);
+  });
+
+  await t.test("shared search accepts either identifier, partial/lowercase values and empty restoration; missing rows return 200", async (t) => {
+    let received: ListResultsOptions | undefined;
+    t.mock.method(dependencies, "listResults", async (options?: ListResultsOptions) => { received = options; return []; });
+    for (const search of [" MIMIC-LAB-100142 ", "mimic-p-10007928", "10014", "NOT-FOUND", "", "  "]) {
+      const response = await request(`/api/results?search=${encodeURIComponent(search)}&result_status=FINAL&limit=11&offset=0`);
+      assert.deepEqual(response, { status: 200, body: { items: [], limit: 11, offset: 0 } });
+      assert.deepEqual(received, { limit: 11, offset: 0, resultStatus: "FINAL", ...(search.trim() ? { search: search.trim() } : {}) });
+    }
   });
 
   await t.test("result detail returns the serialized result or JSON 404", async () => {

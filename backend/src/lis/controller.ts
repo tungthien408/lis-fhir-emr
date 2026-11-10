@@ -48,7 +48,7 @@ function pagination(value: unknown, field: string, fallback: number, minimum: nu
 }
 
 function listOptions(query: Request["query"]): Required<Pick<ListResultsOptions, "limit" | "offset">> & ListResultsOptions {
-  const allowed = new Set(["patient_id", "test_code", "result_status", "limit", "offset"]);
+  const allowed = new Set(["search", "result_id", "patient_id", "test_code", "result_status", "limit", "offset"]);
   if (Object.keys(query).some((key) => !allowed.has(key))) {
     throw new InvalidHttpInput("Unsupported result query parameter");
   }
@@ -56,6 +56,12 @@ function listOptions(query: Request["query"]): Required<Pick<ListResultsOptions,
     limit: pagination(query.limit, "limit", 20, 1, 100),
     offset: pagination(query.offset, "offset", 0, 0, Number.MAX_SAFE_INTEGER),
   };
+  if (query.search !== undefined) {
+    if (typeof query.search !== "string") throw new InvalidHttpInput("search must be a string");
+    const search = query.search.trim();
+    if (search) options.search = identifier(search, "search");
+  }
+  if (query.result_id !== undefined) options.resultId = identifier(query.result_id, "result_id").trim();
   if (query.patient_id !== undefined) options.patientId = identifier(query.patient_id, "patient_id");
   if (query.test_code !== undefined) options.testCode = identifier(query.test_code, "test_code");
   if (query.result_status !== undefined) {
