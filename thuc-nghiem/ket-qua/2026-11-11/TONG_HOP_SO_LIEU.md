@@ -243,4 +243,5 @@ Ghi chú: p95 = 95% kết quả nhanh hơn mức này. Thời gian lấy từ m�
 - 05-E1A-do-tre-tung-ket-qua.xong: 2026-11-12T00:12:20.203+07:00
 - 06-E4-gian-doan.xong: 2026-11-12T00:14:49.449+07:00
 - 07-kiem-tra-fhir.xong: 2026-11-12T00:17:24.382+07:00
+- 09-dong-goi.xong: 2026-11-12T00:21:43.986+07:00
 - stack-demo-da-tam-dung.txt: Stack demo (project lis-fhir-emr) đã được TẠM DỪNG lúc 2026-11-11T23:46:57.789+07:00. Bật lại: docker compose up -d
