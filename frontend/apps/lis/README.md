@@ -9,6 +9,22 @@ Kiểm thử trình duyệt: `node apps/lis/tests/browser-flow.mjs`, thêm `--de
 
 Xem [hướng dẫn chung](../../README.md) và [báo cáo kiểm thử](../../STITCH_REDESIGN.md).
 
+Nếu UI báo `Phản hồi từ LIS không phải JSON hợp lệ`, kiểm tra response của
+`/api/lis/results?limit=11&offset=0&result_status=FINAL` trên cùng địa chỉ UI.
+Nếu response là HTTP 200 với `Content-Type: text/html` và nội dung trang LIS,
+request API đang rơi vào trang HTML dự phòng của Vite. Sau khi đổi nhánh hoặc
+merge cấu hình mới, tiến trình Vite đã mở từ trước có thể chưa nạp proxy trong
+`frontend/config/vite.ts`. Dừng frontend bằng `Ctrl+C`, rồi chạy lại từ thư mục
+`frontend`:
+
+```sh
+npm run dev:lis
+```
+
+Mở lại địa chỉ Vite in ra (mặc định `http://127.0.0.1:5173/`). Response API đúng
+phải là JSON có `items`, `limit`, `offset`; chỉ tải lại tab trình duyệt không
+khởi động lại cấu hình của tiến trình Vite.
+
 Nếu danh sách tải được nhưng tìm kiếm báo HTTP 400, kiểm tra phản hồi của
 `/api/lis/results?search=100142&result_status=FINAL&limit=11&offset=0`.
 Lỗi `VALIDATION_ERROR` với message `Unsupported result query parameter` có thể
