@@ -155,3 +155,13 @@
 [2026-11-12 06:01:55] Đã tạo MINH_CHUNG_SHA256.txt (1116 file). Kiểm tra lại sau này: cd /home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/thuc-nghiem/ket-qua/2026-11-11 && sha256sum -c MINH_CHUNG_SHA256.txt
 [2026-11-12 06:01:55] Đã tắt và xóa môi trường thực nghiệm lisexp (dữ liệu đã được sao lưu trong các file .sql.gz).
 [2026-11-12 06:01:56] Đã bật lại stack demo của nhóm.
+[2026-11-12 06:01:56] Đã commit vào nhánh thuc-nghiem/so-lieu-2026-11-11 (chưa push).
+[2026-11-12 06:01:56] ===== XONG: 09-dong-goi =====
+[2026-11-12 06:04:30] ===== BẮT ĐẦU: 09-dong-goi =====
+[2026-11-12 06:04:31] Không thấy mật khẩu trong thư mục kết quả.
+[2026-11-12 06:04:31]   đã nén: kiem-tra-fhir/ket-qua-validator.json.gz
+[2026-11-12 06:04:31]   đã nén: E1-1000-ket-qua/doi-chieu/field-comparisons.jsonl.gz
+[2026-11-12 06:04:35]   đã nén: E1-1000-ket-qua/do-luong/per-result.jsonl.gz
+[2026-11-12 06:04:35] Đã tạo MINH_CHUNG_SHA256.txt (1116 file). Kiểm tra lại sau này: cd /home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/thuc-nghiem/ket-qua/2026-11-11 && sha256sum -c MINH_CHUNG_SHA256.txt
+[2026-11-12 06:04:36] Đã tắt và xóa môi trường thực nghiệm lisexp (dữ liệu đã được sao lưu trong các file .sql.gz).
+[2026-11-12 06:04:36] Đã bật lại stack demo của nhóm.
