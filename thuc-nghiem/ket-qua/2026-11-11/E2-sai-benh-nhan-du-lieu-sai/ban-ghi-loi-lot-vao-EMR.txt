@@ -1,0 +1,7 @@
+          external_id           | analyte_code | quantity | unit_text |             patient_key              
+--------------------------------+--------------+----------+-----------+--------------------------------------
+ MUT-MW-ma-xn-ngoai-danh-muc    | 99999        |      0.3 | mg/dL     | 7c17a3a0-aed9-5a6a-85bc-18059b24de20
+ MUT-MW-don-vi-khong-duoc-duyet | 50912        |      0.3 | kg        | 7c17a3a0-aed9-5a6a-85bc-18059b24de20
+ MUT-EMR-ma-xn-ngoai-danh-muc   | 99999        |      0.3 | mg/dL     | 7c17a3a0-aed9-5a6a-85bc-18059b24de20
+(3 rows)
+

@@ -1,0 +1,12 @@
+Thời điểm ghi: 2026-11-11T23:46:57.812+07:00
+Commit đang chạy: 9924105ca4de54b33663e91bfb03bca0e388d7b5 (nhánh main)
+Code có sửa chưa commit?: 0 file
+Hệ điều hành: Linux 7.2.14-arch1-1 x86_64
+CPU: 13th Gen Intel(R) Core(TM) i5-13420H, 12 luồng
+RAM: 15Gi
+Node: v26.13.0 | npm: 12.2.2
+Docker: Docker version 29.9.3, build 5457199aa5 | Docker Compose version 5.7.0
+PostgreSQL (image): postgres:17
+Java: openjdk version "27.0.1.0.3" 2026-10-24
+Cấu hình hệ thống khi đo (mặc định trong compose.yaml): chờ HTTP 3 s; thử lại sau 2 s, 4 s, 8 s (tối đa 4 lần);
+  giữ việc (lease) 15 s; quét hàng đợi mỗi 1 s; LIS và middleware mỗi bên 1 tiến trình xử lý nền.

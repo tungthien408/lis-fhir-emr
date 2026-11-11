@@ -1,0 +1,9 @@
+== MIMIC-LAB-102
+{"event_id":"c5c69963-61a8-47cb-9b03-b831f9a6f4dd","result_id":"MIMIC-LAB-102","dispatch_status":"ACK","exchange_id":"40e8a493-26ce-415b-b7c9-25e9876dedf5"}
+HTTP 200
+== MIMIC-LAB-106
+{"event_id":"46e1c9ae-bf29-4208-955f-ba81f36964eb","result_id":"MIMIC-LAB-106","dispatch_status":"ACK","exchange_id":"d29af44e-75fa-4eed-90ac-e76e14682c0b"}
+HTTP 200
+== MIMIC-LAB-118
+{"event_id":"893c97ac-7655-4490-b4b1-062bf53e756f","result_id":"MIMIC-LAB-118","dispatch_status":"ACK","exchange_id":"d783e3fe-17ca-4c29-9040-175b1e393433"}
+HTTP 200

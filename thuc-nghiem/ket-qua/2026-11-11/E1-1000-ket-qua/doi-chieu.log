@@ -1,0 +1,3 @@
+{"outcome":"PASS","expected":1000,"matched":1000}
+(node:1165148) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)

@@ -1,0 +1,2 @@
+{"accepted":true,"event_id":"941d2118-693b-49b9-b014-c7b831b89362","exchange_id":"42bd94a6-d7a2-4355-b450-4e21ce7fe64b","source_system":"lis-demo","source_result_id":"MUT-MW-ma-xn-ngoai-danh-muc","source_hash":"0fd695ab58e3ed0847a63bdc9137b364a607384fb0d2e4f4b773c8d516c989bc"}
+HTTP 202

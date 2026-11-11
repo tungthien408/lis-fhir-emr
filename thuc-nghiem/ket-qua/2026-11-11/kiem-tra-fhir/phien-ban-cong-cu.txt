@@ -1,0 +1,17 @@
+FHIR Validation tool Version 7.0.5 (Git# 17db3661806b). Built 2026-11-05T23:27:05.236Z (6 days old)
+Unable to parse command line arguments: Missing required parameter for option '-version' (<fhirVersion>)
+Encountered Illegal Argument
+java.lang.IllegalArgumentException: picocli.CommandLine$MissingParameterException: Missing required parameter for option '-version' (<fhirVersion>)
+	at org.hl7.fhir.validation.cli.picocli.CLI.parseArgsAndExecuteCommand(CLI.java:52)
+	at org.hl7.fhir.validation.cli.ValidatorCli.main(ValidatorCli.java:98)
+Caused by: picocli.CommandLine$MissingParameterException: Missing required parameter for option '-version' (<fhirVersion>)
+	at picocli.CommandLine$Interpreter.assertNoMissingParameters(CommandLine.java:14968)
+	at picocli.CommandLine$Interpreter.applyOption(CommandLine.java:14198)
+	at picocli.CommandLine$Interpreter.processStandaloneOption(CommandLine.java:14074)
+	at picocli.CommandLine$Interpreter.processArguments(CommandLine.java:13894)
+	at picocli.CommandLine$Interpreter.parse(CommandLine.java:13620)
+	at picocli.CommandLine$Interpreter.parse(CommandLine.java:13588)
+	at picocli.CommandLine$Interpreter.parse(CommandLine.java:13483)
+	at picocli.CommandLine.parseArgs(CommandLine.java:1552)
+	at org.hl7.fhir.validation.cli.picocli.CLI.parseArgsAndExecuteCommand(CLI.java:49)
+	... 1 common frames omitted

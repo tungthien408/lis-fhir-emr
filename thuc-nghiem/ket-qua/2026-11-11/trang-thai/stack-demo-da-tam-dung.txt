@@ -1,0 +1,1 @@
+Stack demo (project lis-fhir-emr) đã được TẠM DỪNG lúc 2026-11-11T23:46:57.789+07:00. Bật lại: docker compose up -d

@@ -1,0 +1,21 @@
+{
+  "event_id": "c5c69963-61a8-47cb-9b03-b831f9a6f4dd",
+  "source_system": "lis-demo",
+  "source_result_id": "MIMIC-LAB-102",
+  "source_snapshot": {
+    "unit": "mg/dL",
+    "fluid": "Blood",
+    "category": "Chemistry",
+    "result_id": "MIMIC-LAB-102",
+    "test_code": "50912",
+    "test_name": "Creatinine",
+    "value_num": 999,
+    "patient_id": "MIMIC-P-10000032",
+    "effective_at": "2180-05-06T22:25:00.000000Z",
+    "reference_low": 0.4,
+    "result_status": "FINAL",
+    "reference_high": 1.1
+  },
+  "source_hash": "14ccd84008081ba59734ed2ede26322e31b98adca4511862541c0c4d0da799fe",
+  "published_at": "2026-11-11T16:51:53.511Z"
+}

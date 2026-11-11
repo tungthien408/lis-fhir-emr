@@ -1,0 +1,111 @@
+ source_result_id |   event_type    | old_status | new_status |                             detail                             |          occurred_at          
+------------------+-----------------+------------+------------+----------------------------------------------------------------+-------------------------------
+ MIMIC-LAB-100142 | RECEIVED        |            | RECEIVED   |                                                                | 2026-11-11 17:12:33.003186+00
+ MIMIC-LAB-100142 | CLAIMED         | RECEIVED   | PROCESSING |                                                                | 2026-11-11 17:12:33.858633+00
+ MIMIC-LAB-100142 | VALIDATED       | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:33.871411+00
+ MIMIC-LAB-100142 | TRANSFORMED     | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:33.872481+00
+ MIMIC-LAB-100142 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 1}       | 2026-11-11 17:12:33.883012+00
+ MIMIC-LAB-100142 | RETRY_SCHEDULED | PROCESSING | RETRY_WAIT | {"code": "NETWORK_ERROR", "phase": "SEND", "outcome": "retry"} | 2026-11-11 17:12:33.945967+00
+ MIMIC-LAB-100142 | CLAIMED         | RETRY_WAIT | PROCESSING |                                                                | 2026-11-11 17:12:36.029081+00
+ MIMIC-LAB-100142 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 2}       | 2026-11-11 17:12:36.046135+00
+ MIMIC-LAB-100142 | RETRY_SCHEDULED | PROCESSING | RETRY_WAIT | {"code": "NETWORK_ERROR", "phase": "SEND", "outcome": "retry"} | 2026-11-11 17:12:36.157177+00
+ MIMIC-LAB-100142 | CLAIMED         | RETRY_WAIT | PROCESSING |                                                                | 2026-11-11 17:12:40.628261+00
+ MIMIC-LAB-100142 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 3}       | 2026-11-11 17:12:40.639715+00
+ MIMIC-LAB-100142 | TARGET_STORED   | PROCESSING | VERIFYING  | {"code": null, "phase": "SEND", "outcome": "stored"}           | 2026-11-11 17:12:40.660857+00
+ MIMIC-LAB-100142 | VERIFY_STARTED  | VERIFYING  | VERIFYING  | {"phase": "VERIFY", "outcome": "STARTED", "attempt_no": 1}     | 2026-11-11 17:12:40.678299+00
+ MIMIC-LAB-100142 | DELIVERED       | VERIFYING  | DELIVERED  | {"code": null, "phase": "VERIFY", "outcome": "delivered"}      | 2026-11-11 17:12:40.692081+00
+ MIMIC-LAB-100145 | RECEIVED        |            | RECEIVED   |                                                                | 2026-11-11 17:12:34.051496+00
+ MIMIC-LAB-100145 | CLAIMED         | RECEIVED   | PROCESSING |                                                                | 2026-11-11 17:12:34.961663+00
+ MIMIC-LAB-100145 | VALIDATED       | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:34.977737+00
+ MIMIC-LAB-100145 | TRANSFORMED     | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:34.978523+00
+ MIMIC-LAB-100145 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 1}       | 2026-11-11 17:12:34.990206+00
+ MIMIC-LAB-100145 | RETRY_SCHEDULED | PROCESSING | RETRY_WAIT | {"code": "NETWORK_ERROR", "phase": "SEND", "outcome": "retry"} | 2026-11-11 17:12:35.01403+00
+ MIMIC-LAB-100145 | CLAIMED         | RETRY_WAIT | PROCESSING |                                                                | 2026-11-11 17:12:37.208843+00
+ MIMIC-LAB-100145 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 2}       | 2026-11-11 17:12:37.223863+00
+ MIMIC-LAB-100145 | RETRY_SCHEDULED | PROCESSING | RETRY_WAIT | {"code": "NETWORK_ERROR", "phase": "SEND", "outcome": "retry"} | 2026-11-11 17:12:37.264047+00
+ MIMIC-LAB-100145 | CLAIMED         | RETRY_WAIT | PROCESSING |                                                                | 2026-11-11 17:12:42.055955+00
+ MIMIC-LAB-100145 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 3}       | 2026-11-11 17:12:42.168641+00
+ MIMIC-LAB-100145 | TARGET_STORED   | PROCESSING | VERIFYING  | {"code": null, "phase": "SEND", "outcome": "stored"}           | 2026-11-11 17:12:42.191416+00
+ MIMIC-LAB-100145 | VERIFY_STARTED  | VERIFYING  | VERIFYING  | {"phase": "VERIFY", "outcome": "STARTED", "attempt_no": 1}     | 2026-11-11 17:12:42.207059+00
+ MIMIC-LAB-100145 | DELIVERED       | VERIFYING  | DELIVERED  | {"code": null, "phase": "VERIFY", "outcome": "delivered"}      | 2026-11-11 17:12:42.219818+00
+ MIMIC-LAB-100151 | RECEIVED        |            | RECEIVED   |                                                                | 2026-11-11 17:12:35.25103+00
+ MIMIC-LAB-100151 | CLAIMED         | RECEIVED   | PROCESSING |                                                                | 2026-11-11 17:12:36.16424+00
+ MIMIC-LAB-100151 | VALIDATED       | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:36.171742+00
+ MIMIC-LAB-100151 | TRANSFORMED     | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:36.172456+00
+ MIMIC-LAB-100151 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 1}       | 2026-11-11 17:12:36.180225+00
+ MIMIC-LAB-100151 | RETRY_SCHEDULED | PROCESSING | RETRY_WAIT | {"code": "NETWORK_ERROR", "phase": "SEND", "outcome": "retry"} | 2026-11-11 17:12:36.195842+00
+ MIMIC-LAB-100151 | CLAIMED         | RETRY_WAIT | PROCESSING |                                                                | 2026-11-11 17:12:38.389475+00
+ MIMIC-LAB-100151 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 2}       | 2026-11-11 17:12:38.398087+00
+ MIMIC-LAB-100151 | RETRY_SCHEDULED | PROCESSING | RETRY_WAIT | {"code": "NETWORK_ERROR", "phase": "SEND", "outcome": "retry"} | 2026-11-11 17:12:38.407613+00
+ MIMIC-LAB-100151 | CLAIMED         | RETRY_WAIT | PROCESSING |                                                                | 2026-11-11 17:12:43.297159+00
+ MIMIC-LAB-100151 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 3}       | 2026-11-11 17:12:43.315648+00
+ MIMIC-LAB-100151 | TARGET_STORED   | PROCESSING | VERIFYING  | {"code": null, "phase": "SEND", "outcome": "stored"}           | 2026-11-11 17:12:43.401885+00
+ MIMIC-LAB-100151 | VERIFY_STARTED  | VERIFYING  | VERIFYING  | {"phase": "VERIFY", "outcome": "STARTED", "attempt_no": 1}     | 2026-11-11 17:12:43.420421+00
+ MIMIC-LAB-100151 | DELIVERED       | VERIFYING  | DELIVERED  | {"code": null, "phase": "VERIFY", "outcome": "delivered"}      | 2026-11-11 17:12:43.435077+00
+ MIMIC-LAB-100177 | RECEIVED        |            | RECEIVED   |                                                                | 2026-11-11 17:12:36.29942+00
+ MIMIC-LAB-100177 | CLAIMED         | RECEIVED   | PROCESSING |                                                                | 2026-11-11 17:12:37.271467+00
+ MIMIC-LAB-100177 | VALIDATED       | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:37.277957+00
+ MIMIC-LAB-100177 | TRANSFORMED     | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:37.278677+00
+ MIMIC-LAB-100177 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 1}       | 2026-11-11 17:12:37.28949+00
+ MIMIC-LAB-100177 | RETRY_SCHEDULED | PROCESSING | RETRY_WAIT | {"code": "NETWORK_ERROR", "phase": "SEND", "outcome": "retry"} | 2026-11-11 17:12:37.376059+00
+ MIMIC-LAB-100177 | CLAIMED         | RETRY_WAIT | PROCESSING |                                                                | 2026-11-11 17:12:39.485642+00
+ MIMIC-LAB-100177 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 2}       | 2026-11-11 17:12:39.495569+00
+ MIMIC-LAB-100177 | TARGET_STORED   | PROCESSING | VERIFYING  | {"code": null, "phase": "SEND", "outcome": "stored"}           | 2026-11-11 17:12:39.559411+00
+ MIMIC-LAB-100177 | VERIFY_STARTED  | VERIFYING  | VERIFYING  | {"phase": "VERIFY", "outcome": "STARTED", "attempt_no": 1}     | 2026-11-11 17:12:39.569867+00
+ MIMIC-LAB-100177 | DELIVERED       | VERIFYING  | DELIVERED  | {"code": null, "phase": "VERIFY", "outcome": "delivered"}      | 2026-11-11 17:12:39.579391+00
+ MIMIC-LAB-100190 | RECEIVED        |            | RECEIVED   |                                                                | 2026-11-11 17:12:37.385664+00
+ MIMIC-LAB-100190 | CLAIMED         | RECEIVED   | PROCESSING |                                                                | 2026-11-11 17:12:38.41563+00
+ MIMIC-LAB-100190 | VALIDATED       | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:38.425999+00
+ MIMIC-LAB-100190 | TRANSFORMED     | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:38.426785+00
+ MIMIC-LAB-100190 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 1}       | 2026-11-11 17:12:38.438093+00
+ MIMIC-LAB-100190 | RETRY_SCHEDULED | PROCESSING | RETRY_WAIT | {"code": "NETWORK_ERROR", "phase": "SEND", "outcome": "retry"} | 2026-11-11 17:12:38.448408+00
+ MIMIC-LAB-100190 | CLAIMED         | RETRY_WAIT | PROCESSING |                                                                | 2026-11-11 17:12:40.70059+00
+ MIMIC-LAB-100190 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 2}       | 2026-11-11 17:12:40.709179+00
+ MIMIC-LAB-100190 | TARGET_STORED   | PROCESSING | VERIFYING  | {"code": null, "phase": "SEND", "outcome": "stored"}           | 2026-11-11 17:12:40.728604+00
+ MIMIC-LAB-100190 | VERIFY_STARTED  | VERIFYING  | VERIFYING  | {"phase": "VERIFY", "outcome": "STARTED", "attempt_no": 1}     | 2026-11-11 17:12:40.745432+00
+ MIMIC-LAB-100190 | DELIVERED       | VERIFYING  | DELIVERED  | {"code": null, "phase": "VERIFY", "outcome": "delivered"}      | 2026-11-11 17:12:40.75884+00
+ MIMIC-LAB-100214 | RECEIVED        |            | RECEIVED   |                                                                | 2026-11-11 17:12:38.430373+00
+ MIMIC-LAB-100214 | CLAIMED         | RECEIVED   | PROCESSING |                                                                | 2026-11-11 17:12:38.459124+00
+ MIMIC-LAB-100214 | VALIDATED       | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:38.463842+00
+ MIMIC-LAB-100214 | TRANSFORMED     | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:38.464075+00
+ MIMIC-LAB-100214 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 1}       | 2026-11-11 17:12:38.469201+00
+ MIMIC-LAB-100214 | RETRY_SCHEDULED | PROCESSING | RETRY_WAIT | {"code": "NETWORK_ERROR", "phase": "SEND", "outcome": "retry"} | 2026-11-11 17:12:38.475129+00
+ MIMIC-LAB-100214 | CLAIMED         | RETRY_WAIT | PROCESSING |                                                                | 2026-11-11 17:12:40.766981+00
+ MIMIC-LAB-100214 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 2}       | 2026-11-11 17:12:40.777419+00
+ MIMIC-LAB-100214 | TARGET_STORED   | PROCESSING | VERIFYING  | {"code": null, "phase": "SEND", "outcome": "stored"}           | 2026-11-11 17:12:40.840055+00
+ MIMIC-LAB-100214 | VERIFY_STARTED  | VERIFYING  | VERIFYING  | {"phase": "VERIFY", "outcome": "STARTED", "attempt_no": 1}     | 2026-11-11 17:12:40.857166+00
+ MIMIC-LAB-100214 | DELIVERED       | VERIFYING  | DELIVERED  | {"code": null, "phase": "VERIFY", "outcome": "delivered"}      | 2026-11-11 17:12:40.869988+00
+ MIMIC-LAB-100218 | RECEIVED        |            | RECEIVED   |                                                                | 2026-11-11 17:12:39.495754+00
+ MIMIC-LAB-100218 | CLAIMED         | RECEIVED   | PROCESSING |                                                                | 2026-11-11 17:12:39.582858+00
+ MIMIC-LAB-100218 | VALIDATED       | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:39.586134+00
+ MIMIC-LAB-100218 | TRANSFORMED     | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:39.586524+00
+ MIMIC-LAB-100218 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 1}       | 2026-11-11 17:12:39.589993+00
+ MIMIC-LAB-100218 | TARGET_STORED   | PROCESSING | VERIFYING  | {"code": null, "phase": "SEND", "outcome": "stored"}           | 2026-11-11 17:12:39.605782+00
+ MIMIC-LAB-100218 | VERIFY_STARTED  | VERIFYING  | VERIFYING  | {"phase": "VERIFY", "outcome": "STARTED", "attempt_no": 1}     | 2026-11-11 17:12:39.611573+00
+ MIMIC-LAB-100218 | DELIVERED       | VERIFYING  | DELIVERED  | {"code": null, "phase": "VERIFY", "outcome": "delivered"}      | 2026-11-11 17:12:39.617752+00
+ MIMIC-LAB-100275 | RECEIVED        |            | RECEIVED   |                                                                | 2026-11-11 17:12:40.536025+00
+ MIMIC-LAB-100275 | CLAIMED         | RECEIVED   | PROCESSING |                                                                | 2026-11-11 17:12:40.877921+00
+ MIMIC-LAB-100275 | VALIDATED       | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:40.886062+00
+ MIMIC-LAB-100275 | TRANSFORMED     | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:40.886695+00
+ MIMIC-LAB-100275 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 1}       | 2026-11-11 17:12:40.896123+00
+ MIMIC-LAB-100275 | TARGET_STORED   | PROCESSING | VERIFYING  | {"code": null, "phase": "SEND", "outcome": "stored"}           | 2026-11-11 17:12:40.914621+00
+ MIMIC-LAB-100275 | VERIFY_STARTED  | VERIFYING  | VERIFYING  | {"phase": "VERIFY", "outcome": "STARTED", "attempt_no": 1}     | 2026-11-11 17:12:41.026984+00
+ MIMIC-LAB-100275 | DELIVERED       | VERIFYING  | DELIVERED  | {"code": null, "phase": "VERIFY", "outcome": "delivered"}      | 2026-11-11 17:12:41.041308+00
+ MIMIC-LAB-100310 | RECEIVED        |            | RECEIVED   |                                                                | 2026-11-11 17:12:41.593403+00
+ MIMIC-LAB-100310 | CLAIMED         | RECEIVED   | PROCESSING |                                                                | 2026-11-11 17:12:42.227233+00
+ MIMIC-LAB-100310 | VALIDATED       | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:42.234161+00
+ MIMIC-LAB-100310 | TRANSFORMED     | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:42.234792+00
+ MIMIC-LAB-100310 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 1}       | 2026-11-11 17:12:42.242433+00
+ MIMIC-LAB-100310 | TARGET_STORED   | PROCESSING | VERIFYING  | {"code": null, "phase": "SEND", "outcome": "stored"}           | 2026-11-11 17:12:42.257781+00
+ MIMIC-LAB-100310 | VERIFY_STARTED  | VERIFYING  | VERIFYING  | {"phase": "VERIFY", "outcome": "STARTED", "attempt_no": 1}     | 2026-11-11 17:12:42.271332+00
+ MIMIC-LAB-100310 | DELIVERED       | VERIFYING  | DELIVERED  | {"code": null, "phase": "VERIFY", "outcome": "delivered"}      | 2026-11-11 17:12:42.28206+00
+ MIMIC-LAB-100317 | RECEIVED        |            | RECEIVED   |                                                                | 2026-11-11 17:12:42.649266+00
+ MIMIC-LAB-100317 | CLAIMED         | RECEIVED   | PROCESSING |                                                                | 2026-11-11 17:12:43.444162+00
+ MIMIC-LAB-100317 | VALIDATED       | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:43.452503+00
+ MIMIC-LAB-100317 | TRANSFORMED     | PROCESSING | PROCESSING |                                                                | 2026-11-11 17:12:43.453401+00
+ MIMIC-LAB-100317 | SENT            | PROCESSING | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 1}       | 2026-11-11 17:12:43.463616+00
+ MIMIC-LAB-100317 | TARGET_STORED   | PROCESSING | VERIFYING  | {"code": null, "phase": "SEND", "outcome": "stored"}           | 2026-11-11 17:12:43.529116+00
+ MIMIC-LAB-100317 | VERIFY_STARTED  | VERIFYING  | VERIFYING  | {"phase": "VERIFY", "outcome": "STARTED", "attempt_no": 1}     | 2026-11-11 17:12:43.54707+00
+ MIMIC-LAB-100317 | DELIVERED       | VERIFYING  | DELIVERED  | {"code": null, "phase": "VERIFY", "outcome": "delivered"}      | 2026-11-11 17:12:43.560233+00
+(107 rows)
+

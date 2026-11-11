@@ -1,0 +1,145 @@
+[2026-11-11 23:46:53] ===== BẮT ĐẦU: 00-kiem-tra-truoc =====
+[2026-11-11 23:46:53] Kiểm tra công cụ:
+[2026-11-11 23:46:53]   có docker
+[2026-11-11 23:46:53]   có node
+[2026-11-11 23:46:53]   có npm
+[2026-11-11 23:46:53]   có jq
+[2026-11-11 23:46:53]   có curl
+[2026-11-11 23:46:53]   có gzip
+[2026-11-11 23:46:53]   có sha256sum
+[2026-11-11 23:46:53]   có java
+[2026-11-11 23:46:53]   có python3
+[2026-11-11 23:46:53]   (không bắt buộc) thiếu matplotlib → sudo pacman -S python-matplotlib (để vẽ biểu đồ)
+[2026-11-11 23:46:54] Kiểm tra .env:
+[2026-11-11 23:46:54]   LIS_DB_PASSWORD: ok
+[2026-11-11 23:46:54]   MIDDLEWARE_DB_PASSWORD: ok
+[2026-11-11 23:46:54]   EMR_DB_PASSWORD: ok
+[2026-11-11 23:46:54]   POSTGRES_ADMIN_PASSWORD: ok
+[2026-11-11 23:46:54] Đĩa trống: 19 GB
+[2026-11-11 23:46:54] Tạm dừng stack demo của nhóm (nếu đang chạy) – dữ liệu demo được giữ nguyên:
+[2026-11-11 23:46:57]   đã tạm dừng (bật lại ở bước 09)
+[2026-11-11 23:46:57] Chuẩn bị thư viện Node của backend:
+[2026-11-11 23:46:57]   node_modules đã có
+[2026-11-11 23:46:58] Đã ghi cấu hình máy vào 00-moi-truong.txt
+[2026-11-11 23:46:58]   ✔ [PRE/PRE-OK] Kiểm tra trước khi chạy → đạt
+[2026-11-11 23:46:58] ===== XONG: 00-kiem-tra-truoc =====
+[2026-11-11 23:51:04] ===== BẮT ĐẦU: 02-E1-1000-ket-qua =====
+[2026-11-11 23:51:04] Dựng lại môi trường thực nghiệm sạch (lisexp)…
+[2026-11-11 23:51:13] Môi trường sẵn sàng.
+[2026-11-11 23:51:13] Chạy thử 20 kết quả…
+[2026-11-11 23:51:40]   ✔ [E1/E1-THU] Chạy thử: 20/20 kết quả đi trọn luồng → 20
+[2026-11-11 23:51:40] Dựng lại môi trường thực nghiệm sạch (lisexp)…
+[2026-11-11 23:51:52] Môi trường sẵn sàng.
+[2026-11-11 23:51:52] Chụp DB TRƯỚC khi chạy…
+[2026-11-11 23:51:52]   ✔ [E1/E1-TRUOC] Trước khi chạy: EMR chưa có kết quả nào → 0
+[2026-11-11 23:51:52] Gửi 1.000 kết quả (khoảng 20–30 phút)…
+[2026-11-12 00:09:40] Chụp DB SAU khi chạy và đối chiếu độc lập…
+[2026-11-12 00:09:46]   ✔ [E1/E1-M1-CONGCU] Số kết quả công cụ đo thấy đi trọn luồng (LIS→EMR, đọc lại đúng) → 1000
+[2026-11-12 00:09:46]   ✔ [E1/E1-DELIVERED] Số giao dịch middleware ở trạng thái hoàn tất (DELIVERED) → 1000
+[2026-11-12 00:09:46]   ✔ [E1/E1-DOICHIEU] Kết luận của bộ đối chiếu độc lập → PASS
+[2026-11-12 00:09:46]   ✔ [E1/E1-KHOP] Số kết quả khớp hoàn toàn với đáp án → 1000
+[2026-11-12 00:09:46]   ✔ [E1/E1-M4] Số kết quả gắn sai bệnh nhân → 0
+[2026-11-12 00:09:46]   ✔ [E1/E1-M5] Số kết quả bị lưu trùng → 0
+[2026-11-12 00:09:46]   ✔ [E1/E1-SAI-TRUONG] Số kết quả có ít nhất 1 trường sai → 0
+[2026-11-12 00:09:46]   ✔ [E1/E1-THIEU] Số kết quả không tìm thấy ở EMR → 0
+[2026-11-12 00:09:46]   ✔ [E1/E1-M6] Số giao dịch báo hoàn tất nhưng đối chiếu độc lập thấy sai → 0
+[2026-11-12 00:09:46]   ✔ [E1/E1-40-LOI] Tập 40 kết quả lõi: số kết quả đạt đối chiếu → 40
+[2026-11-12 00:09:46]   ✔ [E1/E1-FHIR-XUAT] Số bản FHIR Observation đã xuất để kiểm tra cấu trúc → 1000
+[2026-11-12 00:09:47] Đã sao lưu DB sau E1 (để kiểm tra lại khi cần).
+[2026-11-12 00:09:47] ===== XONG: 02-E1-1000-ket-qua =====
+[2026-11-12 00:09:56] ===== BẮT ĐẦU: 03-E3-gui-trung =====
+[2026-11-12 00:09:56] Số lượng trước khi thử: 1000 1000 1000 0 (sự kiện LIS / giao dịch middleware / bản ghi EMR / mã bị trùng)
+[2026-11-12 00:09:56]   ✔ [E3/E3-LIS-MIMIC-LAB-102] Publish lại MIMIC-LAB-102: LIS trả 200 (đã có), không tạo sự kiện mới → 200
+[2026-11-12 00:09:56]   ✔ [E3/E3-LIS-EV-MIMIC-LAB-102] Publish lại MIMIC-LAB-102: vẫn giữ đúng mã sự kiện cũ → c5c69963-61a8-47cb-9b03-b831f9a6f4dd
+[2026-11-12 00:09:56]   ✔ [E3/E3-LIS-MIMIC-LAB-106] Publish lại MIMIC-LAB-106: LIS trả 200 (đã có), không tạo sự kiện mới → 200
+[2026-11-12 00:09:56]   ✔ [E3/E3-LIS-EV-MIMIC-LAB-106] Publish lại MIMIC-LAB-106: vẫn giữ đúng mã sự kiện cũ → 46e1c9ae-bf29-4208-955f-ba81f36964eb
+[2026-11-12 00:09:57]   ✔ [E3/E3-LIS-MIMIC-LAB-118] Publish lại MIMIC-LAB-118: LIS trả 200 (đã có), không tạo sự kiện mới → 200
+[2026-11-12 00:09:57]   ✔ [E3/E3-LIS-EV-MIMIC-LAB-118] Publish lại MIMIC-LAB-118: vẫn giữ đúng mã sự kiện cũ → 893c97ac-7655-4490-b4b1-062bf53e756f
+[2026-11-12 00:09:57]   ✔ [E3/E3-MW-1] Gửi lại y nguyên gói tin sang middleware: được nhận (202) → HTTP 202
+[2026-11-12 00:09:57]   ✔ [E3/E3-MW-2] …và trả lại ĐÚNG mã giao dịch cũ (không tạo giao dịch mới) → 40e8a493-26ce-415b-b7c9-25e9876dedf5
+[2026-11-12 00:09:57]   ✔ [E3/E3-MW-3] Cùng mã sự kiện nhưng nội dung khác: middleware từ chối (4xx) → 4xx
+[2026-11-12 00:09:58]   ✔ [E3/E3-EMR-1] Gửi lại y nguyên Observation vào EMR: trả 200 (đã có) → HTTP 200
+[2026-11-12 00:09:58]   ✔ [E3/E3-EMR-2] …và trả lại ĐÚNG mã bản ghi cũ → a21b813c-169a-480f-92f2-08d0cc2feeea
+[2026-11-12 00:09:58]   ✔ [E3/E3-EMR-3] Cùng mã kết quả nhưng giá trị khác: EMR báo xung đột (409) → HTTP 409
+[2026-11-12 00:09:58]   ✔ [E3/E3-EMR-4] …giá trị đã lưu KHÔNG bị ghi đè → 0.3
+[2026-11-12 00:10:03]   ✔ [E3/E3-DEM-1] Tổng số sự kiện / giao dịch / bản ghi EMR không đổi sau mọi lần gửi trùng → 1000 1000 1000
+[2026-11-12 00:10:03]   ✔ [E3/E3-DEM-2] Không có mã kết quả nào bị lưu 2 lần ở EMR → 0
+[2026-11-12 00:10:03] ===== XONG: 03-E3-gui-trung =====
+[2026-11-12 00:10:08] ===== BẮT ĐẦU: 04-E2-sai-benh-nhan-du-lieu-sai =====
+[2026-11-12 00:10:08] Dùng MIMIC-LAB-102 làm khuôn để tạo các ca lỗi
+[2026-11-12 00:10:18]   ✔ [E2/TC02-1] Bệnh nhân không có liên kết (MUT-LAB-NOLINK-1): middleware từ chối, EMR không lưu → REJECTED, EMR=0
+[2026-11-12 00:10:19]   ✔ [E2/TC02-2] Bệnh nhân không có liên kết (MUT-LAB-NOLINK-2): middleware từ chối, EMR không lưu → REJECTED, EMR=0
+[2026-11-12 00:10:19]   ✔ [E2/TC02-3] Bệnh nhân không có liên kết (MUT-LAB-NOLINK-3): middleware từ chối, EMR không lưu → REJECTED, EMR=0
+[2026-11-12 00:10:25]   ✘ [E2/TC03-MW-1] Mã xét nghiệm không có trong danh mục (gói tin gửi vào middleware) → kỳ vọng: bị chặn, EMR không lưu | thực tế: KHÔNG bị chặn (middleware: DELIVERED), EMR lưu 1 bản ghi
+[2026-11-12 00:10:26]   ✘ [E2/TC03-MW-2] Đơn vị đo không thuộc danh sách được chấp nhận (gói tin gửi vào middleware) → kỳ vọng: bị chặn, EMR không lưu | thực tế: KHÔNG bị chặn (middleware: DELIVERED), EMR lưu 1 bản ghi
+[2026-11-12 00:10:26]   ✔ [E2/TC03-MW-3] Mã bệnh nhân không tồn tại (gói tin gửi vào middleware) → bị chặn sau khi tiếp nhận (REJECTED, REMOTE_VALIDATION_ERROR), EMR lưu 0 bản ghi
+[2026-11-12 00:10:27]   ✔ [E2/TC03-MW-4] Thiếu giá trị xét nghiệm (gói tin gửi vào middleware) → bị chặn ngay ở middleware (HTTP 400), EMR lưu 0 bản ghi
+[2026-11-12 00:10:27]   ✔ [E2/TC03-MW-5] Cận dưới lớn hơn cận trên (gói tin gửi vào middleware) → bị chặn ngay ở middleware (HTTP 422), EMR lưu 0 bản ghi
+[2026-11-12 00:10:27]   ✔ [E2/TC03-MW-6] Kết quả chưa ở trạng thái FINAL (gói tin gửi vào middleware) → bị chặn ngay ở middleware (HTTP 422), EMR lưu 0 bản ghi
+[2026-11-12 00:10:28]   ✔ [E2/TC03-EMR-1] Thiếu thông tin bệnh nhân (gửi thẳng vào EMR) → HTTP 422, EMR lưu 0 bản ghi
+[2026-11-12 00:10:28]   ✔ [E2/TC03-EMR-2] Bệnh nhân không có liên kết ở EMR (gửi thẳng vào EMR) → HTTP 422, EMR lưu 0 bản ghi
+[2026-11-12 00:10:28]   ✔ [E2/TC03-EMR-3] Giá trị không phải là số (gửi thẳng vào EMR) → HTTP 422, EMR lưu 0 bản ghi
+[2026-11-12 00:10:28]   ✔ [E2/TC03-EMR-4] Cận dưới lớn hơn cận trên (gửi thẳng vào EMR) → HTTP 422, EMR lưu 0 bản ghi
+[2026-11-12 00:10:28]   ✔ [E2/TC03-EMR-5] Thiếu thời điểm xét nghiệm (gửi thẳng vào EMR) → HTTP 422, EMR lưu 0 bản ghi
+[2026-11-12 00:10:29]   ✔ [E2/TC03-EMR-6] Không phải tài nguyên Observation (gửi thẳng vào EMR) → HTTP 422, EMR lưu 0 bản ghi
+[2026-11-12 00:10:29]   ✘ [E2/TC03-EMR-7] Mã xét nghiệm không có trong danh mục (gửi thẳng vào EMR) → kỳ vọng: EMR từ chối (4xx), không lưu | thực tế: HTTP 201, EMR lưu 1 bản ghi
+[2026-11-12 00:10:29]   ✔ [E2/TC03-EMR-8] Đơn vị đo không thuộc danh sách được chấp nhận (gửi thẳng vào EMR) → HTTP 422, EMR lưu 0 bản ghi
+[2026-11-12 00:10:29]   ✘ [E2/E2-TONG-1] Số ca lỗi bị báo hoàn tất (DELIVERED) sai → kỳ vọng: 0 | thực tế: 2
+[2026-11-12 00:10:29]   ✘ [E2/E2-TONG-2] Số ca lỗi có bản ghi lọt vào EMR → kỳ vọng: 0 | thực tế: 3
+[2026-11-12 00:10:29] ===== XONG: 04-E2-sai-benh-nhan-du-lieu-sai =====
+[2026-11-12 00:10:35] ===== BẮT ĐẦU: 05-E1A-do-tre-tung-ket-qua =====
+[2026-11-12 00:10:35] Dựng lại môi trường thực nghiệm sạch (lisexp)…
+[2026-11-12 00:10:47] Môi trường sẵn sàng.
+[2026-11-12 00:12:20]   ✔ [E1A/E1A-HOANTAT] Gửi lần lượt 40 kết quả lõi: số kết quả hoàn tất → 40
+[2026-11-12 00:12:20]   ✔ [E1A/E1A-1LAN] Tất cả đều xong ngay lần gửi đầu, không phải thử lại → 40
+[2026-11-12 00:12:20] ===== XONG: 05-E1A-do-tre-tung-ket-qua =====
+[2026-11-12 00:12:31] ===== BẮT ĐẦU: 06-E4-gian-doan =====
+[2026-11-12 00:12:31] E4a: tắt EMR, gửi 10 kết quả, 5 giây sau bật lại
+[2026-11-12 00:12:48]   ✔ [E4/E4a-1] EMR tắt ngắn: số kết quả tự hoàn tất sau khi EMR chạy lại → 10
+[2026-11-12 00:12:48]   ✔ [E4/E4a-2] EMR tắt ngắn: có tự thử lại (số kết quả phải gửi > 1 lần) → 6
+[2026-11-12 00:12:49]   ✔ [E4/E4a-3] EMR tắt ngắn: mỗi kết quả đúng 1 bản ghi ở EMR (không mất, không trùng) → 10/10
+[2026-11-12 00:12:49] E4b: tắt EMR, gửi 10 kết quả, 60 giây sau mới bật lại
+[2026-11-12 00:14:13]   ✔ [E4/E4b-1] EMR tắt lâu: không ca nào bị báo hoàn tất khi EMR đang tắt → 0
+[2026-11-12 00:14:13]   ✔ [E4/E4b-2] EMR tắt lâu: hết số lần thử lại thì dừng ở FAILED (không thử mãi) → 10
+[2026-11-12 00:14:13]   ✔ [E4/E4b-3] EMR tắt lâu: không có bản ghi nào lọt vào EMR → 0
+[2026-11-12 00:14:13]   ✔ [E4/E4b-4] EMR tắt lâu: LIS vẫn ghi nhận middleware đã nhận (ACK), dữ liệu gốc còn nguyên ở middleware → 10
+[2026-11-12 00:14:13] E4c: khởi động lại worker với chuỗi chờ dài hơn rồi đưa các ca FAILED chạy lại
+[2026-11-12 00:14:23]   ✔ [E4/E4c-1] Sau khi người vận hành đưa lại: số ca hoàn tất → 10
+[2026-11-12 00:14:24]   ✔ [E4/E4c-2] Sau khi đưa lại: mỗi kết quả đúng 1 bản ghi ở EMR → 10
+[2026-11-12 00:14:25] E4d: tắt middleware, gửi 10 kết quả, 5 giây sau bật lại
+[2026-11-12 00:14:49]   ✔ [E4/E4d-1] Middleware tắt: LIS KHÔNG báo 'đã nhận' (ACK) giả trong lúc middleware tắt → 0
+[2026-11-12 00:14:49]   ✔ [E4/E4d-2] Middleware chạy lại: số kết quả LIS tự gửi lại và hoàn tất → 10
+[2026-11-12 00:14:49]   ✔ [E4/E4d-3] Middleware chạy lại: không sinh giao dịch trùng → 10
+[2026-11-12 00:14:49] ===== XONG: 06-E4-gian-doan =====
+[2026-11-12 00:14:55] ===== BẮT ĐẦU: 01-test-tu-dong =====
+[2026-11-12 00:14:55] ===== BẮT ĐẦU: 07-kiem-tra-fhir =====
+[2026-11-12 00:14:55] Chạy toàn bộ test tự động (npm run test:repositories:postgres)…
+[2026-11-12 00:14:55] LỖI ở dòng 142 của thuc-nghiem/lib.sh (mã 1). Xem nhat-ky-chay.log
+[2026-11-12 00:15:16] ===== BẮT ĐẦU: 07-kiem-tra-fhir =====
+[2026-11-12 00:15:16] Tải validator_cli.jar…
+[2026-11-12 00:15:46] LỖI ở dòng 15 của thuc-nghiem/01-test-tu-dong.sh (mã 1). Xem nhat-ky-chay.log
+[2026-11-12 00:15:46] LỖI ở dòng 16 của thuc-nghiem/01-test-tu-dong.sh (mã 1). Xem nhat-ky-chay.log
+[2026-11-12 00:15:46] LỖI ở dòng 16 của thuc-nghiem/01-test-tu-dong.sh (mã 1). Xem nhat-ky-chay.log
+[2026-11-12 00:15:51] Kiểm tra 1000 bản FHIR (có thể mất 5–30 phút)…
+[2026-11-12 00:16:24] LỖI ở dòng 35 của thuc-nghiem/07-kiem-tra-fhir.sh (mã 1). Xem nhat-ky-chay.log
+[2026-11-12 00:16:59] ===== BẮT ĐẦU: 07-kiem-tra-fhir =====
+[2026-11-12 00:17:00] Kiểm tra 1000 bản FHIR (có thể mất 5–30 phút)…
+[2026-11-12 00:17:24]   ✘ [FHIR/FHIR-M8] Số bản FHIR Observation không có lỗi cấu trúc (theo HL7 validator) → kỳ vọng: 1000 | thực tế: 0
+[2026-11-12 00:17:24] ===== XONG: 07-kiem-tra-fhir =====
+[2026-11-12 00:17:45] ===== BẮT ĐẦU: 01-test-tu-dong =====
+[2026-11-12 00:17:45] Chạy toàn bộ test tự động (npm run test:repositories:postgres)…
+[2026-11-12 00:18:36]   ✔ [AUTO/AUTO-TONG] Bộ test tự động: số test không đạt → 0
+[2026-11-12 00:18:36]   ✔ [AUTO/AUTO-SO-TEST] Bộ test tự động: có chạy test (tổng số > 0) → có
+[2026-11-12 00:18:36]   ✔ [AUTO/AUTO-TC06] TC06 được chứng minh bằng test tự động (số test liên quan đạt / không đạt) → 6 đạt, 0 không đạt
+[2026-11-12 00:18:36]   ✔ [AUTO/AUTO-TC07] TC07 được chứng minh bằng test tự động (số test liên quan đạt / không đạt) → 23 đạt, 0 không đạt
+[2026-11-12 00:18:36] ===== XONG: 01-test-tu-dong =====
+[2026-11-12 00:21:28] ===== BẮT ĐẦU: 09-dong-goi =====
+[2026-11-12 00:21:30] Không thấy mật khẩu trong thư mục kết quả.
+[2026-11-12 00:21:30]   đã nén: kiem-tra-fhir/ket-qua-validator.json.gz
+[2026-11-12 00:21:30]   đã nén: E1-1000-ket-qua/doi-chieu/field-comparisons.jsonl.gz
+[2026-11-12 00:21:34]   đã nén: E1-1000-ket-qua/do-luong/per-result.jsonl.gz
+[2026-11-12 00:21:34] Đã tạo MINH_CHUNG_SHA256.txt (1112 file). Kiểm tra lại sau này: cd /home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/thuc-nghiem/ket-qua/2026-11-11 && sha256sum -c MINH_CHUNG_SHA256.txt
+[2026-11-12 00:21:36] Đã tắt và xóa môi trường thực nghiệm lisexp (dữ liệu đã được sao lưu trong các file .sql.gz).
+[2026-11-12 00:21:43] Đã bật lại stack demo của nhóm.
+[2026-11-12 00:21:43] Đã commit vào nhánh thuc-nghiem/so-lieu-2026-11-11 (chưa push).
+[2026-11-12 00:21:43] ===== XONG: 09-dong-goi =====
