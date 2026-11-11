@@ -1,193 +1,43 @@
-# Frontend LIS – Middleware Monitor – EMR
+# Frontend LIS → FHIR → EMR
 
-Ba ứng dụng React + TypeScript + Vite độc lập, quản lý bằng npm workspaces trong thư mục `frontend/`. Workspace là một gói npm con được quản lý cùng các gói khác từ thư mục cha.
+Flow Console theo Google Stitch là **giao diện duy nhất** trên cả ba entry point hiện có. Không có app thứ tư, màn legacy hay cửa sổ “Tra cứu chuyên sâu”.
 
-Trạng thái hiện tại: **LIS** có danh sách, chi tiết và Publish (Giai đoạn 2.1–2.3); **Middleware Monitor** theo dõi exchange và các lượt thử; **EMR** tra cứu bệnh nhân và xem kết quả xét nghiệm. Cả ba đều gọi API thật qua proxy và có test trình duyệt riêng. Xem README từng ứng dụng: [LIS](apps/lis/README.md), [Monitor](apps/middleware-monitor/README.md), [EMR](apps/emr/README.md). Các mục Giai đoạn 1 bên dưới ghi nhận đợt chuyển đổi cấu trúc trước đó.
-
-## Phạm vi giai đoạn 1
-
-- Di chuyển nguyên trạng ứng dụng thử nghiệm LIS vào `apps/lis/`.
-- Tạo khung ứng dụng cho Middleware Monitor và EMR (khi đó mới là trang giới thiệu; các màn hình nghiệp vụ được bổ sung ở giai đoạn sau).
-- Mỗi ứng dụng có điểm khởi động React, cấu hình Vite, cổng và bản build riêng.
-- Chỉ dùng chung cấu hình Vite thực sự cần cho cả ba ứng dụng tại `config/vite.ts`.
-- Chưa cần tạo gói trong `packages/`; chưa bổ sung thư viện giao diện hoặc chức năng nghiệp vụ.
-
-## Cấu trúc
-
-```text
-frontend/
-├── apps/
-│   ├── lis/
-│   │   ├── public/
-│   │   ├── src/                # Mã nguồn và CSS LIS được bảo toàn
-│   │   ├── index.html
-│   │   ├── package.json
-│   │   ├── tsconfig*.json
-│   │   ├── vite.config.ts
-│   │   └── dist/               # Sinh ra khi build LIS
-│   ├── middleware-monitor/
-│   │   ├── src/                # Danh sách/chi tiết exchange, lượt thử (attempts)
-│   │   ├── index.html
-│   │   ├── package.json
-│   │   ├── tsconfig*.json
-│   │   ├── vite.config.ts
-│   │   └── dist/               # Sinh ra khi build Monitor
-│   └── emr/
-│       ├── src/                # Tra cứu bệnh nhân, hồ sơ và kết quả xét nghiệm
-│       ├── index.html
-│       ├── package.json
-│       ├── tsconfig*.json
-│       ├── vite.config.ts
-│       └── dist/               # Sinh ra khi build EMR
-├── config/
-│   └── vite.ts                 # Proxy và cấu hình máy chủ dùng chung
-├── eslint.config.js
-├── package.json
-├── package-lock.json
-└── README.md
-```
-
-Mỗi ứng dụng khai báo React và React DOM trong `dependencies`. Công cụ phát triển như Vite, TypeScript và ESLint nằm trong `devDependencies` của workspace cha. Cài dependency tại `frontend/` trước khi chạy các ứng dụng. Không cần khởi chạy hai ứng dụng còn lại để chạy hoặc build một ứng dụng.
-
-## Cài đặt
-
-Yêu cầu Node.js tương thích các thư viện hiện có; `engines` yêu cầu Node.js ≥ 22.16.0. Đã kiểm tra trên Node.js `24.11.0` (giai đoạn chuyển đổi) và `26.13.0` (review 07/11/2026).
-
-Từ thư mục gốc repository:
-
-```powershell
-cd frontend
-npm ci
-```
-
-`npm ci` cài theo tệp khóa chung. Không cần chạy `npm install` riêng trong từng ứng dụng. Tệp khóa giữ nguyên phiên bản tất cả dependency đã có trước khi chuyển đổi.
-
-Trên PowerShell, có thể dùng `npm.cmd` thay `npm` nếu chính sách thực thi chặn `npm.ps1`.
-
-## Chạy từng ứng dụng
-
-Đứng tại `frontend/`, chạy mỗi lệnh trong một terminal riêng:
-
-| Ứng dụng | Lệnh | Địa chỉ phát triển |
+| Entry point | Development | Preview |
 |---|---|---|
-| LIS | `npm run dev:lis` | <http://127.0.0.1:5173> |
-| Middleware Monitor | `npm run dev:monitor` | <http://127.0.0.1:5174> |
-| EMR | `npm run dev:emr` | <http://127.0.0.1:5175> |
+| LIS | 5173 | 4173 |
+| Middleware Monitor | 5174 | 4174 |
+| EMR | 5175 | 4175 |
 
-`npm run dev` vẫn mở LIS để giữ cách chạy quen thuộc của bản thử nghiệm. Dừng từng ứng dụng bằng `Ctrl+C`.
-
-Cả ba dùng `strictPort: true`: nếu cổng bị chiếm, lệnh báo lỗi thay vì tự chọn cổng khác. Kiểm tra tiến trình đang dùng cổng trước khi chạy; chỉ dừng tiến trình mà mình quản lý.
-
-Có thể chạy trực tiếp theo workspace:
+Chạy trong thư mục `frontend`:
 
 ```powershell
-npm run dev --workspace apps/lis
-npm run dev --workspace apps/middleware-monitor
-npm run dev --workspace apps/emr
+npm.cmd ci
+npm.cmd run dev:lis
+# Hoặc dev:monitor / dev:emr
 ```
 
-## Build và xem trước
+Mở `http://127.0.0.1:5173/#/flow`. Có thể chọn trực tiếp bằng `#/flow?result_id=<mã đã encode>`. Các URL trước đây của LIS, Monitor và EMR tự chuyển về `/#/flow`, kể cả đường dẫn hash và đường dẫn trực tiếp. URL chọn kết quả Flow sai vẫn báo lỗi để không mở nhầm kết quả khác.
 
-Build là quá trình kiểm tra TypeScript và đóng gói mã nguồn thành các tệp phục vụ trình duyệt.
+Biểu tượng hai mũi tên đầu trang chỉ trang trí, giữ nguyên hình thức Stitch; không có click handler, menu hay liên kết. Bố cục LIS – Luồng trao đổi – EMR và bằng chứng giữ nguyên. Các nhãn hồ sơ/kết quả là thông tin, không mở trang khác. Biểu tượng màu cam của Luồng trao đổi vẫn làm mới trạng thái.
 
-| Ứng dụng | Lệnh build | Đầu ra | Lệnh xem trước | Cổng xem trước |
-|---|---|---|---|---:|
-| LIS | `npm run build:lis` | `apps/lis/dist/` | `npm run preview:lis` | 4173 |
-| Middleware Monitor | `npm run build:monitor` | `apps/middleware-monitor/dist/` | `npm run preview:monitor` | 4174 |
-| EMR | `npm run build:emr` | `apps/emr/dist/` | `npm run preview:emr` | 4175 |
+Mã giao diện chung ở `apps/lis/src/App.tsx` và `apps/lis/src/flow/`. Hai App còn lại re-export giao diện này. API client và kiểu dữ liệu nằm trong từng workspace được giữ lại; `state/routes.ts` chỉ còn các hàm kiểm tra/chuẩn hóa định danh được client dùng. Router Flow ở `apps/lis/src/flow/routes.ts`.
 
-- `npm run build`: build lần lượt cả ba ứng dụng.
-- `npm run preview`: xem trước bản build LIS.
-- Chạy build ứng dụng tương ứng trước khi dùng lệnh xem trước.
-- Các cổng xem trước cũng bật `strictPort` và có cùng proxy API.
-- `preview` dùng để kiểm tra bản build tại máy cá nhân. Khi triển khai thực tế, cần máy chủ phục vụ tệp tĩnh và cấu hình proxy riêng.
-
-## Kiểm tra mã nguồn
+Bốn trạng thái dựa trên API thật: FINAL chưa Publish, đang xử lý, DELIVERED có bằng chứng xác minh, REJECTED có mã lỗi và trạm lỗi. Không có dữ liệu giả lập hoặc timer tạo thành công trong ứng dụng. Các HTTP fixtures chỉ nằm trong test. Proxy Vite giữ nguyên backend 3101/3102/3103.
 
 ```powershell
-# Kiểm tra TypeScript của cả ba ứng dụng và cấu hình Vite được import
-npm run check
+npm.cmd run build
+npm.cmd run check
+npm.cmd run lint
+npm.cmd run test --workspaces
 
-# Kiểm tra ESLint cả frontend, bao gồm cấu hình dùng chung
-npm run lint
-
-# Kiểm tra ESLint của từng workspace
-npm run lint --workspace apps/lis
-npm run lint --workspace apps/middleware-monitor
-npm run lint --workspace apps/emr
-
-# Kiểm tra TypeScript của một ứng dụng
-npm run check --workspace apps/lis
+node apps/lis/tests/browser-flow.mjs
+node apps/lis/tests/browser-flow.mjs --app=middleware-monitor
+node apps/lis/tests/browser-flow.mjs --app=emr
+# Thêm --dev để dùng cổng 5173/5174/5175.
+# Nếu server dev của dự án đang chạy: thêm --reuse-server.
+node apps/lis/tests/browser-flow.mjs --real
 ```
 
-Các lệnh được chạy từ `frontend/`. Mỗi ứng dụng cũng có các script `dev`, `build`, `check`, `lint`, `preview` trong `package.json` riêng.
+Browser test cần Chrome/Edge headless. `--real` chỉ GET các bản ghi đã có; cần ít nhất một FINAL chưa Publish và một DELIVERED. Test tự mở/đóng server của nó; `--reuse-server` kiểm tra server hiện có là Flow Console và không đóng server đó.
 
-## Kết nối backend
-
-Proxy là thành phần nhận yêu cầu từ trình duyệt rồi chuyển tiếp tới backend. Cả ba ứng dụng dùng chung các quy tắc sau, giữ nguyên tham số truy vấn:
-
-| Đường dẫn frontend | Backend trên máy cá nhân | Đường dẫn backend |
-|---|---|---|
-| `/api/lis/...` | `http://127.0.0.1:3101` | `/api/...` |
-| `/api/middleware/...` | `http://127.0.0.1:3102` | `/api/...` |
-| `/api/emr/...` | `http://127.0.0.1:3103` | `/api/...` |
-
-Ví dụ LIS gọi `/api/lis/results?limit=11&offset=0`; Vite chuyển tiếp đến `http://127.0.0.1:3101/api/results?limit=11&offset=0`.
-
-Cấu hình này dành cho frontend chạy trực tiếp trên host, gọi các cổng backend Docker đã công bố. Không sửa backend để xử lý CORS. Proxy này không ánh xạ `/health` hoặc `/ready`; kiểm tra hai endpoint đó trực tiếp tại địa chỉ backend khi cần.
-
-Nếu LIS báo lỗi tải dữ liệu, kiểm tra backend LIS đang hoạt động và truy cập được ở cổng 3101. Monitor gọi `/api/middleware/...` và EMR gọi `/api/emr/...`; nếu một trong hai báo lỗi tải dữ liệu, kiểm tra backend tương ứng ở cổng 3102 hoặc 3103.
-
-## Các tệp đã chuyển đổi
-
-| Nhóm | Thay đổi |
-|---|---|
-| Di chuyển nguyên trạng | `src/**`, `public/**`, `index.html`, `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json` từ frontend cũ sang `apps/lis/` |
-| Di chuyển và điều chỉnh | `vite.config.ts` sang `apps/lis/vite.config.ts`, dùng cấu hình chung và cổng 5173/4173 |
-| Tạo mới cho LIS | `apps/lis/package.json` |
-| Tạo mới cho Monitor và EMR | Mỗi ứng dụng có `package.json`, `index.html`, `vite.config.ts`, ba `tsconfig*.json`, `src/main.tsx`, `src/App.tsx`, `src/index.css` |
-| Tạo mới dùng chung | `config/vite.ts` |
-| Cập nhật tại frontend cha | `package.json`, `package-lock.json`, `eslint.config.js`, `README.md` |
-
-Thư mục `dist/` và `node_modules/` cũ tại frontend cha là sản phẩm sinh tự động, không phải mã nguồn được chuyển. Bản build mới nằm riêng trong mỗi ứng dụng. Không dùng lại `frontend/dist/` cũ.
-
-## Chức năng LIS – Giai đoạn 2.2 (Publish bổ sung ở 2.3)
-
-- Danh sách dùng GET với `limit=11`, hiển thị 10 dòng; dòng thứ 11 xác định có trang sau.
-- Bộ lọc mã bệnh nhân, mã xét nghiệm, READY/FINAL; tách bản nháp và bộ lọc áp dụng.
-- Hash routing lưu bộ lọc và trang trong URL, hỗ trợ F5 và Back/Forward.
-- Màn hình chi tiết riêng gọi GET `/api/lis/results/<encodedResultId>`, đủ 12 trường, bố cục rộng/hẹp.
-- Giữ chuỗi số/đơn vị, thời gian UTC và ISO gốc, nullable; hủy yêu cầu và chặn phản hồi cũ.
-- Có trạng thái đang tải/rỗng/lỗi/thử lại. Publish (xác nhận, theo dõi ACK/exchange) được thêm ở Giai đoạn 2.3, xem README LIS.
-
-Xem [README LIS](apps/lis/README.md) để chạy kiểm thử và [báo cáo 2.2](apps/lis/tests/evidence/phase-2.2-2026-11-03/BAO_CAO.md) để xem bằng chứng mới. Phần kiểm tra ngày 02/11/2026 bên dưới là lịch sử chuyển đổi workspace, không mô tả trạng thái chức năng/nghiệm thu hiện tại. Mô tả Monitor/EMR là "trang giới thiệu" trong phần đó chỉ đúng tại thời điểm đó.
-
-## Kết quả kiểm tra ngày 02/11/2026
-
-| Hạng mục | Kết quả thực tế |
-|---|---|
-| Kiểm tra trước khi di chuyển | Đúng nhánh `feature/frontend/lis-emr-ui`; working tree sạch; bản LIS được lưu ở commit `516b6d8` |
-| Cài đặt workspace | `npm install --offline --ignore-scripts --no-audit --no-fund --cache node_modules/.cache/npm` thành công; thêm ba liên kết workspace |
-| Cây dependency | `npm ls --workspaces --depth=0` nhận đủ ba ứng dụng; dùng chung React/React DOM 19.3.1 |
-| Bảo toàn LIS | So SHA-256 trước/sau của cả 11 tệp trong `src/` và `public/`: trùng khớp toàn bộ |
-| Phiên bản dependency | Đối chiếu tệp khóa trước/sau: không có dependency cũ đổi phiên bản |
-| TypeScript | `npm run check` đạt cho cả ba ứng dụng |
-| ESLint | `npm run lint` và `npm run lint --workspaces` đạt |
-| Build riêng | `build:lis`, `build:monitor`, `build:emr` đều đạt |
-| Các lệnh chạy | Chạy đồng thời `npm run dev:lis`, `npm run dev:monitor`, `npm run dev:emr`: đúng cổng và HTTP 200 |
-| Chạy đồng thời bằng API Vite | Khởi động Vite bằng API Node cho cả ba ứng dụng trên 5173/5174/5175; HTML và các module `main.tsx`, `App.tsx` trả HTTP 200 |
-| Hai trang giới thiệu | React dựng được nội dung tên Monitor và EMR khi kiểm tra kết xuất phía máy chủ; chưa kiểm tra trực quan bằng trình duyệt |
-| Xung đột cổng phát triển | Thử khởi động Vite thứ hai trên từng cổng đang dùng: bị từ chối đúng với `strictPort` |
-| Quy tắc proxy | Kiểm tra cả ba đích backend và cách viết lại đường dẫn/tham số trên từng ứng dụng: đạt |
-| Xem trước bản build | Cả ba ứng dụng trả HTTP 200 trên 4173/4174/4175; tệp JavaScript và CSS của bản build truy cập được |
-| API LIS thật | GET trực tiếp cổng 3101 không kết nối được, kể cả kiểm tra ngoài sandbox; GET qua proxy LIS trả 502. Chưa xác nhận lại dữ liệu thật sau chuyển đổi |
-
-Lượt kiểm tra các lệnh chạy gặp lỗi quyền khi dọn tiến trình bằng `taskkill` trong sandbox. Sau khi được cấp quyền, đã xác minh và dừng đúng các tiến trình Vite kiểm thử thuộc frontend này. Kiểm tra lại cho thấy cả sáu cổng 5173–5175 và 4173–4175 đã được giải phóng. Không gửi POST, không thay đổi dữ liệu PostgreSQL, không khởi động lại backend và không tạo dữ liệu giả.
-
-## Các điểm còn lại
-
-- Cần chạy lại bước kiểm tra dữ liệu LIS khi backend tại `127.0.0.1:3101` truy cập được. Không dùng kết quả build hoặc HTTP 200 của trang để kết luận API đã trả dữ liệu thật.
-- Giao diện đã được kiểm tra bằng Chrome thật ở các giai đoạn sau (`tests/browser*.mjs` của từng ứng dụng); mục này chỉ phản ánh lượt kiểm tra chuyển đổi ngày 02/11/2026.
-- Các giới hạn của bản thử nghiệm LIS như xử lý `effective_at = null` và kiểu nullable được giữ nguyên để giới hạn giai đoạn này ở chuyển đổi cấu trúc.
-- Cần cấu hình phục vụ tệp tĩnh và proxy khi triển khai thực tế; giai đoạn này chưa sửa Compose hoặc thêm hạ tầng triển khai.
-- Không có thay đổi ngoài phạm vi `frontend/`; không bổ sung tính năng nghiệp vụ hay nâng cấp dependency.
+Xem [báo cáo dọn legacy và kiểm thử](STITCH_REDESIGN.md). Ảnh và report nằm trong `apps/lis/tests/evidence/stitch-redesign/` (Git ignore).

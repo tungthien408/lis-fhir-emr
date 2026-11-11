@@ -26,7 +26,7 @@
  * gửi dữ liệu sang Middleware/EMR.
  */
 import { randomUUID } from "node:crypto";
-import { and, asc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, or, sql } from "drizzle-orm";
 import { lisDatabase } from "./db.js";
 import { dispatchAttempts, patients, publishEvents, results, testCatalog } from "./schema.js";
 
@@ -41,6 +41,10 @@ export interface ResultWithDetails {
 }
 
 export interface ListResultsOptions {
+  /** Literal case-insensitive search across patient ID OR result ID. */
+  search?: string;
+  /** Literal, case-insensitive substring of the result ID, before pagination. */
+  resultId?: string;
   patientId?: string;
   testCode?: string;
   resultStatus?: ResultStatus;
@@ -116,6 +120,11 @@ export async function listResults(options: ListResultsOptions = {}): Promise<Res
     .innerJoin(patients, eq(results.patientId, patients.patientId))
     .innerJoin(testCatalog, eq(results.testCode, testCatalog.testCode))
     .where(and(
+      !options.search?.trim() ? undefined : or(
+        sql`strpos(lower(${results.patientId}), lower(${options.search.trim()})) > 0`,
+        sql`strpos(lower(${results.resultId}), lower(${options.search.trim()})) > 0`,
+      ),
+      options.resultId === undefined ? undefined : sql`strpos(lower(${results.resultId}), lower(${options.resultId.trim()})) > 0`,
       options.patientId === undefined ? undefined : eq(results.patientId, options.patientId),
       options.testCode === undefined ? undefined : eq(results.testCode, options.testCode),
       options.resultStatus === undefined ? undefined : eq(results.resultStatus, options.resultStatus),

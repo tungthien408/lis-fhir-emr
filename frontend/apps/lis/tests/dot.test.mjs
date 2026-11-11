@@ -2,8 +2,6 @@
 import { test } from 'node:test'
 import { lisResultRequest, DOT_SEGMENT_HEADER } from '../src/api/resultRequest.ts'
 import { getLisResult } from '../src/api/lis.ts'
-import { parseResultsHash, resultsHash } from '../src/state/routes.ts'
-import { initialQuery } from '../src/state/results.ts'
 import { withDotResultProxy } from '../proxy/lis.ts'
 import lisConfig from '../vite.config.ts'
 import { createFrontendConfig } from '../../../config/vite.ts'
@@ -12,17 +10,6 @@ const fixture = (id) => ({
   result_id: id, patient_id: 'P1', test_code: 'T1', test_name: 'Dot test',
   fluid: null, category: null, value_num: '0', unit: 'mg/dL',
   reference_low: null, reference_high: '1.0000', effective_at: null, result_status: 'FINAL',
-})
-
-test('Dot ID: hash không chuẩn hóa và giải mã đúng một lần', () => {
-  for (const id of ['.', '..', '%2E', '%2E%2E', '%252E', '%', '/', '+', '#', '?', ' Kết quả/AbC+%?# 🧪 ']) {
-    const hash = resultsHash(initialQuery, id)
-    assert.equal(parseResultsHash(hash).kind, 'detail')
-    assert.equal(parseResultsHash(hash).resultId, id)
-  }
-  for (const hash of ['#/results/%2E', '#/results/%2e', '#/results/%2E%2E']) {
-    assert.equal(parseResultsHash(hash).kind, 'detail')
-  }
 })
 
 test('Dot ID: wire path phân biệt dấu chấm và literal percent bằng marker', () => {
@@ -99,13 +86,14 @@ test('Dot ID: Vary bảo vệ cache cho cả dot và literal, giữ Vary hiện 
   assert.equal(response.headers.vary, undefined)
 })
 
-test('Dot ID: chỉ cấu hình LIS được mở rộng cho dev/preview; Monitor và EMR giữ nguyên', () => {
+test('Dot ID: cả ba entry point dùng proxy LIS bảo toàn định danh cho dev/preview', () => {
   const base = createFrontendConfig(5173, 4173)
   for (const mode of ['server', 'preview']) {
     assert.equal(lisConfig[mode].proxy['/api/lis'].toProxy, true)
     for (const route of ['/api/middleware', '/api/emr']) {
       assert.deepEqual(lisConfig[mode].proxy[route], base[mode].proxy[route])
     }
-    assert.equal(base[mode].proxy['/api/lis'].toProxy, undefined)
+    assert.equal(base[mode].proxy['/api/lis'].toProxy, true)
+    assert.equal(typeof base[mode].proxy['/api/lis'].bypass, 'function')
   }
 })

@@ -192,11 +192,36 @@ test("LIS Repository integration (PostgreSQL)", {
     assert.deepEqual(await repository.listResults({ offset: 26 }), []);
   });
 
+  await t.test("result ID search is literal, case insensitive, combined with status before pagination", async () => {
+    // R26 is outside the default first page; IDs returned keep their original case.
+    for (const resultId of [resultIds[25].toLowerCase(), ' r26 ']) {
+      const rows = await repository.listResults({ resultId, resultStatus: 'FINAL' });
+      assert.deepEqual(rows.map(row => row.result.resultId), [resultIds[25]]);
+    }
+    assert.deepEqual(await repository.listResults({ resultId: 'r26', resultStatus: 'READY' }), []);
+    const expected = seedResults.filter(row => row.resultId.toLowerCase().includes('r2') && row.resultStatus === 'FINAL');
+    const rows = await repository.listResults({ resultId: 'r2', resultStatus: 'FINAL', limit: 2, offset: 1 });
+    assert.deepEqual(rows.map(row => row.result.resultId), expected.slice(1, 3).map(row => row.resultId));
+    for (const resultId of ['%', '_', "' OR 1=1 --"]) assert.deepEqual(await repository.listResults({ resultId }), []);
+  });
+
   await t.test("paginates unfiltered results without gaps or overlaps", async () => {
     const first = await repository.listResults({ limit: 10 });
     const second = await repository.listResults({ limit: 10, offset: 10 });
     const last = await repository.listResults({ limit: 10, offset: 20 });
     assert.deepEqual([...first, ...second, ...last].map((row) => row.result.resultId), resultIds);
+  });
+
+  await t.test("shared search finds patient OR result, full/partial/case-insensitive and AND FINAL before pagination", async () => {
+    for (const search of [patientIds[1].toLowerCase(), ' p2 ', resultIds[25].toLowerCase(), 'r26', 'missing', '%', '_', "' OR 1=1 --", '']) {
+      const expected = seedResults.filter(row => row.resultStatus === 'FINAL'
+        && (row.patientId.toLowerCase().includes(search.trim().toLowerCase()) || row.resultId.toLowerCase().includes(search.trim().toLowerCase())));
+      const rows = await repository.listResults({ search, resultStatus: 'FINAL', limit: 100 });
+      assert.deepEqual(rows.map(row => row.result.resultId), expected.map(row => row.resultId));
+    }
+    const expected = seedResults.filter(row => row.resultStatus === 'FINAL' && row.patientId === patientIds[1]);
+    const rows = await repository.listResults({ search: 'p2', resultStatus: 'FINAL', limit: 2, offset: 1 });
+    assert.deepEqual(rows.map(row => row.result.resultId), expected.slice(1, 3).map(row => row.resultId));
   });
 
   await t.test("atomically creates a complete PENDING event and retrieves it by either ID", async () => {

@@ -55,6 +55,8 @@ export const lisOpenApiDocument: OpenAPIV3.Document = {
         description: "Có thể bỏ trống bộ lọc. Nếu dùng nhiều bộ lọc, kết quả phải thỏa tất cả điều kiện. "
           + "Danh sách sắp theo result_id. Tham số lặp hoặc không được hỗ trợ sẽ bị từ chối.",
         parameters: [
+          { name: "search", in: "query", description: "Tìm toàn bộ hoặc một phần mã bệnh nhân HOẶC mã kết quả, không phân biệt hoa/thường, bỏ khoảng trắng hai đầu; chuỗi rỗng khôi phục danh sách. Lọc trên toàn bộ dữ liệu trước phân trang, kết hợp AND với result_status và các bộ lọc khác. Ký tự % và _ được tìm theo nghĩa đen.", schema: { type: "string" } },
+          { name: "result_id", in: "query", description: "Toàn bộ hoặc một phần mã kết quả; bỏ khoảng trắng hai đầu, không phân biệt hoa/thường. Ký tự % và _ được tìm theo nghĩa đen. Lọc trước phân trang, kết hợp AND với các bộ lọc khác.", schema: { type: "string", minLength: 1 } },
           { name: "patient_id", in: "query", description: "Mã bệnh nhân; bỏ trống nếu không lọc.", schema: { type: "string", minLength: 1 } },
           { name: "test_code", in: "query", description: "Mã xét nghiệm; bỏ trống nếu không lọc.", schema: { type: "string", minLength: 1 } },
           { name: "result_status", in: "query", description: "Trạng thái kết quả.", schema: { type: "string", enum: ["READY", "FINAL"] } },

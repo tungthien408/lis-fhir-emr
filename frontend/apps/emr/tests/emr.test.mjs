@@ -1,35 +1,12 @@
-import { patientLabel, profileTitle, readableUtc } from '../src/state/presentation.ts'
+import { normalizeInput } from '../src/state/routes.ts'
+
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { readRoute, routeHash, normalizeInput } from '../src/state/routes.ts'
 import { getPatient, getResults, getResult, validatePatient, validateResult, assertAssociation } from '../src/api/emr.ts'
 import { patient, result, uuid, patientKey, otherKey, patientId, patientSystem, resultSystem } from './fixtures.mjs'
 const search = { mode: 'source', value: patientId }
-
-test('Nhãn Demo patient chỉ đổi cách hiển thị, giữ nguyên mã số và dữ liệu API', () => {
-  for (const suffix of ['10007928', '0000123', '0', '123456789012345678901234567890']) {
-    const p = Object.freeze({ ...patient(), display_label: `Demo patient ${suffix}` })
-    const original = structuredClone(p)
-    assert.equal(patientLabel(validatePatient(p).display_label), `Hồ sơ bệnh nhân ${suffix}`)
-    assert.deepEqual(p, original)
-  }
-})
-
-test('Nhãn không khớp chính xác giữ nguyên, không suy diễn từ định danh', () => {
-  for (const label of [null, '', 'Nguyễn Văn An', 'Hồ sơ bệnh nhân 10007928', 'Demo patient', 'Demo patient ABC', 'Demo patient 12A', 'Demo patient -12', 'Demo patient 1.2', 'demo patient 10007928', 'Demo Patient 10007928', ' Demo patient 10007928', 'Demo patient 10007928 ', 'Demo patient  10007928', 'Demo patient 10007928\n', 'Demo patient 10007928\r\n', 'Demo patient １２３']) {
-    assert.equal(patientLabel(label), label)
-  }
-})
 test('Chỉ chuẩn hóa mã MIMIC hợp lệ; giữ mã tùy ý và số 0 đầu', () => {
   for (const [input,kind,expected] of [[' mimic-p-001 ', 'patient', 'MIMIC-P-001'], ['mImIc-LaB-100145', 'result', 'MIMIC-LAB-100145'], [' Local/AbC ', 'patient', 'Local/AbC'], ['mimic-p-abc', 'patient', 'mimic-p-abc']]) assert.equal(normalizeInput(input,kind), expected)
-})
-for (const id of ['.', '..', '%2E', '/', ' Kết quả/🧪+%?# ', 'MIMIC-LAB-100145']) test('Hash giữ nguyên cặp định danh và ngữ cảnh: ' + id, () => {
-  const route = { kind: 'result', system: resultSystem, id, key: patientKey, search, page: 3 }
-  assert.deepEqual(readRoute(routeHash(route)), route)
-})
-test('Routing F5/search/profile; URL sai/lặp/trộn tham số không được sửa thành truy vấn rộng', () => {
-  for (const route of [{ kind: 'search', search }, { kind: 'profile', key: patientKey, search, page: 2 }]) assert.deepEqual(readRoute(routeHash(route)), route)
-  for (const hash of ['#/other', '#/patients/bad', '#/search?mode=other', '#/search?value=%00', '#/search?value=%ZZ', '#/search?value=x&value=y', '#/search?patient_key=x', '#/patients/'+patientKey+'?page=0', '#/patients/'+patientKey+'?page=9007199254740991', '#/result?external_id=x', '#/result?external_system=x&external_id=y&patient_key=bad']) assert.equal(readRoute(hash).kind, 'invalid', hash)
 })
 for (const mode of ['source','key']) test('GET bệnh nhân đúng namespace/mode, no-store và identity: ' + mode, async t => {
   const p = patient(), signal = new AbortController().signal
@@ -71,21 +48,4 @@ test('Mạng/JSON/schema/abort không thành rỗng hoặc kết quả đã lưu
     t.mock.method(globalThis,'fetch',async()=>response());await assert.rejects(getPatient(search));t.mock.restoreAll()
   }
   const c=new AbortController();c.abort();t.mock.method(globalThis,'fetch',async(_p,o)=>o.signal.throwIfAborted());await assert.rejects(getPatient(search,c.signal),{name:'AbortError'})
-})
-
-
-test('Thời gian dễ đọc giữ nguyên ngày MIMIC; không đưa microsecond qua Date', () => {
-  const value = '2129-04-05T21:30:00.123456Z'
-  assert.equal(readableUtc(value), '2129-04-05 21:30:00 UTC')
-  assert.equal(value, '2129-04-05T21:30:00.123456Z')
-  assert.equal(readableUtc('2026-11-05T01:02:03.456789Z'), '2026-11-05 01:02:03 UTC')
-})
-test('Thời gian ngoài dạng UTC chuẩn được giữ nguyên, không đổi ngày hoặc tự gán múi giờ', () => {
-  for (const value of ['2026-11-05T08:02:03.123456+07:00', 'not-a-timestamp']) assert.equal(readableUtc(value), value)
-})
-
-test('Tiêu đề hồ sơ không lặp cụm "Hồ sơ bệnh nhân"', () => {
-  assert.equal(profileTitle('Demo patient 10007928'), 'Hồ sơ bệnh nhân 10007928')
-  assert.equal(profileTitle('Nguyễn Văn An'), 'Hồ sơ bệnh nhân – Nguyễn Văn An')
-  assert.equal(profileTitle(null), 'Hồ sơ bệnh nhân – Chưa có nhãn hiển thị')
 })
