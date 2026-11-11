@@ -3,6 +3,10 @@
 022020ffece02f9413bb282146560e45427ca06144c0c2f1c5bb277bcc45e6f7  ./01-test-tu-dong/test-minh-chung-TC06-TC07.txt
 97669a08a328fa19a4b7ad0179cea7152fe0c0f190f8e8284ef713bf1b3ddb31  ./01-test-tu-dong/tom-tat.txt
 7fa1c117aa2de18470ca63e0b2599339175ce7b00be5ddc22d464ec08b63cb7a  ./BAO_CAO_KET_QUA_THUC_NGHIEM.md
+9a85448aa419969681eefbebed49e6e0ac357eb19380c0a5ed595a1a0b6af438  ./bieu-do/1-thoi-gian-tung-chang.png
+56143c1a3978564531c50d2b75b22171dc2fc38f7945cad3cce3b0f56d2870ca  ./bieu-do/2-do-tre-tung-ket-qua.png
+976fa2e9b02c70b22c5f22586a1852c080c956f086fe0a7bb95741d47bba0bfc  ./bieu-do/3-do-tre-khi-don-1000.png
+f33ca71602640bcc273c6455f2ebd9ced8c152aedcfb9d889c8e8da121e39861  ./bieu-do/4-phuc-hoi-E4a.png
 0ca1c4954153d1fecad874d9cc09f5f222b53fcceb5e72d592c9c4c37590b9e9  ./chi-so.json
 8f33e39eb07757ccc2cfc76fe3ed471598c047b9ea85805e23d83d8fee254c6f  ./danh-sach-40-ket-qua-loi.txt
 b58f853eef5272771698b34b456e211573caffc9bfcfad5278fd4bfb204e0833  ./E1-1000-ket-qua/bat-dau.txt
@@ -1109,4 +1113,4 @@ bd0b680c8ad0850866fd954c8af5bf4d8db6254333c067d451005f729d46bdfd  ./kiem-tra-fhi
 361ba57ff005ad32048683e170c25d8a6df7779ef9a56d37c2e9e69ee664416a  ./kiem-tra-fhir/phien-ban-cong-cu.txt
 785f3c7e1067ba886b8d99d123b587155dd1631041792964b82aa5ad2dc8e65a  ./kiem-tra-fhir/tom-tat.txt
 6aa7db4530a6a30c6910d40131ff16c3027f945eee7e89e756968107417c145d  ./kiem-tra.jsonl
-30e11d9d9cc172e7ef7356e078e7af86248aaae448939ac41b3d1678f260764b  ./TONG_HOP_SO_LIEU.md
+c7fdf09213ec753bc5eb236f64974633b52962d3c92d02b6bb56391ae95489d1  ./TONG_HOP_SO_LIEU.md

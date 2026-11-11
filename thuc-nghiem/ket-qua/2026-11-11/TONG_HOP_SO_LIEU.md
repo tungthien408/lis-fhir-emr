@@ -229,9 +229,16 @@ Ghi chú: p95 = 95% kết quả nhanh hơn mức này. Thời gian lấy từ m�
 | E2 | E2-TONG-2 | Số ca lỗi có bản ghi lọt vào EMR | 0 | 3 |
 | FHIR | FHIR-M8 | Số bản FHIR Observation không có lỗi cấu trúc (theo HL7 validator) | 1000 | 0 |
 
-## Ghi chú
+## 7. Biểu đồ
 
-- Không có matplotlib nên không vẽ biểu đồ (sudo pacman -S python-matplotlib rồi chạy lại bước 08).
+![1-thoi-gian-tung-chang.png](bieu-do/1-thoi-gian-tung-chang.png)
+
+![2-do-tre-tung-ket-qua.png](bieu-do/2-do-tre-tung-ket-qua.png)
+
+![3-do-tre-khi-don-1000.png](bieu-do/3-do-tre-khi-don-1000.png)
+
+![4-phuc-hoi-E4a.png](bieu-do/4-phuc-hoi-E4a.png)
+
 
 ## 8. Trạng thái các bước
 
@@ -243,5 +250,5 @@ Ghi chú: p95 = 95% kết quả nhanh hơn mức này. Thời gian lấy từ m�
 - 05-E1A-do-tre-tung-ket-qua.xong: 2026-11-12T00:12:20.203+07:00
 - 06-E4-gian-doan.xong: 2026-11-12T00:14:49.449+07:00
 - 07-kiem-tra-fhir.xong: 2026-11-12T00:17:24.382+07:00
-- 09-dong-goi.xong: 2026-11-12T00:21:43.986+07:00
+- 09-dong-goi.xong: 2026-11-12T05:54:49.382+07:00
 - stack-demo-da-tam-dung.txt: Stack demo (project lis-fhir-emr) đã được TẠM DỪNG lúc 2026-11-11T23:46:57.789+07:00. Bật lại: docker compose up -d
