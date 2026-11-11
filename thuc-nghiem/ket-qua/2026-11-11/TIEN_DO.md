@@ -27,6 +27,7 @@
 - Không có bieu-do/ nên báo cáo không chèn hình; mục 4.1/4.2/4.5 ghi rõ "không có biểu đồ".
 - Không sửa code sản phẩm. 6 phép kiểm tra KHÔNG ĐẠT (5 ở E2: mã/đơn vị lạ lọt qua, 1 ở FHIR-M8: lỗi example.org) được giữ nguyên làm kết quả.
 - 00:24: sau bước 09, `lis-dispatcher` và `middleware-worker` của stack demo vẫn ở trạng thái Exited (SIGTERM lúc tạm dừng) dù 09 đã `start`; đã chạy `docker compose up -d` rồi `docker compose start lis-dispatcher middleware-worker` → cả 6 container demo đang chạy. `up -d` đã tạo lại container `emr` và `middleware` (không xóa volume).
+- Sau khi người dùng cài matplotlib và chạy lại 08: đã chèn 4 biểu đồ (Hình 3.1–3.4) vào báo cáo mục 4.1, 4.2, 4.5; sửa mục 7, 8, 9 và Phụ lục. Báo cáo đổi nên cần chạy lại bước 09 để cập nhật `MINH_CHUNG_SHA256.txt`.
 
 ## Việc cần người dùng làm khi quay lại
 - Push nhánh `thuc-nghiem/so-lieu-2026-11-11` cho bạn cùng nhóm: `git push -u origin thuc-nghiem/so-lieu-2026-11-11` (mình chưa push).

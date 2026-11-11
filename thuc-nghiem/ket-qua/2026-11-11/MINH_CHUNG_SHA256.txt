@@ -2,7 +2,7 @@
 823cb63e92d743965dfe385be6c2693779bc4fa375d05bef9346518c5eff296d  ./01-test-tu-dong/log-day-du.txt
 022020ffece02f9413bb282146560e45427ca06144c0c2f1c5bb277bcc45e6f7  ./01-test-tu-dong/test-minh-chung-TC06-TC07.txt
 97669a08a328fa19a4b7ad0179cea7152fe0c0f190f8e8284ef713bf1b3ddb31  ./01-test-tu-dong/tom-tat.txt
-7fa1c117aa2de18470ca63e0b2599339175ce7b00be5ddc22d464ec08b63cb7a  ./BAO_CAO_KET_QUA_THUC_NGHIEM.md
+4c7b244eb2bcccbcfe6a9ff48c0fd854d4c404cd18d0025ff416b0b2317dec9d  ./BAO_CAO_KET_QUA_THUC_NGHIEM.md
 9a85448aa419969681eefbebed49e6e0ac357eb19380c0a5ed595a1a0b6af438  ./bieu-do/1-thoi-gian-tung-chang.png
 56143c1a3978564531c50d2b75b22171dc2fc38f7945cad3cce3b0f56d2870ca  ./bieu-do/2-do-tre-tung-ket-qua.png
 976fa2e9b02c70b22c5f22586a1852c080c956f086fe0a7bb95741d47bba0bfc  ./bieu-do/3-do-tre-khi-don-1000.png

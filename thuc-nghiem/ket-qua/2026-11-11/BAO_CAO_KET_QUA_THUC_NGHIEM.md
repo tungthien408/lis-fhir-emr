@@ -118,7 +118,10 @@ luôn nghỉ `pollMs` = 1000 ms giữa các vòng (`backend/src/lis/dispatcher.t
 Suy luận: mỗi vòng chỉ gửi 1 kết quả nên tốc độ bị giới hạn khoảng 1 kết quả/giây; "thời gian dài" ở đây chủ yếu là xếp hàng, không phải xử lý chậm.
 Báo cáo không thử đổi cấu hình để kiểm chứng suy luận này.
 
-Biểu đồ: không có (máy thiếu `matplotlib`; xem mục 7). Số liệu để vẽ lại nằm trong `E1-1000-ket-qua/thoi-gian-tung-chang.csv`.
+![Thời gian chờ khi dồn 1.000 kết quả](bieu-do/3-do-tre-khi-don-1000.png)
+
+*Hình 3.1 – Khi dồn 1000 kết quả cùng lúc, tổng thời gian của từng kết quả tăng gần như đường thẳng theo thứ tự gửi (từ khoảng 1 giây lên khoảng 1051 giây).*
+Đọc hình này thế nào: trục ngang là thứ tự gửi, trục dọc là tổng thời gian từ Publish đến hoàn tất; đường thẳng dốc đều nghĩa là mỗi kết quả phải chờ thêm một lượng gần như nhau so với kết quả trước.
 
 Minh chứng: `E1-1000-ket-qua/doi-chieu/comparison-report.json`, `E1-1000-ket-qua/dung-sai-theo-truong.csv`, `E1-1000-ket-qua/thoi-gian-tung-chang.csv`,
 `E1-1000-ket-qua/ket-thuc.txt`, `kiem-tra.jsonl` (mã `E1-*`).
@@ -138,7 +141,14 @@ Minh chứng: `E1-1000-ket-qua/doi-chieu/comparison-report.json`, `E1-1000-ket-q
 phần xử lý thật (ánh xạ, lưu, đọc lại) cộng lại chưa đến 0,1 giây ở trung vị.
 
 **Nhận định.** Khi không bị xếp hàng, độ trễ chủ yếu do chu kỳ quét 1 giây (suy luận, khớp với việc hai chặng chờ đều dao động trong khoảng 0–1 giây).
-Biểu đồ: không có (xem mục 7).
+![Thời gian từng chặng khi gửi từng kết quả](bieu-do/1-thoi-gian-tung-chang.png)
+
+*Hình 3.2 – Thời gian trung vị của từng chặng khi gửi từng kết quả một (40 kết quả lõi).* Hai chặng chờ (khoảng 0,45 giây mỗi chặng) chiếm gần hết tổng thời gian; ba chặng xử lý thật chỉ tính bằng mili giây.
+
+![Độ trễ từng kết quả khi gửi lần lượt](bieu-do/2-do-tre-tung-ket-qua.png)
+
+*Hình 3.3 – Độ trễ đầu–cuối của từng kết quả trong 40 kết quả gửi lần lượt.* Đã đo: 32/40 kết quả hoàn tất trong 1,07 giây trở xuống, 8/40 kết quả mất từ 1,78 giây đến 2,04 giây (lệnh ở Phụ lục).
+Nhận định (suy luận, chưa kiểm chứng): hai nhóm cách nhau cỡ một chu kỳ quét 1 giây, có thể do một số kết quả lỡ nhịp quét và phải chờ thêm một vòng.
 
 Minh chứng: `E1A-do-tre-tung-ket-qua/thoi-gian-tung-chang.csv`, `kiem-tra.jsonl` (mã `E1A-*`).
 
@@ -186,7 +196,9 @@ Minh chứng: `E3-gui-trung/` (đặc biệt `dem-sau.txt`), `kiem-tra.jsonl` (m
 *Đọc bảng này thế nào:* 12/12 phép kiểm tra đạt. Với tắt ngắn, tự phục hồi 10/10. Với tắt lâu, hệ thống không tự phục hồi mà dừng ở FAILED (đúng thiết kế: hết số lần thử lại thì dừng);
 cần người vận hành đưa lại.
 
-Biểu đồ: không có (xem mục 7).
+![Thời gian phục hồi E4a](bieu-do/4-phuc-hoi-E4a.png)
+
+*Hình 3.4 – E4a: thời gian từ lúc EMR chạy lại đến khi từng kết quả hoàn tất (10 kết quả).* Các cột cao nhất khoảng 5,3–5,4 giây, thấp nhất khoảng 1,5 giây; số liệu trung vị và lớn nhất (2,76 giây và 5,45 giây) lấy từ bảng trên.
 
 Minh chứng: `E4-gian-doan/E4a-ket-qua.csv`, `E4b-ket-qua.csv`, `E4c-ket-qua.csv`, `E4d-ket-qua.csv`, `kiem-tra.jsonl` (mã `E4*`).
 
@@ -275,7 +287,7 @@ Các p95 ở M9 tính theo cách "nearest-rank" (lấy phần tử theo thứ h�
 - Thời gian phụ thuộc chu kỳ quét hàng đợi 1 giây; khi dồn 1000 kết quả, thời gian chủ yếu là xếp hàng, không phản ánh tốc độ xử lý từng kết quả (xem mục 4.1).
 - TC06 và TC07 được chứng minh bằng test tự động chứ không tạo lỗi thật.
 - Chưa đánh giá bảo mật, tải lớn, vận hành dài ngày.
-- Môi trường thiếu `matplotlib` nên **không có biểu đồ** (`bieu-do/` không tồn tại). Số liệu thô nằm ở các file CSV; có thể cài `python-matplotlib` rồi chạy lại `python3 thuc-nghiem/08-tong-hop.py` để sinh biểu đồ.
+- Biểu đồ (4 hình trong `bieu-do/`) được sinh ở lần chạy lại bước 08 sau khi cài `matplotlib`; biểu đồ chỉ vẽ lại các số trong file CSV, không thêm số mới.
 - Hai script phải sửa vì lỗi vận hành (đếm kết quả của test và của validator, chi tiết ở Phụ lục); logic đo và tiêu chí đạt/không đạt không đổi.
 - Tên một số hạng mục trong báo cáo giữa kỳ (TC01–TC07) được ánh xạ theo kịch bản như mục 1; M7 tổng 43/46 gộp các nhóm khác nhau nên khi trích nên nêu theo nhóm.
 
@@ -285,11 +297,11 @@ Các p95 ở M9 tính theo cách "nearest-rank" (lấy phần tử theo thứ h�
 |---|---|---|
 | 3.x Môi trường | Bảng mục 2.1 | "Bảng 3.1 – Cấu hình máy và tham số hệ thống khi thực nghiệm" |
 | 3.x Kết quả luồng chính | Bảng mục 4.1 (M1–M5) | "Bảng 3.2 – Kết quả 1000 kết quả xét nghiệm hợp lệ (E1)" |
-| 3.x Độ trễ | Bảng thời gian từng chặng mục 4.2 (và biểu đồ nếu vẽ lại) | "Bảng 3.3 – Độ trễ khi gửi từng kết quả (40 kết quả lõi)" |
-| 3.x Xếp hàng khi dồn tải | Số liệu mục 4.1 (kết quả thứ 1/250/500/750/1000) | "Hình 3.1 – Thời gian chờ ở chặng LIS → middleware tăng theo thứ tự gửi (suy luận: do 1 kết quả/vòng quét 1 giây)" |
+| 3.x Độ trễ | Bảng thời gian từng chặng mục 4.2 và Hình 3.2, 3.3 | "Bảng 3.3 – Độ trễ khi gửi từng kết quả (40 kết quả lõi)" |
+| 3.x Xếp hàng khi dồn tải | Hình 3.1 (mục 4.1) và số liệu kết quả thứ 1/250/500/750/1000 | "Hình 3.1 – Thời gian chờ tăng theo thứ tự gửi khi dồn 1000 kết quả (suy luận: do 1 kết quả/vòng quét 1 giây)" |
 | 3.x Dữ liệu sai | Bảng mục 4.3 | "Bảng 3.4 – Xử lý dữ liệu sai và bệnh nhân không liên kết (E2)" |
 | 3.x Gửi trùng | Bảng mục 4.4 | "Bảng 3.5 – Kết quả gửi trùng ở ba chặng (E3)" |
-| 3.x Gián đoạn | Bảng mục 4.5 | "Bảng 3.6 – Phục hồi khi EMR hoặc middleware tạm ngừng (E4)" |
+| 3.x Gián đoạn | Bảng mục 4.5 và Hình 3.4 | "Bảng 3.6 – Phục hồi khi EMR hoặc middleware tạm ngừng (E4)" |
 | 3.x Cấu trúc FHIR | Bảng mục 4.7 | "Bảng 3.7 – Lỗi do HL7 validator báo trên 1000 bản Observation" |
 | 3.x Tổng hợp | Bảng mục 5 | "Bảng 3.8 – Tổng hợp chỉ số M1–M13" |
 
@@ -309,6 +321,7 @@ Nên nêu thẳng ở chương 3 các ca không như kỳ vọng (mục 6) như 
 | `E2-sai-benh-nhan-du-lieu-sai/` | Gói tin, phản hồi, bản ghi lọt vào EMR | 4.3, 6 |
 | `E3-gui-trung/` | Minh chứng gửi trùng | 4.4 |
 | `E4-gian-doan/` | Minh chứng tạm ngừng | 4.5 |
+| `bieu-do/*.png` | 4 biểu đồ (Hình 3.1–3.4) | 4.1, 4.2, 4.5 |
 | `01-test-tu-dong/` | Tóm tắt test, test minh chứng TC06/TC07 | 4.6 |
 | `fhir-1000/`, `kiem-tra-fhir/` | 1000 bản FHIR và kết quả validator | 4.7, 6.4 |
 | `MINH_CHUNG_SHA256.txt` | Dấu vân tay các file trên | 9 |
@@ -344,5 +357,18 @@ Kết quả: 0,3 / 261,0 / 524,2 / 788,1 / 1050,6 giây cho kết quả thứ 1 
 
 **Lệnh tìm trong code (mục 6):**
 `grep -rn "test_code" backend/src/middleware backend/src/emr`, `grep -n "limit(1)" backend/src/lis/repository.ts`, `sed -n 130,140p backend/src/middleware/service.ts`.
+
+**Đếm kết quả nhanh/chậm ở Hình 3.3 (mục 4.2):**
+
+```
+python3 -I - <<'EOF'
+import csv
+r = list(csv.DictReader(open('thuc-nghiem/ket-qua/2026-11-11/E1A-do-tre-tung-ket-qua/thoi-gian-tung-chang.csv')))
+t = [float(x['tong_ms']) for x in r]
+print(len(t), sum(v > 1500 for v in t), sum(v <= 1500 for v in t))
+EOF
+```
+
+Kết quả: 40 kết quả; 8 kết quả trên 1500 ms (từ 1782 ms trở lên); 32 kết quả từ 1066 ms trở xuống.
 
 **Đếm phép kiểm tra:** `grep -c '"ket_qua":"DAT"' kiem-tra.jsonl` = 61; `grep -c '"ket_qua":"KHONG_DAT"' kiem-tra.jsonl` = 6 (tổng 67).
