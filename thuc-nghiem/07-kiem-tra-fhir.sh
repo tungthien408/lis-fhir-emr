@@ -2,7 +2,7 @@
 # BƯỚC 07 – KIỂM TRA CẤU TRÚC FHIR (M8) bằng công cụ kiểm tra chính thức của HL7 (validator_cli.jar).
 # Kiểm tra 1.000 bản Observation đã xuất ở bước 02 có đúng chuẩn FHIR R4 (4.0.1) hay không.
 # Lần đầu cần Internet để tải công cụ (~200 MB) và gói định nghĩa FHIR R4. Thời gian: 5–30 phút.
-# Lưu ý: "warning" về hệ mã https://example.org/... là bình thường (nhóm dùng mã cục bộ, chưa dùng LOINC),
+# Lưu ý: warning về CodeSystem cục bộ có thể xuất hiện (chưa dùng LOINC),
 #        chỉ "error"/"fatal" mới tính là không đạt.
 source "$(dirname "$0")/lib.sh"
 require_step "02-E1-1000-ket-qua"
@@ -13,13 +13,31 @@ command -v java >/dev/null || { log "Thiếu Java (sudo pacman -S jre-openjdk)";
 JAR="${VALIDATOR_JAR:-$HOME/.cache/lis-fhir-emr/validator_cli.jar}"
 if [ ! -s "$JAR" ]; then
   mkdir -p "$(dirname "$JAR")"; log "Tải validator_cli.jar…"
-  curl -fsSL -o "$JAR" https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar
+  curl -fsSL -o "$JAR" https://github.com/hapifhir/org.hl7.fhir.core/releases/download/7.0.5/validator_cli.jar
 fi
-java -jar "$JAR" -version > "$D/phien-ban-cong-cu.txt" 2>&1 || true
+java -jar "$JAR" -help > "$D/phien-ban-cong-cu.txt" 2>&1
+sha256sum "$JAR" > "$D/validator-jar.sha256"
+grep -q 'Version 7.0.5 ' "$D/phien-ban-cong-cu.txt" || { log "Cần đúng HL7 validator 7.0.5 để so sánh với đợt cũ"; false; }
 n_files=$(ls "$OUT/fhir-1000"/*.json | wc -l | tr -d ' ')
 log "Kiểm tra $n_files bản FHIR (có thể mất 5–30 phút)…"
 # VALIDATOR_TX: để trống = dùng máy chủ thuật ngữ mặc định của HL7 (cần Internet); đặt "n/a" để bỏ kiểm tra thuật ngữ.
 TX_ARGS=(); [ -n "${VALIDATOR_TX:-}" ] && TX_ARGS=(-tx "$VALIDATOR_TX")
+printf '%s\n' "${VALIDATOR_TX:-default (same as 2026-11-11)}" > "$D/terminology-mode.txt"
+mkdir -p "$D/chay-thu-1"
+sample=$(find "$OUT/fhir-1000" -maxdepth 1 -name '*.json' -print -quit)
+sample_rc=0
+java -Xmx3g -jar "$JAR" "$sample" -version 4.0.1 "${TX_ARGS[@]}" -output "$D/chay-thu-1/ket-qua-validator.json" \
+  > "$D/chay-thu-1/log-validator.txt" 2>&1 || sample_rc=$?
+sample_errors=$(python3 -I - "$D/chay-thu-1/ket-qua-validator.json" <<'PY'
+import json, sys
+x = json.load(open(sys.argv[1]))
+outcomes = [x] if x.get('resourceType') == 'OperationOutcome' else [e['resource'] for e in x.get('entry', [])]
+assert outcomes, 'Validator did not return an outcome'
+print(sum(i.get('severity') in ('error', 'fatal') for o in outcomes for i in o.get('issue', [])))
+PY
+)
+check $S "FHIR-THU" "Một Observation namespace mới qua validator trước khi kiểm tra toàn bộ" "0 lỗi" "$sample_errors lỗi"
+[ "$sample_errors" = 0 ] && [ "$sample_rc" = 0 ] || { log "Chạy thử validator chưa đạt; giữ log để phân tích"; false; }
 rc=0
 java -Xmx3g -jar "$JAR" "$OUT"/fhir-1000/*.json -version 4.0.1 "${TX_ARGS[@]}" -output "$D/ket-qua-validator.json" \
   > "$D/log-validator.txt" 2>&1 || rc=$?

@@ -28,11 +28,16 @@ if [ "${GIU_MOI_TRUONG:-0}" != 1 ]; then
   log "Đã tắt và xóa môi trường thực nghiệm lisexp (dữ liệu đã được sao lưu trong các file .sql.gz)."
 fi
 if [ -f "$OUT/trang-thai/stack-demo-da-tam-dung.txt" ]; then
-  docker compose -p lis-fhir-emr --project-directory "$ROOT" -f "$ROOT/compose.yaml" start >/dev/null 2>&1 \
+  docker compose -p lis-fhir-emr --project-directory "$ROOT" -f "$ROOT/compose.yaml" --profile dispatcher --profile worker start >/dev/null 2>&1 \
     && log "Đã bật lại stack demo của nhóm." || log "Không tự bật lại được stack demo → chạy tay: docker compose up -d"
 fi
 
 BR="thuc-nghiem/so-lieu-$RUN_TAG"
+if [ "${PACK_GIT:-1}" = 0 ]; then
+  log "PACK_GIT=0: không chuyển nhánh, stage hoặc commit."
+  step_end
+  exit 0
+fi
 cd "$ROOT"
 cur=$(git rev-parse --abbrev-ref HEAD)
 if [ "$cur" != "$BR" ]; then git checkout -b "$BR" 2>/dev/null || git checkout "$BR"; fi

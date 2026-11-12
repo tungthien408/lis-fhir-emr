@@ -127,14 +127,14 @@ và Dispatcher với dữ liệu giả; chưa phải nghiệm thu bằng dataset
 ```json
 {
   "resourceType": "Observation",
-  "identifier": [{"system":"https://example.org/lis/result","value":"MIMIC-LAB-174"}],
+  "identifier": [{"system":"urn:uuid:05934370-0df0-5666-8eff-bd5181906b62","value":"MIMIC-LAB-174"}],
   "status": "final",
   "category": [{"coding":[{"system":"http://terminology.hl7.org/CodeSystem/observation-category","code":"laboratory"}]}],
   "code": {
-    "coding": [{"system":"https://example.org/lis/test-code","code":"50971","display":"Potassium"}],
+    "coding": [{"system":"urn:uuid:cb8ffc71-ef38-58d2-ba65-0bf0232d5d02","code":"50971","display":"Potassium"}],
     "text": "Potassium / Blood / Chemistry"
   },
-  "subject": {"type":"Patient","identifier":{"system":"https://example.org/lis/patient","value":"MIMIC-P-10000032"}},
+  "subject": {"type":"Patient","identifier":{"system":"urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4","value":"MIMIC-P-10000032"}},
   "effectiveDateTime": "2180-06-03T12:00:00Z",
   "valueQuantity": {"value":3.4,"unit":"mEq/L"},
   "referenceRange": [{"low":{"value":3.3,"unit":"mEq/L"},"high":{"value":5.1,"unit":"mEq/L"}}]
@@ -176,7 +176,7 @@ Middleware gọi `GET /api/lab-results` với **cả** `external_system` và `ex
 **Phân biệt ID:** `result_id` là mã nguồn; `event_id` là lần Publish; `exchange_id` là giao dịch Middleware; `target_id` là kết quả lưu ở EMR; `patient_id` (LIS) **khác** `patient_key` (EMR). `source_system` (ví dụ `lis-demo`) **khác** `external_system` (URI của `Observation.identifier.system`).
 
 - Khóa chống trùng: Middleware dùng `event_id` và `(source_system, source_result_id)`; EMR dùng `(external_system, external_id)`. Không dùng `patient_id + test_code` vì một bệnh nhân có thể xét nghiệm nhiều lần.
-- Namespace mẫu: `https://example.org/lis/result`, `https://example.org/lis/patient`, `https://example.org/lis/test-code`. Mã xét nghiệm hiện là mã cục bộ, **không mặc định là LOINC**.
+- Namespace cố định của dự án: `urn:uuid:05934370-0df0-5666-8eff-bd5181906b62`, `urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4`, `urn:uuid:cb8ffc71-ef38-58d2-ba65-0bf0232d5d02`. Mã xét nghiệm hiện là mã cục bộ, **không mặc định là LOINC**.
 - `source_hash`: SHA-256 của JSON snapshot với khóa object sắp theo từ điển, mảng giữ nguyên thứ tự, không thêm khoảng trắng; hai bên cần thống nhất cách biểu diễn số và thời gian trước khi tính. **So sánh cả hash lẫn nội dung**, không chỉ dựa vào hash.
 
 ### Dạng JSON đọc lại từ EMR — bổ sung hợp đồng ở B4B
@@ -481,7 +481,7 @@ Hướng dẫn thử bằng `curl` và kết quả test: [SPP-66 B3](spp-66-b3-r
 
 Không nhận pagination, tham số phụ, tham số lặp, array/object hoặc trộn hai chế độ.
 Identifier hợp lệ không rỗng/chỉ trắng, không có ký tự điều khiển; backend giữ nguyên case/khoảng trắng.
-Namespace LIS thực tế là `https://example.org/lis/patient`; frontend chỉ chuẩn hóa đầu vào
+Namespace LIS thực tế là `urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4`; frontend chỉ chuẩn hóa đầu vào
 `MIMIC-P-<hậu tố số>` đã nhận diện, không sửa định danh trong response.
 
 200 trả một hồ sơ đã tồn tại (không có kết quả xét nghiệm vẫn 200):
@@ -492,7 +492,7 @@ Namespace LIS thực tế là `https://example.org/lis/patient`; frontend chỉ 
     "patient_key": "6eac20d5-c71c-50a6-8adb-17bd7b5677de",
     "display_label": "Demo patient 10007928",
     "identifiers": [
-      {"identifier_system": "https://example.org/lis/patient", "identifier_value": "MIMIC-P-10007928"}
+      {"identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4", "identifier_value": "MIMIC-P-10007928"}
     ]
   }
 }
@@ -537,7 +537,7 @@ Thành công chỉ trả năm trường:
 ```json
 {
   "result": "STORED",
-  "external_system": "https://example.org/lis/result",
+  "external_system": "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62",
   "external_id": "B4A-SYNTHETIC-R1",
   "target_id": "00000000-0000-4000-8000-000000000066",
   "patient_key": "00000000-0000-4000-8000-000000000067"
@@ -562,7 +562,7 @@ Item trả dữ liệu Repository đã lưu như mục 4, cộng `received_at`, 
 đầy đủ microsecond. Không ép NUMERIC thành number hoặc timestamp thành `Date`.
 
 Ví dụ tại thư mục gốc repo, sau khi đã có liên kết người bệnh giả
-`https://example.org/lis/patient` + `B4A-SYNTHETIC-P1` trong EMR:
+`urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4` + `B4A-SYNTHETIC-P1` trong EMR:
 
 ```bash
 curl -i http://127.0.0.1:3103/api/observations \
@@ -570,7 +570,7 @@ curl -i http://127.0.0.1:3103/api/observations \
   --data-binary @backend/tests/middleware/fixtures/observation-r4-golden.json
 
 curl -G http://127.0.0.1:3103/api/lab-results \
-  --data-urlencode 'external_system=https://example.org/lis/result' \
+  --data-urlencode 'external_system=urn:uuid:05934370-0df0-5666-8eff-bd5181906b62' \
   --data-urlencode 'external_id=B4A-SYNTHETIC-R1'
 
 # Thay patient_key bằng UUID EMR nhận từ POST.
@@ -623,3 +623,20 @@ triển khai và ví dụ chạy thử: [SPP-66 A3](spp-66-a3-review.md).
 - [ ] Cập nhật tài liệu khi API thực sự được triển khai; không coi ví dụ JSON là kết quả thử nghiệm.
 
 **Đọc thêm:** [Kiến trúc](architecture.md) · [Database](database.md) · [HL7 FHIR R4 Observation](https://hl7.org/fhir/R4/observation.html).
+
+
+## Hợp đồng trao đổi sau sửa lỗi thực nghiệm (12/11/2026)
+
+Namespace là định danh dữ liệu, độc lập với URL giao diện `http://localhost:5173`.
+Mapping version hiện tại: `lis-observation-v2`. Các API ghi chỉ chấp nhận ba URN UUID
+được khai báo ở trên; bộ đối chiếu vẫn hỗ trợ bộ tham chiếu cũ `spp65-v2`.
+
+Policy `mimic-iv-demo-2.2-v1` áp dụng cho cả middleware và EMR:
+`50971 → mEq/L`, `50912 → mg/dL`, `51222 → g/dL`, `50802 → mEq/L`, `51492 → mg/dL`.
+So khớp chính xác, không chuẩn hóa hoặc chuyển đơn vị. Middleware trả 422 với
+`INVALID_TEST_CODE`/`INVALID_UNIT`; EMR trả 422 `VALIDATION_ERROR` và chỉ rõ field.
+Kiểm tra diễn ra trước khi ghi dữ liệu, kể cả khi không có cận tham chiếu.
+Không truy cập chéo schema LIS từ middleware hoặc EMR.
+
+Thay đổi namespace áp dụng cho môi trường thực nghiệm sạch. Không tự sửa FHIR/hash
+đã lưu hoặc di trú DB demo cũ; triển khai trên DB đã có dữ liệu cần kế hoạch riêng.

@@ -10,7 +10,7 @@ type StoreRepository = { withPatientLinkTransaction: typeof withPatientLinkTrans
 const patientKey = randomUUID();
 function fakeRepository(inspect?: (input: NewLabResult) => void): StoreRepository {
   return { async withPatientLinkTransaction(system, value, operation) {
-    assert.equal(system, "https://example.org/lis/patient");
+    assert.equal(system, "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4");
     assert.equal(value, "B4A-SYNTHETIC-P1");
     return operation({ patientKey, async createLabResult(input) {
       const prepared = { ...input, patientKey }; inspect?.(prepared);

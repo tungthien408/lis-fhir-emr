@@ -89,6 +89,8 @@ ECASES=(
   'sai-loai-tai-nguyen|.resourceType="Patient"|Không phải tài nguyên Observation'
   'ma-xn-ngoai-danh-muc|.code.coding[0].code="99999"|Mã xét nghiệm không có trong danh mục'
   'don-vi-khong-duoc-duyet|.valueQuantity.unit="kg"|Đơn vị đo không thuộc danh sách được chấp nhận'
+  'don-vi-sai-nhat-quan|.valueQuantity.unit="kg" | (.referenceRange[]? | .low?, .high? | select(. != null) | .unit)="kg"|Đơn vị sai nhưng giá trị và các cận đều nhất quán'
+  'don-vi-sai-khong-co-can|.valueQuantity.unit="kg" | del(.referenceRange)|Đơn vị sai khi không có cận tham chiếu'
 )
 i=0
 for c in "${ECASES[@]}"; do

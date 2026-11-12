@@ -12,6 +12,7 @@ want() { if command -v "$1" >/dev/null 2>&1; then log "  có $1"; else log "  (k
 log "Kiểm tra công cụ:"
 need docker "cài Docker Engine"; need node "cài Node.js >= 22.16"; need npm "cài npm"; need jq "sudo pacman -S jq"
 need curl "sudo pacman -S curl"; need gzip "sudo pacman -S gzip"; need sha256sum "coreutils"
+need flock "util-linux"
 want java "sudo pacman -S jre-openjdk (cần cho bước 07 kiểm tra FHIR)"
 want python3 "sudo pacman -S python (cần cho bước 08 tổng hợp)"
 python3 -c 'import matplotlib' 2>/dev/null && log "  có matplotlib" || log "  (không bắt buộc) thiếu matplotlib → sudo pacman -S python-matplotlib (để vẽ biểu đồ)"
@@ -64,6 +65,8 @@ else log "  node_modules đã có"; fi
   echo "  giữ việc (lease) 15 s; quét hàng đợi mỗi 1 s; LIS và middleware mỗi bên 1 tiến trình xử lý nền."
 } > "$OUT/00-moi-truong.txt"
 log "Đã ghi cấu hình máy vào 00-moi-truong.txt"
+export RUN_TAG
+python3 "$TN_DIR/write-run-manifest.py" --output "$OUT/run-manifest.json" --oracle "$ORACLE"
 
 [ "$fail" = 0 ] || { log "CÒN MỤC CHƯA ĐẠT ở trên → sửa rồi chạy lại bước 00."; false; }
 check PRE "PRE-OK" "Kiểm tra trước khi chạy" "đạt" "đạt"

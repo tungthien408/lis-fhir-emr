@@ -7,9 +7,9 @@ const at = new Date("2026-11-04T10:00:00Z");
 const attempt = { attemptId: "00000000-0000-4000-8000-000000000001", exchangeId: row.exchangeId,
   attemptNo: 1, phase: "SEND", startedAt: at, sentAt: null, responseAt: null, endedAt: at,
   httpStatus: 201, errorCode: null, errorMessage: null,
-  responseBody: { result: "STORED", external_system: "https://example.org/lis/result", external_id: row.sourceResultId,
+  responseBody: { result: "STORED", external_system: "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62", external_id: row.sourceResultId,
     target_id: "00000000-0000-4000-8000-000000000002", patient_key: "00000000-0000-4000-8000-000000000003" } };
-const mapped = { ...row, fhirPayload: { identifier: [{ system: "https://example.org/lis/result", value: row.sourceResultId }] } };
+const mapped = { ...row, fhirPayload: { identifier: [{ system: "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62", value: row.sourceResultId }] } };
 test("Monitor sanitization: mismatched receipts and non-SEND/non-200/201 never prove storage", () => {
   assert.ok(monitorAttempt(mapped, attempt).receipt);
   assert.equal(monitorAttempt({ ...mapped, fhirPayload: { identifier: [{ system: "https://secret.example", value: row.sourceResultId }] } }, { ...attempt, responseBody: { ...attempt.responseBody, external_system: "https://secret.example" } }).receipt, null);

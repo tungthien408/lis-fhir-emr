@@ -1,0 +1,2 @@
+{"error":{"code":"VALIDATION_ERROR","message":"A finite JSON number is required"}}
+HTTP 400

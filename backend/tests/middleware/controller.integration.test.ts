@@ -191,9 +191,9 @@ test("Middleware Controller integration (HTTP + PostgreSQL)", {
     input.source_result_id = " Kết quả/🧪+%?# "; input.source_snapshot.result_id = input.source_result_id; rehash(input);
     const id = acceptedId(await post(input));
     await pool.query("update integration.exchange_transactions set fhir_payload=$2::jsonb where exchange_id=$1", [id,
-      JSON.stringify({ identifier: [{ system: "https://example.org/lis/result", value: input.source_result_id }] })]);
+      JSON.stringify({ identifier: [{ system: "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62", value: input.source_result_id }] })]);
     const ids = [crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID()];
-    const receipt = { result: "STORED", external_system: "https://example.org/lis/result", external_id: input.source_result_id,
+    const receipt = { result: "STORED", external_system: "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62", external_id: input.source_result_id,
       target_id: crypto.randomUUID(), patient_key: crypto.randomUUID(), secret: "must-not-leak" };
     for (const [i, phase, code, body, status] of [
       [2, "VERIFY", null, { outcome: "delivered" }, 200],

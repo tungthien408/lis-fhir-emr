@@ -29,9 +29,16 @@ export function loadExpected(manifestPath: string, pinnedManifestSha256: string)
     const upstream = read('upstream-answers.csv');
     requireReference(sha256(upstream) === provenance.upstream_sha256, 'UPSTREAM_CHECKSUM_MISMATCH');
     const rules: unknown = JSON.parse(read('rules.json'));
-    if (!object(rules) || rules.version !== 'spp82-independent-mr01-mr09-v1'
-      || rules.result_system !== 'https://example.org/lis/result' || rules.patient_system !== 'https://example.org/lis/patient'
-      || rules.test_system !== 'https://example.org/lis/test-code' || rules.source_system !== 'lis-demo'
+    // Independent contract allowlist: never import the product mapper or namespaces.
+    const supportedSystems = object(rules) && (
+      (rules.version === 'spp82-independent-mr01-mr09-v1'
+        && rules.result_system === 'https://example.org/lis/result' && rules.patient_system === 'https://example.org/lis/patient'
+        && rules.test_system === 'https://example.org/lis/test-code')
+      || (rules.version === 'spp82-independent-mr01-mr09-v2'
+        && rules.result_system === 'urn:uuid:05934370-0df0-5666-8eff-bd5181906b62'
+        && rules.patient_system === 'urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4'
+        && rules.test_system === 'urn:uuid:cb8ffc71-ef38-58d2-ba65-0bf0232d5d02'));
+    if (!object(rules) || !supportedSystems || rules.source_system !== 'lis-demo'
       || rules.seed_tag !== 'DACN-MIMIC22-SOURCE-ALIGNED-V2' || rules.category_system !== 'http://terminology.hl7.org/CodeSystem/observation-category'
       || rules.category_code !== 'laboratory' || rules.subject_type !== 'Patient' || rules.clinical_status !== 'final'
       || rules.source_status !== 'FINAL' || rules.resource_type !== 'Observation' || rules.context_separator !== ' / ') throw new ReferenceError('UNSUPPORTED_REFERENCE_RULES');

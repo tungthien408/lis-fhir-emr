@@ -30,7 +30,7 @@ test("EMR Controller C3 (real HTTP, isolated dependencies)", async (t) => {
   const request = (path: string, options?: RequestInit) => requestJson(server.baseUrl, path, options);
   const post = (body: unknown = observation, headers = { "Content-Type": "application/fhir+json" }) =>
     request("/api/observations", { method: "POST", headers, body: JSON.stringify(body) });
-  const source = "/api/lab-results?external_system=https%3A%2F%2Fexample.org%2Flis%2Fresult&external_id=R1";
+  const source = "/api/lab-results?external_system=urn%3Auuid%3A05934370-0df0-5666-8eff-bd5181906b62&external_id=R1";
   const patient = `/api/lab-results?patient_key=${patientKey}`;
 
   await t.test("health and readiness preserve their response formats and readiness statuses", async (t) => {
@@ -86,6 +86,19 @@ test("EMR Controller C3 (real HTTP, isolated dependencies)", async (t) => {
     assertError(await post(), 422, "PATIENT_NOT_LINKED");
   });
 
+  await t.test("real C2 rejects unknown codes and consistently unsupported quantities over HTTP", async (t) => {
+    t.mock.method(dependencies, "storeObservation", service.storeObservation);
+    for (const mode of ["unknown", "all-kg", "no-range"]) {
+      const input = structuredClone(observation); input.code.coding[0].code = mode === "unknown" ? "99999" : "50912";
+      input.valueQuantity.unit = mode === "unknown" ? "mg/dL" : "kg";
+      for (const range of input.referenceRange ?? []) for (const key of ["low", "high"] as const) {
+        if (range[key]) range[key].unit = input.valueQuantity.unit;
+      }
+      if (mode === "no-range") delete input.referenceRange;
+      assertError(await post(input), 422, "VALIDATION_ERROR");
+    }
+  });
+
   await t.test("no success response is sent while the C2 transaction is pending", async (t) => {
     const entered = deferred(); const commit = deferred(); t.after(commit.resolve);
     t.mock.method(dependencies, "storeObservation", (input: unknown) => service.storeObservation(input, {
@@ -105,7 +118,7 @@ test("EMR Controller C3 (real HTTP, isolated dependencies)", async (t) => {
 
   await t.test("exact source lookup forwards both identities without pagination, truncation or deduplication", async (t) => {
     t.mock.method(dependencies, "getLabResultsBySource", async (system: unknown, id: unknown) => {
-      assert.equal(system, "https://example.org/lis/result"); assert.equal(id, " R1 ");
+      assert.equal(system, "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62"); assert.equal(id, " R1 ");
       return { kind: "found", items: [row, { ...row, target_id: randomUUID() }] };
     });
     const response = await request(`${source.replace("=R1", "=%20R1%20")}`);

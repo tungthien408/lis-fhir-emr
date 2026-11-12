@@ -1,0 +1,2 @@
+su_kien_lis giao_dich_mw ban_ghi_emr ma_bi_trung
+1000 1000 1000 0

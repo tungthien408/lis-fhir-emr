@@ -1,5 +1,5 @@
-export const PATIENT_SYSTEM = 'https://example.org/lis/patient'
-export const RESULT_SYSTEM = 'https://example.org/lis/result'
+export const PATIENT_SYSTEM = 'urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4'
+export const RESULT_SYSTEM = 'urn:uuid:05934370-0df0-5666-8eff-bd5181906b62'
 export type Patient = { patient_key: string; display_label: string | null; identifiers: { identifier_system: string; identifier_value: string }[] }
 export type LabResult = { target_id: string; patient_key: string; external_system: string; external_id: string;
   analyte_system: string; analyte_code: string; analyte_display: string | null; analyte_context: string | null;

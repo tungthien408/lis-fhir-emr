@@ -2,6 +2,7 @@
 import { canonicalJson, hashCanonicalJson } from "./canonical-json.js";
 import * as exchangeRepository from "./repository.js";
 import type { SourceEnvelope } from "./repository.js";
+import { testUnitIssue } from "../common/test-catalog.js";
 
 export interface ExchangeAcknowledgement {
   accepted: true;
@@ -146,6 +147,11 @@ function parseEnvelope(input: unknown): SourceEnvelope {
   }
   if (hashCanonicalJson(snapshot) !== hash) {
     throw new InvalidExchange("invalid", "source_hash", "The snapshot does not match its source hash");
+  }
+  const catalogIssue = testUnitIssue(snapshot.test_code as string, snapshot.unit as string);
+  if (catalogIssue) {
+    const field = catalogIssue === "INVALID_TEST_CODE" ? "test_code" : "unit";
+    throw new InvalidExchange("invalid", `${prefix}${field}`, "The test code and unit must belong to the supported catalog", catalogIssue);
   }
   // Every required field was checked above. Retain the complete original JSON.
   return body as SourceEnvelope;

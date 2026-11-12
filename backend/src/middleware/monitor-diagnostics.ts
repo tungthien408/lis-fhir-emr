@@ -1,3 +1,4 @@
+import { FHIR_NAMESPACES } from "../common/fhir-namespaces.js";
 /** Read-only Monitor DTOs. Never expose arbitrary diagnostics or remote bodies. */
 import type { ExchangeAttempt, ExchangeEvent, ExchangeTransaction } from "./repository.js";
 const codes = new Set(["INVALID_SOURCE", "MAPPING_UNSUPPORTED", "PAYLOAD_INTEGRITY", "STORAGE_RECEIPT_MISSING",
@@ -12,7 +13,7 @@ function receipt(row: ExchangeTransaction, attempt: ExchangeAttempt) {
   const identity = record(fhir) && Array.isArray(fhir.identifier) ? fhir.identifier[0] : undefined;
   if (![200, 201].includes(attempt.httpStatus ?? 0) || attempt.phase !== "SEND" || attempt.errorCode !== null || attempt.endedAt === null || !record(value)
     || value.result !== (attempt.httpStatus === 201 ? "STORED" : attempt.httpStatus === 200 ? "ALREADY_EXISTS" : undefined)
-    || !record(identity) || identity.system !== "https://example.org/lis/result" || identity.value !== row.sourceResultId
+    || !record(identity) || identity.system !== FHIR_NAMESPACES.result || identity.value !== row.sourceResultId
     || value.external_system !== identity.system || value.external_id !== row.sourceResultId
     || typeof value.target_id !== "string" || !uuid.test(value.target_id)
     || typeof value.patient_key !== "string" || !uuid.test(value.patient_key)) return null;

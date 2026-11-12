@@ -19,6 +19,7 @@ fi
 OUT="$TN_DIR/ket-qua/$RUN_TAG"
 mkdir -p "$OUT/trang-thai"
 CHECKS="$OUT/kiem-tra.jsonl"          # mỗi dòng = 1 phép kiểm tra "kỳ vọng ↔ thực tế"
+source "$TN_DIR/checks-store.sh"
 
 # ---------- Địa chỉ dịch vụ và tài khoản DB ----------
 export LIS_BASE_URL=http://127.0.0.1:3101
@@ -33,7 +34,10 @@ export MIDDLEWARE_VERIFY_DATABASE_URL="$MIDDLEWARE_DATABASE_URL"
 export EMR_VERIFY_DATABASE_URL="$EMR_DATABASE_URL"
 export SPP82_EXPERIMENT_TARGET=lisexp-local
 
-ORACLE_DIR="$BACKEND/scripts/spp82/reference/spp65-v2"
+EXPERIMENT_REFERENCE_VERSION="${EXPERIMENT_REFERENCE_VERSION:-v3}"
+case "$EXPERIMENT_REFERENCE_VERSION" in v2|v3) ;; *) echo 'EXPERIMENT_REFERENCE_VERSION phải là v2 hoặc v3' >&2; exit 1 ;; esac
+export EXPERIMENT_REFERENCE_VERSION
+ORACLE_DIR="$BACKEND/scripts/spp82/reference/spp65-$EXPERIMENT_REFERENCE_VERSION"
 ORACLE="$ORACLE_DIR/manifest.json"
 ORACLE_SHA="$(cut -d' ' -f1 "$ORACLE_DIR/manifest.sha256")"
 TOKEN_FILE="$OUT/.isolation-token"
@@ -126,8 +130,10 @@ emr_post() { curl -s -w '\nHTTP %{http_code}\n' -X POST "$EMR_BASE_URL/api/obser
 check() {
   local scen="$1" id="$2" desc="$3" exp="$4" act="$5" verdict="${6:-}"
   if [ -z "$verdict" ]; then [ "$exp" = "$act" ] && verdict=DAT || verdict=KHONG_DAT; fi
-  jq -cn --arg s "$scen" --arg i "$id" --arg d "$desc" --arg e "$exp" --arg a "$act" --arg v "$verdict" --arg t "$(now_iso)" \
-     '{kich_ban:$s, ma:$i, mo_ta:$d, ky_vong:$e, thuc_te:$a, ket_qua:$v, luc:$t}' >> "$CHECKS"
+  local record
+  record=$(jq -cn --arg s "$scen" --arg i "$id" --arg d "$desc" --arg e "$exp" --arg a "$act" --arg v "$verdict" --arg t "$(now_iso)" \
+     '{kich_ban:$s, ma:$i, mo_ta:$d, ky_vong:$e, thuc_te:$a, ket_qua:$v, luc:$t}')
+  checks_append "$record"
   if [ "$verdict" = DAT ]; then log "  ✔ [$scen/$id] $desc → $act"; else log "  ✘ [$scen/$id] $desc → kỳ vọng: $exp | thực tế: $act"; fi
 }
 
@@ -139,7 +145,7 @@ step_begin() {
   now_iso > "$OUT/trang-thai/$STEP_NAME.dang-chay"
   log "===== BẮT ĐẦU: $STEP_NAME ====="
   # Không để kiểm tra cũ của chính bước này bị tính 2 lần khi chạy lại
-  if [ -f "$CHECKS" ]; then grep -v "\"kich_ban\":\"${2:-__none__}\"" "$CHECKS" > "$CHECKS.tmp" || true; mv "$CHECKS.tmp" "$CHECKS"; fi
+  checks_remove_scenario "${2:-__none__}"
 }
 step_end() {
   rm -f "$OUT/trang-thai/$STEP_NAME.dang-chay"

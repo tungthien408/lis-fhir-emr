@@ -1,0 +1,6 @@
+MUT-MW-ma-xn-ngoai-danh-muc | Mã xét nghiệm không có trong danh mục | HTTP 422 | middleware: (không tạo giao dịch)  | bản ghi EMR: 0
+MUT-MW-don-vi-khong-duoc-duyet | Đơn vị đo không thuộc danh sách được chấp nhận | HTTP 422 | middleware: (không tạo giao dịch)  | bản ghi EMR: 0
+MUT-MW-benh-nhan-khong-ton-tai | Mã bệnh nhân không tồn tại | HTTP 202 | middleware: REJECTED (REMOTE_VALIDATION_ERROR) | bản ghi EMR: 0
+MUT-MW-thieu-gia-tri | Thiếu giá trị xét nghiệm | HTTP 400 | middleware: (không tạo giao dịch)  | bản ghi EMR: 0
+MUT-MW-can-duoi-lon-hon-can-tren | Cận dưới lớn hơn cận trên | HTTP 422 | middleware: (không tạo giao dịch)  | bản ghi EMR: 0
+MUT-MW-chua-final | Kết quả chưa ở trạng thái FINAL | HTTP 422 | middleware: (không tạo giao dịch)  | bản ghi EMR: 0

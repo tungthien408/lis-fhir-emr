@@ -1,3 +1,16 @@
+# Bổ sung cho đợt sau sửa lỗi (12/11/2026)
+
+- Sau khi hoàn tất sửa/test sản phẩm, chạy lại protocol bên dưới với `RUN_TAG` mới.
+- Dùng `EXPERIMENT_REFERENCE_VERSION=v3` (mặc định); v2 chỉ dùng để đọc/đối chiếu đợt cũ.
+- Chạy `bash thuc-nghiem/tests/checks-store.test.sh` và `bash thuc-nghiem/tests/test-log.test.sh` trước đợt mới.
+- Bước 01 và 07 được chạy song song sau khi test khóa file đạt; không chạy chúng cùng các bước đo thời gian.
+- Validator được khóa ở 7.0.5 / FHIR 4.0.1; không tải bản latest hoặc bỏ qua lỗi URI.
+- E2 có thêm hai ca: đơn vị sai nhưng nhất quán và đơn vị sai không có cận; báo mẫu số thực tế.
+- Ghi `run-manifest.json`, giữ nguyên bằng chứng đợt cũ. Đóng gói bằng `PACK_GIT=0` khi không được yêu cầu commit.
+- Luật không sửa sản phẩm bên dưới áp dụng trong giai đoạn đo, sau khi sửa và test đã hoàn tất.
+
+---
+
 # Hướng dẫn chạy thực nghiệm – dành cho Claude Code
 
 > Người giao việc: Thiện (backend) – đang treo máy, **không có mặt để trả lời câu hỏi**.

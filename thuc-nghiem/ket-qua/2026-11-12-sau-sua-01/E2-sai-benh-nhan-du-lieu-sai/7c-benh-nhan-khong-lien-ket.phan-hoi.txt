@@ -1,0 +1,2 @@
+{"error":{"code":"PATIENT_NOT_LINKED","message":"No valid EMR patient link was found"}}
+HTTP 422

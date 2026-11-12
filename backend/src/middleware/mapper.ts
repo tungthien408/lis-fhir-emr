@@ -4,10 +4,11 @@
  * clock, UUID, HTTP or patient lookup. This type describes our output subset,
  * not every field/profile supported by the complete FHIR specification.
  */
+import { FHIR_NAMESPACES } from "../common/fhir-namespaces.js";
 import type { SourceSnapshot } from "./repository.js";
 
 /** Project-local mapping revision; NOT an HL7/FHIR release or resource version. */
-export const OBSERVATION_MAPPING_VERSION = "lis-observation-v1";
+export const OBSERVATION_MAPPING_VERSION = "lis-observation-v2";
 
 export type ObservationSourceSnapshot = Readonly<Pick<SourceSnapshot,
   "result_id" | "patient_id" | "test_code" | "test_name" | "value_num" | "unit" | "effective_at" | "result_status"
@@ -20,14 +21,14 @@ export type ObservationReferenceRange =
 
 export interface FhirR4LabObservation {
   resourceType: "Observation";
-  identifier: [{ system: "https://example.org/lis/result"; value: string }];
+  identifier: [{ system: typeof FHIR_NAMESPACES.result; value: string }];
   status: "final";
   category: [{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category"; code: "laboratory" }] }];
   code: {
-    coding: [{ system: "https://example.org/lis/test-code"; code: string; display: string }];
+    coding: [{ system: typeof FHIR_NAMESPACES.test; code: string; display: string }];
     text: string;
   };
-  subject: { type: "Patient"; identifier: { system: "https://example.org/lis/patient"; value: string } };
+  subject: { type: "Patient"; identifier: { system: typeof FHIR_NAMESPACES.patient; value: string } };
   effectiveDateTime: string;
   valueQuantity: ObservationQuantity;
   referenceRange?: [ObservationReferenceRange];
@@ -126,11 +127,11 @@ export function mapObservation(snapshot: ObservationSourceSnapshot): MapObservat
 
   const observation: FhirR4LabObservation = {
     resourceType: "Observation",
-    identifier: [{ system: "https://example.org/lis/result", value: snapshot.result_id }],
+    identifier: [{ system: FHIR_NAMESPACES.result, value: snapshot.result_id }],
     status: "final",
     category: [{ coding: [{ system: "http://terminology.hl7.org/CodeSystem/observation-category", code: "laboratory" }] }],
-    code: { coding: [{ system: "https://example.org/lis/test-code", code: snapshot.test_code, display: snapshot.test_name }], text },
-    subject: { type: "Patient", identifier: { system: "https://example.org/lis/patient", value: snapshot.patient_id } },
+    code: { coding: [{ system: FHIR_NAMESPACES.test, code: snapshot.test_code, display: snapshot.test_name }], text },
+    subject: { type: "Patient", identifier: { system: FHIR_NAMESPACES.patient, value: snapshot.patient_id } },
     effectiveDateTime: snapshot.effective_at,
     valueQuantity: { value: snapshot.value_num, unit: snapshot.unit },
   };

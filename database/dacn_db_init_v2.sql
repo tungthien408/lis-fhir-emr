@@ -357,14 +357,14 @@ BEGIN
 
     INSERT INTO lis.publish_events(event_id, result_id, source_system, source_snapshot,
                                    source_hash, dispatch_status)
-    VALUES (event_1, t, 'https://example.org/lis/result',
+    VALUES (event_1, t, 'urn:uuid:05934370-0df0-5666-8eff-bd5181906b62',
             jsonb_build_object('result_id', t), repeat('a', 64), 'PENDING');
 
     -- UNIQUE(result_id) makes a published result idempotent.
     BEGIN
         INSERT INTO lis.publish_events(event_id, result_id, source_system,
                                        source_snapshot, source_hash)
-        VALUES (gen_random_uuid(), t, 'https://example.org/lis/result',
+        VALUES (gen_random_uuid(), t, 'urn:uuid:05934370-0df0-5666-8eff-bd5181906b62',
                 jsonb_build_object('result_id', t), repeat('a', 64));
         RAISE EXCEPTION 'TEST FAILED: duplicate Publish accepted';
     EXCEPTION WHEN unique_violation THEN
@@ -374,12 +374,12 @@ BEGIN
     INSERT INTO emr.patients(patient_key, display_label)
     VALUES (patient_1, 'test one'), (patient_2, 'test two');
     INSERT INTO emr.patient_links(identifier_system, identifier_value, patient_key)
-    VALUES ('https://example.org/lis/patient', t, patient_1);
+    VALUES ('urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4', t, patient_1);
 
     -- The same external patient identity cannot point to another patient.
     BEGIN
         INSERT INTO emr.patient_links(identifier_system, identifier_value, patient_key)
-        VALUES ('https://example.org/lis/patient', t, patient_2);
+        VALUES ('urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4', t, patient_2);
         RAISE EXCEPTION 'TEST FAILED: ambiguous patient link accepted';
     EXCEPTION WHEN unique_violation THEN
         RAISE NOTICE 'PASS: EMR patient_links composite PK (one-to-one lookup per identifier)';
@@ -388,16 +388,16 @@ BEGIN
     INSERT INTO emr.lab_results(target_id, patient_key, external_system, external_id,
                                 analyte_system, analyte_code, quantity, unit_text,
                                 effective_at, clinical_status, fhir_json)
-    VALUES (gen_random_uuid(), patient_1, 'https://example.org/lis/result', t,
-            'https://example.org/lis/test-code', t, 0, 'mg/dL', now(), 'final', '{}'::jsonb);
+    VALUES (gen_random_uuid(), patient_1, 'urn:uuid:05934370-0df0-5666-8eff-bd5181906b62', t,
+            'urn:uuid:cb8ffc71-ef38-58d2-ba65-0bf0232d5d02', t, 0, 'mg/dL', now(), 'final', '{}'::jsonb);
 
     -- UNIQUE(external_system, external_id) protects against duplicate result storage.
     BEGIN
         INSERT INTO emr.lab_results(target_id, patient_key, external_system, external_id,
                                     analyte_system, analyte_code, quantity, unit_text,
                                     effective_at, clinical_status, fhir_json)
-        VALUES (gen_random_uuid(), patient_1, 'https://example.org/lis/result', t,
-                'https://example.org/lis/test-code', t, 99, 'mg/dL', now(), 'final', '{}'::jsonb);
+        VALUES (gen_random_uuid(), patient_1, 'urn:uuid:05934370-0df0-5666-8eff-bd5181906b62', t,
+                'urn:uuid:cb8ffc71-ef38-58d2-ba65-0bf0232d5d02', t, 99, 'mg/dL', now(), 'final', '{}'::jsonb);
         RAISE EXCEPTION 'TEST FAILED: duplicate EMR source result accepted';
     EXCEPTION WHEN unique_violation THEN
         RAISE NOTICE 'PASS: EMR lab_results(external_system, external_id) UNIQUE';
@@ -407,13 +407,13 @@ BEGIN
     INSERT INTO integration.exchange_transactions (
         exchange_id, event_id, source_system, source_result_id, source_payload, source_hash
     ) VALUES (
-        exchange_1, event_1, 'https://example.org/lis/result', t,
+        exchange_1, event_1, 'urn:uuid:05934370-0df0-5666-8eff-bd5181906b62', t,
         jsonb_build_object('result_id', t), repeat('a', 64)
     );
     INSERT INTO integration.exchange_transactions (
         exchange_id, event_id, source_system, source_result_id, source_payload, source_hash
     ) VALUES (
-        exchange_2, gen_random_uuid(), 'https://example.org/lis/result', t || '_other',
+        exchange_2, gen_random_uuid(), 'urn:uuid:05934370-0df0-5666-8eff-bd5181906b62', t || '_other',
         '{}'::jsonb, repeat('b', 64)
     );
 
@@ -433,7 +433,7 @@ BEGIN
         INSERT INTO integration.exchange_transactions (
             exchange_id, event_id, source_system, source_result_id, source_payload, source_hash
         ) VALUES (
-            gen_random_uuid(), gen_random_uuid(), 'https://example.org/lis/result', t,
+            gen_random_uuid(), gen_random_uuid(), 'urn:uuid:05934370-0df0-5666-8eff-bd5181906b62', t,
             '{}'::jsonb, repeat('c', 64)
         );
         RAISE EXCEPTION 'TEST FAILED: duplicate integration source key accepted';

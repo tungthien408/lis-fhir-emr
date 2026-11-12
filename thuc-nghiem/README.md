@@ -66,3 +66,12 @@ Mọi script chạy từ thư mục gốc repo, chạy lại an toàn:
 `bash thuc-nghiem/<số>-<tên>.sh` – nhật ký ở `ket-qua/<ngày>/nhat-ky-chay.log`, trạng thái ở `ket-qua/<ngày>/trang-thai/`.
 Muốn chạy một đợt mới hoàn toàn: `RUN_TAG=2026-11-13 bash thuc-nghiem/00-kiem-tra-truoc.sh` (và đặt cùng `RUN_TAG` cho các bước sau),
 hoặc xóa file `thuc-nghiem/ket-qua/.run-tag`.
+
+
+## Chạy lại sau sửa lỗi
+
+Dùng `RUN_TAG` mới cho toàn bộ lệnh, cùng `EXPERIMENT_REFERENCE_VERSION=v3`.
+Trước khi đo, chạy hai test trong `thuc-nghiem/tests/`. Đợt mới có `run-manifest.json`
+ghi fingerprint mã nguồn, namespace, catalog và bộ đáp án. Bước 07 dùng đúng HL7 validator
+7.0.5 và thử một file trước. Dùng `PACK_GIT=0 bash thuc-nghiem/09-dong-goi.sh` để
+đóng gói mà không chuyển nhánh, stage hoặc commit. Không sửa thư mục kết quả ngày 11/11.

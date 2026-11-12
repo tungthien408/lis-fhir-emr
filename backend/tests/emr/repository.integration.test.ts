@@ -42,7 +42,7 @@ test("EMR Repository integration (disposable PostgreSQL)", {
   }
   await db.insert(patients).values(patientKeys.map((patientKey) => ({ patientKey, displayLabel: "C1 synthetic only" })));
   await db.insert(patientLinks).values([
-    { identifierSystem: "https://example.org/lis/patient", identifierValue: "C1-SYNTHETIC-P", patientKey: patientKeys[0] },
+    { identifierSystem: "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4", identifierValue: "C1-SYNTHETIC-P", patientKey: patientKeys[0] },
     { identifierSystem: "urn:c1:other", identifierValue: "C1-SYNTHETIC-P", patientKey: patientKeys[1] },
     { identifierSystem: "urn:c1:quotes'", identifierValue: "value' OR '1'='1", patientKey: patientKeys[1] },
   ]);
@@ -50,12 +50,12 @@ test("EMR Repository integration (disposable PostgreSQL)", {
   const read = (value: ReturnType<typeof input>) => repository.getLabResultsBySource(value.externalSystem, value.externalId);
 
   await t.test("exact link uses both namespace and value; never infers identity from display", async () => {
-    assert.equal(await repository.getPatientKeyByIdentifier("https://example.org/lis/patient", "C1-SYNTHETIC-P"), patientKeys[0]);
+    assert.equal(await repository.getPatientKeyByIdentifier("urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4", "C1-SYNTHETIC-P"), patientKeys[0]);
     assert.equal(await repository.getPatientKeyByIdentifier("urn:c1:other", "C1-SYNTHETIC-P"), patientKeys[1]);
     for (const [system, value] of [
-      ["missing", "C1-SYNTHETIC-P"], ["https://example.org/lis/patient", "missing"],
-      ["https://example.org/lis/patient", "C1 synthetic only"],
-      ["https://example.org/lis/patient", "c1-synthetic-p"],
+      ["missing", "C1-SYNTHETIC-P"], ["urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4", "missing"],
+      ["urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4", "C1 synthetic only"],
+      ["urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4", "c1-synthetic-p"],
     ]) assert.equal(await repository.getPatientKeyByIdentifier(system, value), undefined);
     assert.equal(await repository.getPatientKeyByIdentifier("urn:c1:quotes'", "value' OR '1'='1"), patientKeys[1]);
     assert.equal((await db.select({ total: count() }).from(patients))[0].total, 2);

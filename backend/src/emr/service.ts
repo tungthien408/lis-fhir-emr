@@ -3,13 +3,9 @@ import { randomUUID } from "node:crypto";
 import { canonicalJson } from "./canonical-json.js";
 import * as labRepository from "./repository.js";
 import type { LabResult } from "./repository.js";
+import { FHIR_NAMESPACES as namespaces } from "../common/fhir-namespaces.js";
+import { testUnitIssue } from "../common/test-catalog.js";
 
-const namespaces = {
-  result: "https://example.org/lis/result",
-  patient: "https://example.org/lis/patient",
-  test: "https://example.org/lis/test-code",
-  category: "http://terminology.hl7.org/CodeSystem/observation-category",
-} as const;
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 type Quantity = { value: number; unit: string };
 
@@ -153,6 +149,11 @@ export function validateObservation(input: unknown):
         if (bound && bound.unit !== result.unit) invalid("referenceRange", "Reference units must exactly match valueQuantity.unit");
       }
       if (low && high && low.value > high.value) invalid("referenceRange", "Reference low exceeds reference high");
+    }
+    const catalogIssue = testUnitIssue(coding.code as string, result.unit);
+    if (catalogIssue) {
+      invalid(catalogIssue === "INVALID_TEST_CODE" ? "code.coding[0].code" : "valueQuantity.unit",
+        "The test code and unit must belong to the supported catalog");
     }
     return { kind: "valid", observation: observation as SupportedObservation };
   } catch (error) {

@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "tool_version": "spp82-independent-verification-v1",
+  "run_id": "bb1d7e4c-960b-45e9-8e40-6cfec7789526",
+  "oracle_manifest_sha256": "5d7da4f5767be864a75a459f3c1c6d52cdc84f44fa76824a3c5aaf70616fcaae",
+  "simulated": false,
+  "input_checksums": {
+    "run_manifest": "df8d2ac76b4ea47116ecc1f8d4b504ca97c8a61e0a0f50f76013079ebf0c5651",
+    "per_result_jsonl": "d446ed9b189733e66af69cb114f2f46b581a051754bdbb2e4d05211b1403e11b",
+    "after": "06a4f1bafe4bf2474e9409008fa7bb9e5bc0005331cdffc9f1fd2be725249364",
+    "before": "6369df156de2c2c2da69ccb4df94e82cd8a97d41e7896c43f1626265db452feb"
+  },
+  "total_expected_results": 1000,
+  "total_observed_results": 1000,
+  "observed_namespace_rows": 1000,
+  "matched_result_count": 1000,
+  "match_rate": 1,
+  "missing_result_count": 0,
+  "duplicate_result_count": 0,
+  "source_cardinality_failure_count": 0,
+  "wrong_patient_linkage_count": 0,
+  "field_mismatch_result_count": 0,
+  "stale_result_count": 0,
+  "reused_target_count": 0,
+  "unverified_result_count": 0,
+  "failed_result_count": 0,
+  "unexpected_extra_result_count": 0,
+  "unexpected_extra_source_count": 0,
+  "unexpected_extra_exchange_count": 0,
+  "outcome": "PASS",
+  "per_field": {
+    "SCOPE:evidence.after_scope": {
+      "PASS": 1,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "SCOPE:evidence.before_scope": {
+      "PASS": 1,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "SCOPE:run.selected_ids": {
+      "PASS": 1,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "SCOPE:lis_results.unexpected_extras": {
+      "PASS": 1,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "SCOPE:exchanges.unexpected_extras": {
+      "PASS": 1,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "SCOPE:emr_results.unexpected_extras": {
+      "PASS": 1,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "CARDINALITY:lis.count": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "CARDINALITY:exchange.count": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "CARDINALITY:emr.count": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR01:result_id": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR01:external_system": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR01:source_labevent_id": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR01:seed_tag": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR02:patient.identifier.value": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR02:patient.identifier.system": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR02:patient.subject_type": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR02:patient_link.count": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR02:patient_key": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR02:emr_patient.exists": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR03:test.code": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR03:test.system": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR03:test.display": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR04:quantity": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR05:unit": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR06:reference.low": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR06:reference.high": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR07:effective_at": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR08:source_status": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR08:clinical_status": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR09:context": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR09:source.fluid": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR09:source.category": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "MR09:laboratory.category": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "FHIR:fhir.supported_structure": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "PIPELINE:middleware.status": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "CARDINALITY:target_id.unique": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    },
+    "RUN:current_run.attribution": {
+      "PASS": 1000,
+      "FAIL": 0,
+      "NOT_VERIFIED": 0
+    }
+  },
+  "limitations": [
+    "Original manifest_1000.csv and upstream lock checksum were not found in available handoff.",
+    "This is a local reference freeze, not SPP-65 owner sign-off.",
+    "Raw charttime has no timezone: UTC and FINAL are declared project assumptions.",
+    "V3 changes only five namespace columns; clinical answers and source identities are inherited from v2 and rechecked against raw CSV.",
+    "Snapshots are repeatable-read per service, not one simultaneous cross-service snapshot.",
+    "Current-run proof assumes an approved isolated harness with no competing writer for selected identities."
+  ]
+}

@@ -48,14 +48,14 @@ async function assertDelivered(c: D3Scenario) {
   assert.equal(exchange.status, "DELIVERED"); assert.equal(exchange.lease_token, null); assert.equal(exchange.lease_until, null);
   assert.equal(exchange.next_retry_at, null); assert.equal(exchange.retry_phase, null);
   assert.deepEqual(exchange.fhir_payload, c.observation); assert.equal(exchange.payload_hash, digest(c.observation));
-  assert.equal(exchange.mapping_version, "lis-observation-v1"); assert.deepEqual(exchange.patient_identifier, c.observation.subject.identifier);
+  assert.equal(exchange.mapping_version, "lis-observation-v2"); assert.deepEqual(exchange.patient_identifier, c.observation.subject.identifier);
   const stored = one(state.emr.results, "EMR result");
   for (const [name, expected] of Object.entries(c.columns)) assert.equal(stored[name], expected, name);
   assert.deepEqual(stored.fhir_json, c.observation); assert.equal(stored.patient_key, c.patientKey);
   assert.notEqual(stored.patient_key, c.decoyKey); assert.match(field(stored, "target_id"), /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/);
   const resolved = one(state.emr.patients.filter((patient) => patient.patient_key === stored.patient_key), "independently seeded patient");
   assert.equal(resolved.display_label, c.expectedPatientLabel);
-  const link = one(state.emr.links.filter((row) => row.identifier_system === "https://example.org/lis/patient" && row.identifier_value === c.patientId), "exact patient link");
+  const link = one(state.emr.links.filter((row) => row.identifier_system === "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4" && row.identifier_value === c.patientId), "exact patient link");
   assert.equal(link.patient_key, resolved.patient_key);
   assert.deepEqual(state.middleware.attempts.map((row) => [row.phase, row.attempt_no, row.http_status, row.error_code]),
     [["SEND", 1, 201, null], ["VERIFY", 1, 200, null]]);

@@ -1,0 +1,34 @@
+[
+  {
+    "boundary": "middleware",
+    "test_code": "99999",
+    "unit": "mg/dL",
+    "kind": "valid",
+    "error": null
+  },
+  {
+    "boundary": "middleware",
+    "test_code": "50912",
+    "unit": "kg",
+    "kind": "valid",
+    "error": null
+  },
+  {
+    "boundary": "emr",
+    "mode": "unknown-code",
+    "kind": "valid",
+    "error": null
+  },
+  {
+    "boundary": "emr",
+    "mode": "all-kg",
+    "kind": "valid",
+    "error": null
+  },
+  {
+    "boundary": "emr",
+    "mode": "kg-without-range",
+    "kind": "valid",
+    "error": null
+  }
+]

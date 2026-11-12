@@ -12,15 +12,17 @@ S=AUTO
 
 log "Chạy toàn bộ test tự động (npm run test:repositories:postgres)…"
 rc=0; (cd "$BACKEND" && npm run test:repositories:postgres) > "$D/log-day-du.txt" 2>&1 || rc=$?
-sum_of() { grep -E "^(# |ℹ )$1 [0-9]+" "$D/log-day-du.txt" | awk '{s+=$3} END{print s+0}'; }
+source "$TN_DIR/test-log.sh"
+sum_of() { test_sum "$D/log-day-du.txt" "$1"; }
 tests=$(sum_of tests); pass=$(sum_of pass); failn=$(sum_of fail); skipped=$(sum_of skipped)
 printf 'Tổng số test: %s\nĐạt: %s\nKhông đạt: %s\nBỏ qua: %s\nMã thoát: %s\n' "$tests" "$pass" "$failn" "$skipped" "$rc" > "$D/tom-tat.txt"
-check $S "AUTO-TONG" "Bộ test tự động: số test không đạt" "0" "$failn"
+verdict=KHONG_DAT; test_run_passed "$rc" "$tests" "$failn" && verdict=DAT
+check $S "AUTO-TONG" "Bộ test tự động: mã thoát 0 và không có test không đạt" "mã thoát 0, không đạt 0" "mã thoát $rc, không đạt $failn" "$verdict"
 check $S "AUTO-SO-TEST" "Bộ test tự động: có chạy test (tổng số > 0)" "có" "$([ "$tests" -gt 0 ] && echo có || echo không)"
 
 # Các test làm minh chứng cho TC06, TC07 (và các ca liên quan)
 # Node dùng reporter "spec": dòng test đạt bắt đầu bằng ✔, không đạt bằng ✖ → đổi về dạng "ok - …"/"not ok - …" để các lệnh đếm bên dưới dùng lại.
-pick() { grep -E "^[[:space:]]*(✔|✖) .*($1)" "$D/log-day-du.txt" | sed -E 's/^[[:space:]]*✔ /ok - /; s/^[[:space:]]*✖ /not ok - /' | sort -u; }
+pick() { test_pick "$D/log-day-du.txt" "$1"; }
 {
   echo "### TC06 – EMR đã lưu nhưng phản hồi bị mất / gửi lại an toàn"
   pick 'POST timeout AFTER storage|ALREADY_EXISTS|D3-05|C4-02'

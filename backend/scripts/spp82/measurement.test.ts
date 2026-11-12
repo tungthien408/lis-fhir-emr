@@ -65,7 +65,7 @@ test('B: full completion requires ACK, DELIVERED, strict read-back and correct i
   assert.equal(result.rows[0].outcome, 'completed');
   assert.ok(completionLatency(result.rows[0])! >= 2);
   const query = new URL(env.urls.find((url) => url.includes('lab-results'))!).searchParams;
-  assert.equal(query.get('external_system'), 'https://example.org/lis/result');
+  assert.equal(query.get('external_system'), 'urn:uuid:05934370-0df0-5666-8eff-bd5181906b62');
   assert.equal(query.get('external_id'), env.f.resultId);
   assert.deepEqual(calculateMetrics(result.manifest, replayJsonl(result.journal)), result.metrics);
   assert.equal(result.rows[0].observations.find((o) => o.stage === 'middleware')!.verify_attempt_count, 3);
