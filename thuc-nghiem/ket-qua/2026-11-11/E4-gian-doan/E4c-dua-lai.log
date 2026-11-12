@@ -1,0 +1,30 @@
+(node:1183774) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"target":"middleware","result_id":"MIMIC-LAB-101859","action":"REQUEUED","phase":"SEND","attempts_used":4,"budget":7}
+(node:1183809) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"target":"middleware","result_id":"MIMIC-LAB-101871","action":"REQUEUED","phase":"SEND","attempts_used":4,"budget":7}
+(node:1183827) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"target":"middleware","result_id":"MIMIC-LAB-101875","action":"REQUEUED","phase":"SEND","attempts_used":4,"budget":7}
+(node:1183845) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"target":"middleware","result_id":"MIMIC-LAB-101879","action":"REQUEUED","phase":"SEND","attempts_used":4,"budget":7}
+(node:1183859) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"target":"middleware","result_id":"MIMIC-LAB-101897","action":"REQUEUED","phase":"SEND","attempts_used":4,"budget":7}
+(node:1183873) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"target":"middleware","result_id":"MIMIC-LAB-101901","action":"REQUEUED","phase":"SEND","attempts_used":4,"budget":7}
+(node:1183887) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"target":"middleware","result_id":"MIMIC-LAB-101905","action":"REQUEUED","phase":"SEND","attempts_used":4,"budget":7}
+(node:1183901) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"target":"middleware","result_id":"MIMIC-LAB-101914","action":"REQUEUED","phase":"SEND","attempts_used":4,"budget":7}
+(node:1183915) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"target":"middleware","result_id":"MIMIC-LAB-102431","action":"REQUEUED","phase":"SEND","attempts_used":4,"budget":7}
+(node:1183929) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"target":"middleware","result_id":"MIMIC-LAB-102453","action":"REQUEUED","phase":"SEND","attempts_used":4,"budget":7}

@@ -1,0 +1,2 @@
+{"error":{"code":"VALIDATION_ERROR","message":"A finite JSON number is required; numeric strings are not accepted"}}
+HTTP 422

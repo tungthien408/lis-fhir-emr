@@ -1,0 +1,669 @@
+FHIR Validation tool Version 7.0.5 (Git# 17db3661806b). Built 2026-11-05T23:27:05.236Z (6 days old)
+  Java:   27.0.1.0.3 from /usr/lib/jvm/java-27-openjdk on amd64 (64bit). 3912MB available
+  Paths:  Current = /home/thien408/Projects/2026-2027/dacn/lis-fhir-emr, Package Cache = /home/thien408/.fhir/packages
+  Params: -help
+Usage: <main class> [-h] [-allow-double-quotes-in-fhirpath]
+                    [-assumeValidRestReferences]
+                    [-authorise-non-conformant-tx-servers] [-check-references]
+                    [-clear-tx-cache] [-disable-default-resource-fetcher]
+                    [-display-issues-are-warnings] [-do-debug]
+                    [-forPublication] [-hintAboutNonMustSupport]
+                    [-implicit-fhirpath-string-conversions] [-native]
+                    [-no-experimental-content]
+                    [-no-extensible-binding-warnings] [-no-http-access]
+                    [-no-internal-caching] [-no-invariants]
+                    [-no_unicode_bidi_control_chars] [-recurse]
+                    [-security-checks] [-show-message-ids] [-show-times]
+                    [-showReferenceMessages] [-tx-routing]
+                    [-unknown-codesystems-cause-errors] [-verbose]
+                    [-want-invariants-in-messages] [-allow-example-urls
+                    [=<allowExampleUrls>]] [-advisor-file=<advisorFile>]
+                    [-ai-service=<aiService>] [-auth=<proxyAuth>]
+                    [-best-practice=<bestPracticeLevel>]
+                    [-check-display=<checkDisplay>]
+                    [-codesystem-validation-size-limit=<codeSystemValidationSize
+                    Limit>] [-debug-log=<debugLog>] [-ecosystem=<ecosystem>]
+                    [-expansion-parameters=<expansionParameters>]
+                    [-fhir-settings=<fhirSettingsFilePath>]
+                    [-html-in-markdown=<htmlInMarkdownCheck>]
+                    [-html-output=<htmlOutput>] [-https-proxy=<httpsProxy>]
+                    [-jurisdiction=<jurisdiction>] [-language=<lang>]
+                    [-level=<level>] [-locale=<locale>] [-log=<mapLog>]
+                    [-max-validation-messages=<maxValidationMessages>]
+                    [-output=<output>] [-output-style=<outputStyle>]
+                    [-po-dir=<poDirectory>]
+                    [-po-stale-handling=<staleHandling>] [-proxy=<proxy>]
+                    [-questionnaire=<questionnaireMode>]
+                    [-r5-bundle-relative-reference-policy=<r5BundleRelativeRefer
+                    encePolicy>] [-resolution-context=<resolutionContext>]
+                    [-resource-id-rule=<resourceIdRule>] [-sct=<snomedCT>]
+                    [-ssrf-protection-enabled=<ssrfProtectionEnabled>]
+                    [-trace-log=<traceLog>] [-tx=<txServer>]
+                    [-txCache=<txCache>] [-txLog=<txLog>]
+                    [-validation-timeout=<validationTimeout>]
+                    [-version=<fhirVersion>] [-watch-mode=<watchMode>]
+                    [-watch-scan-delay=<watchScanDelay>]
+                    [-watch-settle-time=<watchSettleTime>]
+                    [-cert=<certSources>]... [-extension=<extensions>]...
+                    [-ig=<igs>]... [-launch-context=<launchContexts>]...
+                    [-matchetype=<matchetypes>]... [-po=<poFiles>]...
+                    [-profile=<profiles>]... [-usage=<usages>]...
+                    [-bundle=<bundleValidationRules>
+                    <bundleValidationRules>]... [<whatToValidate>...] [COMMAND]
+
+The FHIR validation tool validates a FHIR resource or bundle.
+
+The validation tool compares a resource against the base definitions and any
+profiles declared in the resource (Resource.meta.profile) or specified on the
+command line
+
+The FHIR validation tool validates a FHIR resource or bundle. Syntax and
+content is checked against the specification and other profiles as specified.
+
+ * XML & Json (FHIR versions {{XML_AND_JSON_FHIR_VERSIONS}})
+ * Turtle (FHIR versions {{TURTLE_FHIR_VERSIONS}})
+
+If requested, instances will also be verified against the appropriate schema
+W3C XML Schema, JSON schema or ShEx, as appropriate
+
+      [<whatToValidate>...]  The input file(s) to validate.
+  -h, -?, -help              Display this help and exit
+      -output=<output>       An output file for the results. Results will be
+                               represented as an OperationOutcome. +
+                             By default results are sent to the std out.
+
+Validation Engine Options
+      -advisor-file=<advisorFile>
+                             Path to advisor file (.json or .txt)
+      -ai-service=<aiService>
+                             An AI service to use to inspect code/text pairs.
+                               Available options: claude, chatgpt, and ollama
+                              * claude: Anthropic's Claude-AI. You need to
+                               provide your own API key sourced from anthropic
+                               in the fhir-settings.json file using a header
+                               with the name 'x-api-key'
+                              * chatgpt: OpenAI's ChatGPT. You need to provide
+                               your own API key sourced from anthropic in the
+                               fhir-settings.json file using a standard token
+                              * ollama: Open Source Ollama. With ollama, you
+                               can choose where you host the service. If it's
+                               running locally on the default port, just use
+                               'ollama'. If you are running locally on a
+                               different port, use 'ollama:{port}'. If the
+                               service is anywhere else, use 'ollama:{url}'.
+                               You can append #{model} to any of those if the
+                               model is different to llama3.2
+
+      -cert=<certSources>    A file that contains a public key, or a folder
+                               full of public keys to be used for validating
+                               digital signatures.
+                             Supports the formats jwks, PEM, and der
+
+      -check-references      Check references to other resources when validating
+      -clear-tx-cache        Clear the terminology cache before validation
+      -disable-default-resource-fetcher
+                             Disable the default resource fetcher
+      -display-issues-are-warnings
+                             Treat display validation issues as warnings
+      -do-debug              Enable debug mode
+      -ecosystem=<ecosystem> Terminology ecosystem coordination server URL (the
+                               tx-reg registry the validator consults to find
+                             which terminology server is authoritative for a
+                               code system or value set). To run without the
+                             ecosystem, specify 'n/a' as the URL. By default
+                               'https://ecosystem.hl7.org/tx-reg' will be used
+                             when -tx is not specified; -tx n/a turns the
+                               ecosystem off too.
+                             When both -tx and -ecosystem are specified, the
+                               server nominated with -tx is used in place of
+                             tx.fhir.org wherever the ecosystem would refer to
+                               it.
+
+      -ig, -defn=<igs>       [package|file|folder|url]: an IG or profile
+                               definition to load.
+                             Can be the URL of an implementation guide or a
+                               package ([id]-[ver]) for a built implementation
+                               guide or a local folder that contains a set of
+                               conformance resources.
+                             If you would like to load the latest unreleased
+                               version of the implementation guide or package,
+                               please define the version as '#current'.
+                             If no version is provided, the latest version in
+                               the package cache will be used, or if no such
+                               cached package is available, the
+                               PackageCacheManager will load the latest from
+                               the the online package repo.
+                             If you want the implementation guide to be loaded
+                               for a specific version of FHIR, you can prefix
+                               the IG with the appropriate version in square
+                               brackets ([[fhirVer]][id]-[igVer]).
+
+      -language=<lang>       The language to use when validating coding
+                               displays - same value as for xml:lang
+                             Not used if the resource specifies language
+                             Default: no specified language
+
+      -log=<mapLog>          File path for map transformation log
+      -matchetype=<matchetypes>
+                             File path for matchetype to compare with
+      -native                Use native validation:
+                              * XML: W3C schema+schematron
+                              * JSON: json.schema
+                              * RDF: SHEX
+
+      -no-extensible-binding-warnings
+                             Do not show warnings for extensible binding
+                               validations
+      -no-internal-caching   Do not use internal caching during validation
+      -recurse               Look in subfolders when -ig refers to a folder
+      -resolution-context=<resolutionContext>
+                             Resolution context for package resolution
+      -sct=<snomedCT>        Specify the edition of SNOMED CT to use. Valid
+                               choices: intl | us | uk | au | nl | ca | se | dk
+                               | es
+                             tx.fhir.org only supports a subset. To add to this
+                               list or tx.fhir.org, ask on https://chat.fhir.
+                               org/#narrow/stream/179202-terminology
+
+      -show-times            Show timing information for validation operations
+      -tx=<txServer>         Terminology server URL. To run without
+                               terminology, specify 'n/a' as the URL
+                             By default 'https://tx.fhir.org' will be used.
+                             Nominating a server here turns the terminology
+                               ecosystem off, so that all terminology
+                             requests go to that server - use -ecosystem as
+                               well to keep the ecosystem on.
+
+      -txCache=<txCache>     Path to a directory to be used to cache
+                               terminology server responses. The validator will
+                               attempt to create the folder if it needs to.
+                             To run without a terminology case, specify 'n/a'
+                               as the value
+
+      -txLog=<txLog>         Produce a log of the terminology server operations
+                               in [file]
+                             If not set, no log will be produced.
+
+      -version=<fhirVersion> Version of FHIR.
+                             Valid values are: 1.0, 1.4, 3.0, 4.0, 5.0, 6.0,
+                               1.0.2, 1.4.0, 3.0.2, 4.0.1, 4.1.0, 4.3.0, 5.0.0,
+                               6.0.0
+                             Default is 5.0
+
+Translation Override Options
+      -po=<poFiles>          Load translations from a .po file at runtime
+                               (overrides the shipped properties for that
+                               bundle+locale). Repeatable. Filename must follow
+                               the project convention, e.g.
+                               validator-messages-de.po or
+                               rendering-phrases-pt_BR.po.
+      -po-dir=<poDirectory>  Load every .po file under the given directory at
+                               runtime. Same naming convention as -po.
+      -po-stale-handling=<staleHandling>
+                             How to treat translations whose English source has
+                               drifted from the shipped jar. include (default,
+                               matches the maintainer's import): keep them.
+                               exclude: drop them so English is shown. warn:
+                               keep them and log the affected keys.
+Watch Mode Options
+      -watch-mode=<watchMode>
+                             Specify that the validator remain running and
+                               re-validate when any of the validated files
+                               changes.
+                             Valid values:
+                             * none (default - don't wait, just stop when
+                               finished)
+                             * single (when any of the validated files changes,
+                               re-validate it)
+                             * all (when any of the validated files change,
+                               re-validate all of them)
+                             ll is useful when the content includes internal
+                               dependencies e.g.
+                                    a profile and it's value sets.
+                             The validator has to be terminated with ctrl-c etc
+                               in this mode.
+
+      -watch-scan-delay=<watchScanDelay>
+                             Control how often the validator looks at the
+                               content to decide to run again (in
+                               milliseconds). Default: 1000
+      -watch-settle-time=<watchSettleTime>
+                             Control how long the validator waits before seeing
+                               a change, and revalidating (in milliseconds).
+                               Default: 100
+Terminology Client Options
+      -authorise-non-conformant-tx-servers
+
+Instance Validator Options
+      -allow-double-quotes-in-fhirpath
+                             Support legacy FHIRPath statements that include
+                               double quotes: ""
+      -allow-example-urls[=<allowExampleUrls>]
+                             Allow references to example.org URLs in resources
+                               to be treated as valid
+      -assumeValidRestReferences
+                             If present, assume that URLs that reference
+                               resources follow the RESTful URI pattern and it
+                               is safe to infer the type from the URL
+      -best-practice=<bestPracticeLevel>
+                               How to treat best practice constraints (ignore,
+                               hint, warning, error)
+                               Default is warning
+
+      -bundle=<bundleValidationRules> <bundleValidationRules>
+                             Validate a specific resource in a bundle against a
+                               profile. This option accepts two arguments:
+                               -bundle <rule> <profile>
+                             * <rule> either a Resource name, a integer index,
+                               or both
+                             * <profile> the canonical URL of the profile
+
+      -check-display=<checkDisplay>
+                               How to validate the display text on coded
+                               elements (Coding, CodeableConcept).
+                                          * Ignore (default): display text is
+                               not checked
+                                          * Check: display must exactly match
+                               the code system's canonical text
+                                          * CheckCase: match ignoring case
+                               differences
+                                          * CheckSpace: match ignoring
+                               whitespace differences
+                                          * CheckCaseAndSpace: match ignoring
+                               both case and whitespace differences
+
+      -codesystem-validation-size-limit=<codeSystemValidationSizeLimit>
+                             The maximum number of codes that will be checked
+                               against a code system for a single ValueSet
+                               include, ConceptMap group, or CodeSystem
+                               supplement (default 1000).
+                             Checking a code costs a terminology server round
+                               trip, so where a resource carries more codes
+                               than this, none of them are checked and a hint
+                               is issued instead.
+                             Use 0 for no limit.
+
+      -expansion-parameters=<expansionParameters>
+                             Specifies the expansion parameters to use - this
+                               can supply fixed versions for code systems and
+                               value sets
+      -extension=<extensions>
+                             URL domain from which extensions will be allowed,
+                               or 'any' for all. Can repeat multiple times.
+      -forPublication        Setting this flag means that the validator
+                               automatically checks conformance with the
+                               Shareable* profiles
+      -hintAboutNonMustSupport
+                             If present, raise hints if the instance contains
+                               data elements that are not marked as
+                               mustSupport=true. Useful to identify elements
+                               included that may be ignored by recipients
+      -html-in-markdown=<htmlInMarkdownCheck>
+                             Issue level reported for embedded HTML in resource
+                               markdown (ignore, warning, error)
+      -html-output=<htmlOutput>
+                             A filename for the HTML presentation of the
+                               outcomes of the validation
+      -implicit-fhirpath-string-conversions
+                             Restore pre-5.6.48 FHIRPath behavior regarding
+                               automatic string conversions
+      -jurisdiction=<jurisdiction>
+                             Specifies the jurisdiction to validate in. If you
+                               want to use no specific jurisdiction, use the
+                               values 'uv' or 'global'
+      -launch-context=<launchContexts>
+                             A launch context to make available to
+                               Questionnaire processing, as name:reference.
+                               Where a questionnaire variable is not resolved
+                               from the questionnaire or the resource being
+                               validated, it can fall back to a launch context
+                               with the same name.
+                             The name is the one the Questionnaire declares in
+                               its launchContext, e.g. patient or user. The
+                               reference is a relative or absolute file name,
+                               or an absolute URL that can be dereferenced:
+                               * -launch-context patient:patient-example.json
+                               * -launch-context user:http://example.
+                               org/fhir/Practitioner/1
+                             Can repeat multiple times.
+
+      -level=<level>         Minimum level for validation messages (hints,
+                               warnings, errors)
+      -max-validation-messages=<maxValidationMessages>
+                             The maximum amount of validation messages allowed
+                               before validation will be stopped. Any issues
+                               encountered at this point will be returned. See
+                               notes regarding accuracy for these results at
+                               https://confluence.hl7.
+                               org/spaces/FHIR/pages/35718580/Using+the+FHIR+Val
+                               idator
+      -no-experimental-content
+                             Reject experimental content in validation
+      -no-invariants         Tell the validator to ignore all invariants
+      -no_unicode_bidi_control_chars
+                             Make the validator produce an error for any BiDi
+                               control characters
+      -output-style=<outputStyle>
+                             Output style format (eslint-compact, csv, xml,
+                               json, compact, compact-split)
+      -profile=<profiles>    A canonical URL to validate against (same as if it
+                               was specified in Resource.meta.profile). If no
+                               profile is specified, the resource is validated
+                               against the base specification. Multiple
+                               profiles can be used.
+                             Note: a profile (and it's dependencies) have to be
+                               made available through one of the -ig
+                               parameters. Package dependencies will
+                               automatically be resolved
+
+      -questionnaire=<questionnaireMode>
+                             What to do when validating QuestionnaireResponse
+                               resources (none, check, required)
+                                * none (default): just ignore the questionnaire
+                               reference
+                                * required: check that the
+                               QuestionnaireResponse has a questionnaire and
+                                  validate against it
+                                * check: if the QuestionnaireResponse has a
+                               questionnaire, validate
+                                  against it
+                             The questionnaire must be loaded using the -ig
+                               parameter which specifies the location of a
+                               questionnaire. If provided, then the validator
+                               will validate any QuestionnaireResponse that
+                               claims to match the Questionnaire against it no
+                               default value.
+
+      -r5-bundle-relative-reference-policy=<r5BundleRelativeReferencePolicy>
+                             Control R5 bundle resolution policy (always,
+                               never, default)
+                                 * always - always apply the rule irrespective
+                               of version
+                                 * never - never apply this rule irrespective
+                               of version
+                                 * default - the default behaviour: apply this
+                               rule in R5 and later
+
+      -resource-id-rule=<resourceIdRule>
+                               Whether the top-level resource being validated
+                               must have a Resource.id element (optional,
+                                       required, prohibited).
+                                          * optional (default): id may be
+                               present or absent
+                                          * required: id must be present; an
+                               error is raised if missing
+                                          * prohibited: id must not be present;
+                               an error is raised if found
+                                       Note: this rule applies to the outermost
+                               resource only. The validator independently
+                               enforces id
+                                       rules for contained resources (always
+                               required) and bundle entries/parameters (always
+                               optional).
+
+      -security-checks       If present, check that string content doesn't
+                               include any html-like tags that might create
+                               problems downstream
+                             Note that all external input must always be
+                               sanitized by escaping for either html or sql.
+
+      -show-message-ids      Show message IDs in the validation output
+      -showReferenceMessages Includes validation messages resulting from
+                               validating target resources against profiles
+                               defined on a reference
+                             This increases the volume of validation messages,
+                               but may allow easier debugging.  If not
+                               specified, then only a high-level message
+                               indicating that the referenced item wasn't valid
+                               against the listed profile(s) will be provided.
+
+      -tx-routing            Generate extra output that summarizes which
+                               terminology server was used for a particular
+                               validation
+      -unknown-codesystems-cause-errors
+                             If present, unknown code systems associated with
+                               required bindings will create an error not a
+                               warning
+      -usage=<usages>        A use context that applies to this validation, as
+                               code=value. Some bindings and constraints are
+                               scoped to a use context, and only apply when
+                               that context is in force; the validator does not
+                               decide which use contexts apply, so specify them
+                               here.
+                             The code is always system#code. The value is
+                               type:... where the type says what is being given:
+                               * Coding:system#code            e.g. -usage http:
+                               //terminology.hl7.
+                               org/CodeSystem/usage-context-type#gender=Coding:
+                               http://hl7.org/fhir/administrative-gender#female
+                               * Quantity:decimal:system#code  e.g. -usage http:
+                               //terminology.hl7.
+                               org/CodeSystem/usage-context-type#age=Quantity:
+                               65:http://unitsofmeasure.org#a
+                               * Reference:url                 e.g. -usage http:
+                               //terminology.hl7.
+                               org/CodeSystem/usage-context-type#focus=Reference
+                               :http://example.org/fhir/Patient/1
+                             A value with no type prefix is read as a Coding.
+                               Can repeat multiple times.
+
+      -validation-timeout=<validationTimeout>
+                             A value in milliseconds after which validation
+                               will be stopped. Any issues encountered at this
+                               point will be returned. See notes regarding
+                               accuracy for these results at https://confluence.
+                               hl7.
+                               org/spaces/FHIR/pages/35718580/Using+the+FHIR+Val
+                               idator
+      -verbose               When set, the validator will create hints against
+                               the resources to explain which profiles it has
+                               validated the resource against
+      -want-invariants-in-messages
+                             Controls whether the FHIRPath for invariants is
+                               included in the message
+Locale Options
+      -locale=<locale>       The locale. Specified by a valid IETF BCP 47
+                               language tag (en-US, fr-FR, etc.)
+FHIR Settings Options
+      -fhir-settings=<fhirSettingsFilePath>
+                             the location of the fhir-settings.json file. This
+                               contains global settings used throughout the
+                               validator. Documentation on fhir-settings.json
+                               is available at: https://confluence.hl7.
+                               org/spaces/FHIR/pages/161072808/Using+fhir-settin
+                               gs.json
+Managed Web Access Options
+      -no-http-access        disable all http(s) access across the application.
+      -ssrf-protection-enabled=<ssrfProtectionEnabled>
+                             sets whether or not to enable Server-Side Request
+                               Forgery protection. This blocks non-https
+                               requests and non-public server access for
+                               security reasons. This is enabled by default,
+                               and should always be enabled in production. If
+                               access to http or non-public servers is
+                               required, it should be configured via the
+                               fhir-settings.json file
+Debug Options
+      -debug-log=<debugLog>  A log file to write debug level messages to.
+      -trace-log=<traceLog>  A log file to write trace level messages to.
+Proxy Options
+      -auth=<proxyAuth>      Basic proxy authentication using [username]:
+                               [password]
+      -https-proxy=<httpsProxy>
+                             An https proxy address [address]:[port]
+      -proxy=<proxy>         An http proxy address [address]:[port]
+Commands:
+  help            Display help information about the specified command.
+  compare         Compare profiles.
+
+                  You will need to use the -ig option to load the IGs that
+                    contain the profiles. The validator can infer the FHIR
+                    version based on other Validation Engine options, but you
+                    can also use the -version option to explicitly choose one.
+
+  compile         Compile a structure map
+
+  convert         Convert a resource or logical model.
+
+                  You can use the validator to convert a resource or logical
+                    model.
+
+                  -convert requires the parameters -source and one of {-output,
+                    -outputSuffix}.
+                  -ig may be used to provide a logical model.
+
+                  If the -source maps to one or more resources, e.g. when using
+                    a wildcard,
+                  use -outputSuffix <suffix>, to obtain multiple result files
+                    with a
+                  `<sourcefilename>.<suffix>` filename.
+                  Example: `-source *.xml -convert -outputSuffix convert.json`
+                    outputs:
+                  `source1.xml.convert.json`, `source2.xml.convert.json`, etc.
+
+  to-version      Convert resources between FHIR versions (R2, R3, R4, R5).
+
+                  The validator can use either internal Java routines or
+                    structure maps from
+                  https://github.com/FHIR/packages/tree/master/interversion.
+
+                  By default, internal routines are used for resources with
+                    canonical URLs
+                  (CodeSystem, ValueSet, etc.) and structure maps for others.
+                    If internal
+                  routines fail, structure maps are used as fallback.
+
+                  Use -do-native to force internal routines for all resources.
+                  Use -no-native to disable internal routines completely.
+
+                  Requires -to-version to specify target FHIR version.
+                  For single source: use -output <file>
+
+                  Example: version observation.xml -to-version 4.0 -output
+                    observation4.json
+
+  fhirpath        Evaluate a FHIRPath expression on a resource or logical model.
+
+                  You can use the validator to evaluate a FHIRPath expression
+                    on a resource or logical model. To do this, you must
+                    provide the -fhirpath parameter with the FHIRPath
+                    expression to evaluate, and a parameter with the resource
+                    to evaluate against.
+
+                  The -ig parameter may be used to provide a logical model if
+                    needed.
+
+  transform       Execute a transformation as described by a structure map
+
+  lang-transform  Transform language content in FHIR resources.
+
+                  Supports two modes:
+                  - extract: Extract language content from resources
+                  - inject: Inject language content into resources
+
+  narrative       Generate narrative for a FHIR resource.
+
+                  Reads a FHIR resource file and generates human-readable
+                    narrative content.
+
+                  Requires -version (or -ig) and -tx parameters for proper
+                    narrative generation, and -output to save the resource with
+                    generated narrative.
+
+  snapshot        Generate snapshot for FHIR StructureDefinition profiles.
+
+                  Creates a fully expanded view of a profile including all
+                    elements from
+                  the base resource plus differential constraints.
+
+                  Requires -version (or -ig), -tx, -defn, and one of {-output,
+                    -outputSuffix}.
+                  May use -ig to provide necessary base profiles.
+
+                  For single source: use -output <file>
+                  For multiple sources: use -outputSuffix <suffix> (creates
+                    <source>.<suffix>)
+
+                  The -output/-outputSuffix filetype (xml, json) may imply a
+                    conversion.
+
+                  Example: snapshot *.xml -outputSuffix snapshot.json
+                  Creates: source1.xml.snapshot.json, source2.xml.snapshot.
+                    json, etc.
+
+  tests           Run JUnit tests for the FHIR core library against test cases.
+
+                  Executes all JUnit tests against a local directory following
+                    the
+                  conventions of https://github.com/FHIR/fhir-test-cases.
+
+                  Must be executed with Java property: java.locale.
+                    providers=COMPAT
+
+                  Example: java -Djava.locale.providers=COMPAT -jar
+                    validator_cli.jar tests ./path/to/fhir-test-cases
+
+  txTests         Run the terminology service test cases against a terminology
+                    server.
+
+                  Executes the test cases published by the tx-ecosystem IG and
+                    writes a JSON report of the
+                  results, along with the actual response for each failed test.
+                    Tests can be filtered by
+                  suite, mode and name.
+
+                  The tests are fetched for you - there is nothing to download.
+                    The version of FHIR tested is
+                  the server's own, so it is not a parameter.
+
+                  Documentation: https://hl7.org/fhir/uv/tx-ecosystem/testcases.
+                    html
+
+  install         Initializes the FHIR validator and installs any specified IGs
+                    to the package cache.
+  server          Run the validator as a lightweight HTTP server.
+
+                  The validator runs as an in-process HTTP validation service.
+                  You can configure the FHIR version, connect to a terminology
+                    server,
+                  and load relevant IGs for validation.
+
+                  The server provides a /validateResource endpoint for POST
+                    requests
+                  with FHIR resources in JSON or XML format.
+
+                  The server runs until terminated with Ctrl-C.
+
+                  Example:
+                    java -jar validator_cli.jar server 8080 -version 4.0 \
+                      -ig hl7.fhir.us.carin-bb#1.1.0
+
+  client          HTTP client for interacting with the FHIR validator HTTP
+                    server.
+
+                  This command is intended to send requests to a running
+                    validator
+                  HTTP server, such as validation and server stop requests.
+
+                  Examples:
+                    java -jar validator_cli.jar client -port 3000 .
+                    /resources/resource.json
+                    java -jar validator_cli.jar client -port 3000 stop
+
+  re-package      Generate a package containing all relevant resources for
+                    Implementation Guide(s).
+
+                  Also called "Terminology Package Generation". This command
+                    creates a package
+                  with terminology, conformance, and/or API resources from one
+                    or more IGs.
+
+                  Requires -output parameter. The output can be a folder, .zip,
+                    or .tgz file.
+
+                  By default, includes all resource types (tx, cnt, api). Use
+                    -mode to filter.
+
+                  Example:
+                    java -jar validator_cli.jar re-package hl7.fhir.us.core#4.
+                    0.0 -output ./output.tgz -scope igs -pin

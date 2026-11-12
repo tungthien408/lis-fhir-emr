@@ -35,7 +35,7 @@ for (const id of ids) await lisPool.query(`insert into lis.results(result_id,pat
   values ($1,$2,$3,'3.6000','mg/dL','3.3','5.1','2026-11-04T05:00:00.123456Z',$4,'{"fixture":"phase23 synthetic only"}')`,
   [id, patientId, code, id === "PHASE23-READY" ? "READY" : "FINAL"]);
 await emrPool.query("insert into emr.patients(patient_key,display_label) values ($1,'Phase 2.3 expected patient')", [patientKey]);
-await emrPool.query("insert into emr.patient_links(identifier_system,identifier_value,patient_key) values ('https://example.org/lis/patient',$1,$2)", [patientId, patientKey]);
+await emrPool.query("insert into emr.patient_links(identifier_system,identifier_value,patient_key) values ('urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4',$1,$2)", [patientId, patientKey]);
 const { publishResult } = await import("../../src/lis/service.js");
 const { getPublishEventByResultId } = await import("../../src/lis/repository.js");
 assert.equal((await publishResult("PHASE23-CONFLICT")).kind, "created");

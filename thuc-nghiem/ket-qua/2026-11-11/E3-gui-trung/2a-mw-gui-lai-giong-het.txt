@@ -1,0 +1,2 @@
+{"accepted":true,"event_id":"c5c69963-61a8-47cb-9b03-b831f9a6f4dd","exchange_id":"40e8a493-26ce-415b-b7c9-25e9876dedf5","source_system":"lis-demo","source_result_id":"MIMIC-LAB-102","source_hash":"14ccd84008081ba59734ed2ede26322e31b98adca4511862541c0c4d0da799fe"}
+HTTP 202

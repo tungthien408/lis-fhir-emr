@@ -23,7 +23,7 @@ test("EMR Service C2 (disposable PostgreSQL)", {
   const pool = new Pool({ connectionString: testUrl, max: 4, connectionTimeoutMillis: 3000 });
   const db = drizzle({ client: pool });
   const patientKeys = [randomUUID(), randomUUID()];
-  const patientSystem = "https://example.org/lis/patient";
+  const patientSystem = "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4";
   t.after(async () => {
     try {
       await db.transaction(async (tx) => {
@@ -170,7 +170,7 @@ test("EMR Service C2 (disposable PostgreSQL)", {
   await t.test("same source with any supported content difference conflicts, including equivalent timestamp spelling", async () => {
     const input = validObservation(); await service.storeObservation(input); const before = await rows(input);
     for (const [path, value] of [
-      ["subject.identifier.value", "C2-SYNTHETIC-P2"], ["code.coding.0.code", "another-test"],
+      ["subject.identifier.value", "C2-SYNTHETIC-P2"], ["code.coding.0.code", "50802"],
       ["code.coding.0.display", "Different display"], ["code.text", "Different context"],
       ["valueQuantity.value", 3.5], ["referenceRange.0.low.value", 3.2], ["referenceRange.0.high.value", 5.2],
       ["effectiveDateTime", "2180-06-03T19:00:00.123456+07:00"],
@@ -185,8 +185,8 @@ test("EMR Service C2 (disposable PostgreSQL)", {
     }
     const changed = structuredClone(input); delete changed.referenceRange;
     assert.equal((await service.storeObservation(changed)).kind, "conflict");
-    const unitChanged = structuredClone(input); unitChanged.valueQuantity.unit = "another-unit";
-    unitChanged.referenceRange![0].low!.unit = "another-unit"; unitChanged.referenceRange![0].high!.unit = "another-unit";
+    const unitChanged = structuredClone(input); unitChanged.code.coding[0].code = "50912"; unitChanged.valueQuantity.unit = "mg/dL";
+    unitChanged.referenceRange![0].low!.unit = "mg/dL"; unitChanged.referenceRange![0].high!.unit = "mg/dL";
     assert.equal((await service.storeObservation(unitChanged)).kind, "conflict");
     assert.deepEqual(await rows(input), before);
   });

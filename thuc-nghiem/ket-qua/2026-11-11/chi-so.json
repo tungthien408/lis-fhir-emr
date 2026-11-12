@@ -1,0 +1,266 @@
+{
+  "run_tag": "2026-11-11",
+  "chi_so": {
+    "M1": {
+      "ten": "Tỷ lệ hoàn tất đầu–cuối (lưu đúng, đúng bệnh nhân, đọc lại được)",
+      "1000": "1000/1000 (100.0%)",
+      "40_loi": "40/40 (100.0%)",
+      "nguon": "E1-1000-ket-qua/doi-chieu/comparison-report.json"
+    },
+    "M2": {
+      "ten": "Độ chính xác theo trường (MR01–MR09)",
+      "1000": "24000/24000 (100.0%)",
+      "40_loi": "960/960 (100.0%)",
+      "nguon": "E1-1000-ket-qua/doi-chieu/field-comparisons.jsonl"
+    },
+    "M3": {
+      "ten": "Tính đầy đủ (trường phải có thì có mặt ở EMR)",
+      "1000": "18302/18302 (100.0%)",
+      "40_loi": "730/730 (100.0%)",
+      "nguon": "E1-1000-ket-qua/doi-chieu/field-comparisons.jsonl"
+    },
+    "M4": {
+      "ten": "Số kết quả gắn sai bệnh nhân",
+      "1000": "0",
+      "them": "E2: 3/3 ca bệnh nhân không liên kết bị từ chối, không lưu",
+      "nguon": "comparison-report.json; E2-sai-benh-nhan-du-lieu-sai/7a-ket-qua.txt"
+    },
+    "M5": {
+      "ten": "Số bản ghi trùng ở EMR",
+      "1000": "0",
+      "them": "E3 sau mọi lần gửi trùng: 0 mã bị trùng",
+      "nguon": "comparison-report.json; E3-gui-trung/dem-sau.txt"
+    },
+    "M6": {
+      "ten": "Số lần báo hoàn tất nhưng thực tế sai",
+      "1000": "0",
+      "them": "E4b (EMR tắt lâu): 0 ca báo hoàn tất sai",
+      "nguon": "E1-1000-ket-qua/ket-qua-khong-dat-doi-chieu.txt; E4-gian-doan/E4b-ket-qua.csv"
+    },
+    "M7": {
+      "ten": "Tỷ lệ ca ngoại lệ xử lý đúng",
+      "tong": "43/46 (93.5%)",
+      "theo_nhom": {
+        "Bệnh nhân không có liên kết (TC02)": "3/3 (100.0%)",
+        "Dữ liệu sai gửi vào middleware (TC03)": "4/6 (66.7%)",
+        "Dữ liệu sai gửi thẳng vào EMR (TC03)": "7/8 (87.5%)",
+        "Gửi trùng (TC04)": "15/15 (100.0%)",
+        "Thành phần tạm ngừng (TC05)": "12/12 (100.0%)",
+        "Mất phản hồi sau khi lưu (TC06, test tự động)": "1/1 (100.0%)",
+        "Đọc lại thấy sai (TC07, test tự động)": "1/1 (100.0%)"
+      },
+      "nguon": "kiem-tra.jsonl (kịch bản E2, E3, E4, AUTO)"
+    },
+    "M8": {
+      "ten": "Bản FHIR đạt kiểm tra cấu trúc (HL7 validator, R4 4.0.1)",
+      "1000": "0/1000",
+      "nguon": "kiem-tra-fhir/tom-tat.txt, kiem-tra-fhir/log-validator.txt"
+    },
+    "M9": {
+      "ten": "Độ trễ đầu–cuối (Publish → hoàn tất)",
+      "gui_tung_ket_qua_40": "trung vị 965.6 ms, p95 1.87 s, lớn nhất 2.04 s",
+      "nguon": "E1A-do-tre-tung-ket-qua/thoi-gian-tung-chang.csv",
+      "don_1000_cung_luc": "trung vị 525.21 s, p95 998.95 s, lớn nhất 1050.71 s; tốc độ ~0.94 kết quả/giây",
+      "cong_cu_do_1000": "p50 525.29 s, p95 999.93 s (đo từ phía công cụ, có cộng thời gian hỏi lại mỗi 1 s)"
+    },
+    "M10": {
+      "ten": "Thời gian ánh xạ sang FHIR",
+      "gui_tung_ket_qua_40": "trung vị 0.675 ms, lớn nhất 1.1 ms",
+      "nguon": "E1A-do-tre-tung-ket-qua/thoi-gian-tung-chang.csv",
+      "don_1000_cung_luc": "trung vị 0.723 ms, lớn nhất 2.3 ms"
+    },
+    "M11": {
+      "ten": "Thời gian phục hồi (từ lúc thành phần chạy lại → kết quả hoàn tất)",
+      "EMR_tat_ngan_E4a": "trung vị 2.76 s, lớn nhất 5.45 s (n=10)",
+      "nguon": "E4-gian-doan/E4a-ket-qua.csv",
+      "middleware_tat_ngan_E4d": "trung vị 6.25 s, lớn nhất 10.82 s (n=10)"
+    },
+    "M12": {
+      "ten": "Tỷ lệ phục hồi thành công",
+      "tu_dong_EMR_tat_ngan_E4a": "10/10 (100.0%)",
+      "tu_dong_middleware_tat_ngan_E4d": "10/10 (100.0%)",
+      "EMR_tat_lau_E4b_tu_dong": "0 (đúng thiết kế: hết lượt thử lại thì dừng ở FAILED)",
+      "sau_khi_nguoi_van_hanh_dua_lai_E4c": "10/10 (100.0%)",
+      "nguon": "E4-gian-doan/E4a-ket-qua.csv, E4c-ket-qua.csv, E4d-ket-qua.csv"
+    },
+    "M13": {
+      "ten": "Mức độ bao phủ bằng chứng (yêu cầu cốt lõi có bằng chứng đạt / 12)",
+      "gia_tri": "10/12 (83.3%)",
+      "nguon": "kiem-tra.jsonl"
+    }
+  },
+  "thoi_gian_E1A": {
+    "lis_sang_mw_ms": {
+      "n": 40,
+      "trung_vi": 447.8,
+      "p95": 961.4,
+      "max": 1023.4,
+      "min": 39.9,
+      "tb": 502.56000000000006
+    },
+    "cho_worker_ms": {
+      "n": 40,
+      "trung_vi": 456.4,
+      "p95": 922.2,
+      "max": 996.2,
+      "min": 59.4,
+      "tb": 507.98
+    },
+    "anh_xa_ms": {
+      "n": 40,
+      "trung_vi": 0.675,
+      "p95": 0.985,
+      "max": 1.119,
+      "min": 0.153,
+      "tb": 0.671375
+    },
+    "gui_emr_den_luu_ms": {
+      "n": 40,
+      "trung_vi": 19.1,
+      "p95": 31.7,
+      "max": 56.4,
+      "min": 12.0,
+      "tb": 20.9725
+    },
+    "doc_lai_xac_minh_ms": {
+      "n": 40,
+      "trung_vi": 27.6,
+      "p95": 41.9,
+      "max": 90.3,
+      "min": 16.8,
+      "tb": 29.5875
+    },
+    "tong_ms": {
+      "n": 40,
+      "trung_vi": 965.6,
+      "p95": 1870.3,
+      "max": 2035.8,
+      "min": 696.7,
+      "tb": 1095.6799999999998
+    }
+  },
+  "thoi_gian_E1_1000": {
+    "lis_sang_mw_ms": {
+      "n": 1000,
+      "trung_vi": 524227.6,
+      "p95": 998444.8,
+      "max": 1050552.9,
+      "min": 331.5,
+      "tb": 525265.2866
+    },
+    "cho_worker_ms": {
+      "n": 1000,
+      "trung_vi": 463.6,
+      "p95": 946.2,
+      "max": 1019.8,
+      "min": 8.2,
+      "tb": 465.5666
+    },
+    "anh_xa_ms": {
+      "n": 1000,
+      "trung_vi": 0.723,
+      "p95": 1.267,
+      "max": 2.316,
+      "min": 0.122,
+      "tb": 0.733084
+    },
+    "gui_emr_den_luu_ms": {
+      "n": 1000,
+      "trung_vi": 18.6,
+      "p95": 39.5,
+      "max": 153.2,
+      "min": 8.3,
+      "tb": 21.7992
+    },
+    "doc_lai_xac_minh_ms": {
+      "n": 1000,
+      "trung_vi": 29.2,
+      "p95": 47.6,
+      "max": 153.1,
+      "min": 12.3,
+      "tb": 31.1434
+    },
+    "tong_ms": {
+      "n": 1000,
+      "trung_vi": 525208.8,
+      "p95": 998954.7,
+      "max": 1050709.6,
+      "min": 1022.5,
+      "tb": 525815.0792
+    }
+  },
+  "yeu_cau": [
+    [
+      "REQ-FLOW-01",
+      "Kết quả hợp lệ đi trọn LIS → middleware → EMR, đọc lại đúng",
+      "ĐẠT",
+      "3/3"
+    ],
+    [
+      "REQ-ID-01",
+      "Đúng bệnh nhân; thiếu liên kết thì từ chối",
+      "ĐẠT",
+      "4/4"
+    ],
+    [
+      "REQ-DATA-01",
+      "Giữ đúng mã, tên, ngữ cảnh, giá trị, đơn vị (MR03–05, MR09)",
+      "ĐẠT",
+      "1/1"
+    ],
+    [
+      "REQ-DATA-02",
+      "Giữ đúng cận tham chiếu, thời điểm, trạng thái (MR06–08)",
+      "ĐẠT",
+      "1/1"
+    ],
+    [
+      "REQ-FHIR-01",
+      "Observation đúng cấu trúc FHIR R4",
+      "CÓ CA KHÔNG ĐẠT",
+      "0/1"
+    ],
+    [
+      "REQ-ERR-01",
+      "Dữ liệu sai bị từ chối có lý do, không lưu, không báo hoàn tất",
+      "CÓ CA KHÔNG ĐẠT",
+      "11/16"
+    ],
+    [
+      "REQ-DUP-01",
+      "Gửi trùng không tạo bản ghi mới; khác nội dung thì báo xung đột",
+      "ĐẠT",
+      "15/15"
+    ],
+    [
+      "REQ-RETRY-01",
+      "Lỗi tạm thời được thử lại có giới hạn, không báo hoàn tất sai",
+      "ĐẠT",
+      "9/9"
+    ],
+    [
+      "REQ-OUTBOX-01",
+      "LIS giữ yêu cầu đến khi middleware xác nhận đã nhận",
+      "ĐẠT",
+      "3/3"
+    ],
+    [
+      "REQ-WORKER-01",
+      "Việc dở dang được nhận lại an toàn (test tự động)",
+      "ĐẠT",
+      "1/1"
+    ],
+    [
+      "REQ-MEASURE-01",
+      "Có mốc thời gian để đo từng chặng",
+      "ĐẠT",
+      "1/1"
+    ],
+    [
+      "REQ-EVIDENCE-01",
+      "Dữ liệu nguồn, FHIR, đích, nhật ký được liên kết để kiểm tra lại",
+      "ĐẠT",
+      "2/2"
+    ]
+  ]
+}

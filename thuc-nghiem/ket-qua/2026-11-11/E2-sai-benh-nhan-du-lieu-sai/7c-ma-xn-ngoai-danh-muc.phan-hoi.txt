@@ -1,0 +1,2 @@
+{"result":"STORED","external_system":"https://example.org/lis/result","external_id":"MUT-EMR-ma-xn-ngoai-danh-muc","target_id":"bf41ba18-ab6a-4162-92fe-0d411a7d7e6d","patient_key":"7c17a3a0-aed9-5a6a-85bc-18059b24de20"}
+HTTP 201

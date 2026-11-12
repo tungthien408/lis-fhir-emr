@@ -1,0 +1,10 @@
+[SPP82] PUBLISH | run_id=0addde7f-d46d-4525-a4e3-cb75aeaee3be | mode=SEQUENTIAL | concurrency=1 | limit=ALL
+[SPP82] Môi trường thử nghiệm: lisexp-local
+[SPP82] CẢNH BÁO: Sắp gửi Publish requests thực tế!
+[SPP82] HTTP 202 = Publish event mới (PENDING). Chưa có nghĩa là DELIVERED.
+[SPP82] Đang khám phá kết quả đủ điều kiện...
+(node:1155137) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[SPP82] Tìm thấy: 1000 kết quả đủ điều kiện (seed_tag=DACN-MIMIC22-SOURCE-ALIGNED-V2)
+[SPP82] Sẽ xử lý: 1000 kết quả
+[SPP82] Phân bố xét nghiệm: {"50802":210,"50912":210,"50971":210,"51222":210,"51492":160}

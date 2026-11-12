@@ -1,0 +1,12 @@
+Số file kiểm tra: 1000
+Số file công cụ báo kết quả: 1000
+Đạt (0 lỗi): 1000
+Không đạt (có lỗi): 0
+
+Các loại lỗi (error/fatal) gặp nhiều nhất (số lượt: loại lỗi):
+
+Các loại cảnh báo (warning) gặp nhiều nhất:
+  1000  Observation.code.coding[0].system: A definition for CodeSystem 'urn:uuid:cb8ffc71-ef38-58d2-ba65-0bf0232d5d02' could not be found, so the code cannot be validated
+  1000  Observation.effective.ofType(dateTime): The value '<thời điểm>' is outside the range of reasonable years - check for data entry error
+  1000  Observation: Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)
+  1000  Observation: Best Practice Recommendation: In general, all observations should have a performer

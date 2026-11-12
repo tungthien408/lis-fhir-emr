@@ -297,7 +297,7 @@ test("B4B Worker: PostgreSQL + contract-faithful HTTP EMR mock (NOT real EMR)", 
     assert.equal((await c.attempts()).length, 0);
   });
   await t.test("unsupported FHIR mapping is rejected before HTTP", async (t) => {
-    const c = await scenario(t); c.envelope.source_snapshot.test_code = " padded "; rehash(c.envelope);
+    const c = await scenario(t); c.envelope.source_snapshot.effective_at = "2180-06-03T12:00:00+15:00"; rehash(c.envelope);
     await pool.query("update integration.exchange_transactions set source_payload = $2, source_hash = $3 where exchange_id = $1",
       [c.id, JSON.stringify(c.envelope), c.envelope.source_hash]);
     await c.worker.runOnce(); await c.assertStatus("REJECTED"); assert.equal(c.mock.requests.length, 0);

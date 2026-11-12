@@ -27,7 +27,7 @@ function unsafe(changes: Record<string, unknown>): ObservationSourceSnapshot {
 
 test("full mapping equals the reviewed golden FHIR JSON and returns a project-local version", () => {
   assert.deepEqual(mapped(), golden);
-  assert.equal(OBSERVATION_MAPPING_VERSION, "lis-observation-v1");
+  assert.equal(OBSERVATION_MAPPING_VERSION, "lis-observation-v2");
   assert.equal("mappingVersion" in mapped(), false, "Version is metadata for the future Worker, not a FHIR field");
   assert.equal("meta" in mapped(), false);
 });
@@ -35,7 +35,7 @@ test("full mapping equals the reviewed golden FHIR JSON and returns a project-lo
 test("MR01 preserves the complete result identifier and its namespace", () => {
   const result_id = " LIS-Result/Đ-001 ";
   assert.deepEqual(mapped({ ...source, result_id }).identifier,
-    [{ system: "https://example.org/lis/result", value: result_id }]);
+    [{ system: "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62", value: result_id }]);
   assert.equal("id" in mapped(), false);
 });
 
@@ -43,7 +43,7 @@ test("MR02 uses the LIS patient identifier without inventing an EMR patient_key 
   const patient_id = "LIS-Patient/AbC-001";
   const observation = mapped({ ...source, patient_id });
   assert.deepEqual(observation.subject, {
-    type: "Patient", identifier: { system: "https://example.org/lis/patient", value: patient_id },
+    type: "Patient", identifier: { system: "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4", value: patient_id },
   });
   assert.equal("patient_key" in observation.subject, false);
   assert.equal("reference" in observation.subject, false);
@@ -52,7 +52,7 @@ test("MR02 uses the LIS patient identifier without inventing an EMR patient_key 
 test("MR03 preserves the local test code/display and does not assert LOINC", () => {
   const observation = mapped({ ...source, test_code: "Local CODE-01", test_name: "Xét nghiệm giả" });
   assert.deepEqual(observation.code.coding, [{
-    system: "https://example.org/lis/test-code", code: "Local CODE-01", display: "Xét nghiệm giả",
+    system: "urn:uuid:cb8ffc71-ef38-58d2-ba65-0bf0232d5d02", code: "Local CODE-01", display: "Xét nghiệm giả",
   }]);
   assert.doesNotMatch(JSON.stringify(observation.code), /loinc/i);
 });

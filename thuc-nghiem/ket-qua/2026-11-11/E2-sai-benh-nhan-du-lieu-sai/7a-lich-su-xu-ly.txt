@@ -1,0 +1,22 @@
+ source_result_id | event_type  | new_status |                                   detail                                    |          occurred_at          
+------------------+-------------+------------+-----------------------------------------------------------------------------+-------------------------------
+ MUT-LAB-NOLINK-1 | RECEIVED    | RECEIVED   |                                                                             | 2026-11-11 17:10:10.072552+00
+ MUT-LAB-NOLINK-1 | CLAIMED     | PROCESSING |                                                                             | 2026-11-11 17:10:10.179609+00
+ MUT-LAB-NOLINK-1 | VALIDATED   | PROCESSING |                                                                             | 2026-11-11 17:10:10.188379+00
+ MUT-LAB-NOLINK-1 | TRANSFORMED | PROCESSING |                                                                             | 2026-11-11 17:10:10.189214+00
+ MUT-LAB-NOLINK-1 | SENT        | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 1}                    | 2026-11-11 17:10:10.199189+00
+ MUT-LAB-NOLINK-1 | REJECTED    | REJECTED   | {"code": "REMOTE_VALIDATION_ERROR", "phase": "SEND", "outcome": "terminal"} | 2026-11-11 17:10:10.225455+00
+ MUT-LAB-NOLINK-2 | RECEIVED    | RECEIVED   |                                                                             | 2026-11-11 17:10:11.124689+00
+ MUT-LAB-NOLINK-2 | CLAIMED     | PROCESSING |                                                                             | 2026-11-11 17:10:11.239586+00
+ MUT-LAB-NOLINK-2 | VALIDATED   | PROCESSING |                                                                             | 2026-11-11 17:10:11.254736+00
+ MUT-LAB-NOLINK-2 | TRANSFORMED | PROCESSING |                                                                             | 2026-11-11 17:10:11.25547+00
+ MUT-LAB-NOLINK-2 | SENT        | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 1}                    | 2026-11-11 17:10:11.269451+00
+ MUT-LAB-NOLINK-2 | REJECTED    | REJECTED   | {"code": "REMOTE_VALIDATION_ERROR", "phase": "SEND", "outcome": "terminal"} | 2026-11-11 17:10:11.283879+00
+ MUT-LAB-NOLINK-3 | RECEIVED    | RECEIVED   |                                                                             | 2026-11-11 17:10:12.174808+00
+ MUT-LAB-NOLINK-3 | CLAIMED     | PROCESSING |                                                                             | 2026-11-11 17:10:12.299228+00
+ MUT-LAB-NOLINK-3 | VALIDATED   | PROCESSING |                                                                             | 2026-11-11 17:10:12.315026+00
+ MUT-LAB-NOLINK-3 | TRANSFORMED | PROCESSING |                                                                             | 2026-11-11 17:10:12.315772+00
+ MUT-LAB-NOLINK-3 | SENT        | PROCESSING | {"phase": "SEND", "outcome": "STARTED", "attempt_no": 1}                    | 2026-11-11 17:10:12.414627+00
+ MUT-LAB-NOLINK-3 | REJECTED    | REJECTED   | {"code": "REMOTE_VALIDATION_ERROR", "phase": "SEND", "outcome": "terminal"} | 2026-11-11 17:10:12.431908+00
+(18 rows)
+

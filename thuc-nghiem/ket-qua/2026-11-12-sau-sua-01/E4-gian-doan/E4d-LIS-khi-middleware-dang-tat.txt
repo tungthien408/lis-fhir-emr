@@ -1,0 +1,14 @@
+    result_id     | dispatch_status | dispatch_attempt_count | last_error_code 
+------------------+-----------------+------------------------+-----------------
+ MIMIC-LAB-102464 | RETRY_WAIT      |                      2 | NETWORK_ERROR
+ MIMIC-LAB-102480 | RETRY_WAIT      |                      1 | NETWORK_ERROR
+ MIMIC-LAB-102502 | PENDING         |                      0 | 
+ MIMIC-LAB-102530 | PENDING         |                      0 | 
+ MIMIC-LAB-102535 | PENDING         |                      0 | 
+ MIMIC-LAB-102549 | PENDING         |                      0 | 
+ MIMIC-LAB-102558 | PENDING         |                      0 | 
+ MIMIC-LAB-102598 | PENDING         |                      0 | 
+ MIMIC-LAB-102602 | PENDING         |                      0 | 
+ MIMIC-LAB-106929 | PENDING         |                      0 | 
+(10 rows)
+

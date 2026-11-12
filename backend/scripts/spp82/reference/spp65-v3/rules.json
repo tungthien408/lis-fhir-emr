@@ -1,0 +1,18 @@
+{
+  "category_code": "laboratory",
+  "category_system": "http://terminology.hl7.org/CodeSystem/observation-category",
+  "clinical_status": "final",
+  "context_separator": " / ",
+  "decimal_rule": "exact-coefficient-and-exponent-no-rounding",
+  "fhir_scope": "project-supported-subset; exact keys; no full-HL7-conformance-claim",
+  "patient_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+  "resource_type": "Observation",
+  "result_system": "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62",
+  "seed_tag": "DACN-MIMIC22-SOURCE-ALIGNED-V2",
+  "source_status": "FINAL",
+  "source_system": "lis-demo",
+  "subject_type": "Patient",
+  "test_system": "urn:uuid:cb8ffc71-ef38-58d2-ba65-0bf0232d5d02",
+  "timestamp_rule": "Gregorian-instant-with-all-fractional-digits; raw-charttime-assumed-UTC",
+  "version": "spp82-independent-mr01-mr09-v2"
+}

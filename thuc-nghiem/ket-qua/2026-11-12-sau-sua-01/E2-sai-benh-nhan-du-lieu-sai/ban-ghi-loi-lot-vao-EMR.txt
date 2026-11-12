@@ -1,0 +1,4 @@
+ external_id | analyte_code | quantity | unit_text | patient_key 
+-------------+--------------+----------+-----------+-------------
+(0 rows)
+

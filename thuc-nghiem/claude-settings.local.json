@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash thuc-nghiem/*)",
+      "Bash(VALIDATOR_TX=n/a bash thuc-nghiem/*)",
+      "Bash(python3 thuc-nghiem/*)",
+      "Bash(sleep *)",
+      "Bash(jq *)",
+      "Bash(awk *)",
+      "Bash(sort *)",
+      "Bash(uniq *)",
+      "Bash(date *)",
+      "Bash(sha256sum *)",
+      "Bash(docker ps *)",
+      "Bash(docker compose -p lisexp ps *)",
+      "Bash(docker compose -p lisexp logs *)",
+      "Bash(curl -s http://127.0.0.1:*)",
+      "Edit(/thuc-nghiem/**)"
+    ],
+    "deny": [
+      "Bash(git push *)",
+      "Bash(sudo *)",
+      "Bash(docker compose down *)",
+      "Bash(docker compose -p lis-fhir-emr *)",
+      "Bash(docker volume rm *)",
+      "Bash(docker system prune *)",
+      "Bash(docker rm *)",
+      "Read(./.env)",
+      "Edit(/backend/**)",
+      "Edit(/database/**)",
+      "Edit(/frontend/**)",
+      "Edit(/compose.yaml)"
+    ],
+    "defaultMode": "acceptEdits"
+  },
+  "model": "sonnet"
+}

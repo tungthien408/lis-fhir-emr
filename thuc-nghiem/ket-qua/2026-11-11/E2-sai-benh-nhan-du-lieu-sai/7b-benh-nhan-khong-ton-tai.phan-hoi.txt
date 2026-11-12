@@ -1,0 +1,2 @@
+{"accepted":true,"event_id":"2a86622d-05fc-440f-b423-25064abeb12f","exchange_id":"1247c46f-96d3-4b2e-b37d-e566fbfc64b1","source_system":"lis-demo","source_result_id":"MUT-MW-benh-nhan-khong-ton-tai","source_hash":"955208eebb6402f5c2476c38c24151e48b10662db483c405dea25cb5bcf3f3e6"}
+HTTP 202

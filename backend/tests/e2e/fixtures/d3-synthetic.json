@@ -1,29 +1,29 @@
 {
   "provenance": "Hand-authored D3 synthetic source and independent answers; no MIMIC/SPP-65 data and no Mapper-generated answers",
   "catalog": {
-    "test_code": "D3-LOCAL-TEST", "test_name": "D3 synthetic analyte", "fluid": "Blood", "category": "Chemistry",
+    "test_code": "50912", "test_name": "D3 synthetic analyte", "fluid": "Blood", "category": "Chemistry",
     "accepted_units": ["mg/dL"], "catalog_version": "d3-synthetic-v1"
   },
   "snapshot": {
     "result_id": "D3-SYNTHETIC-RESULT", "patient_id": "D3-SYNTHETIC-PATIENT",
-    "test_code": "D3-LOCAL-TEST", "test_name": "D3 synthetic analyte", "fluid": "Blood", "category": "Chemistry",
+    "test_code": "50912", "test_name": "D3 synthetic analyte", "fluid": "Blood", "category": "Chemistry",
     "value_num": 0.30000000000000004, "unit": "mg/dL", "reference_low": 0.1, "reference_high": 0.9,
     "effective_at": "2026-10-30T08:00:00.123456Z", "result_status": "FINAL"
   },
   "observation": {
     "resourceType": "Observation",
-    "identifier": [{"system":"https://example.org/lis/result","value":"D3-SYNTHETIC-RESULT"}],
+    "identifier": [{"system":"urn:uuid:05934370-0df0-5666-8eff-bd5181906b62","value":"D3-SYNTHETIC-RESULT"}],
     "status": "final",
     "category": [{"coding":[{"system":"http://terminology.hl7.org/CodeSystem/observation-category","code":"laboratory"}]}],
-    "code": {"coding":[{"system":"https://example.org/lis/test-code","code":"D3-LOCAL-TEST","display":"D3 synthetic analyte"}],"text":"D3 synthetic analyte / Blood / Chemistry"},
-    "subject": {"type":"Patient","identifier":{"system":"https://example.org/lis/patient","value":"D3-SYNTHETIC-PATIENT"}},
+    "code": {"coding":[{"system":"urn:uuid:cb8ffc71-ef38-58d2-ba65-0bf0232d5d02","code":"50912","display":"D3 synthetic analyte"}],"text":"D3 synthetic analyte / Blood / Chemistry"},
+    "subject": {"type":"Patient","identifier":{"system":"urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4","value":"D3-SYNTHETIC-PATIENT"}},
     "effectiveDateTime": "2026-10-30T08:00:00.123456Z",
     "valueQuantity": {"value":0.30000000000000004,"unit":"mg/dL"},
     "referenceRange": [{"low":{"value":0.1,"unit":"mg/dL"},"high":{"value":0.9,"unit":"mg/dL"}}]
   },
   "columns": {
-    "external_system": "https://example.org/lis/result", "external_id": "D3-SYNTHETIC-RESULT",
-    "analyte_system": "https://example.org/lis/test-code", "analyte_code": "D3-LOCAL-TEST",
+    "external_system": "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62", "external_id": "D3-SYNTHETIC-RESULT",
+    "analyte_system": "urn:uuid:cb8ffc71-ef38-58d2-ba65-0bf0232d5d02", "analyte_code": "50912",
     "analyte_display": "D3 synthetic analyte", "analyte_context": "D3 synthetic analyte / Blood / Chemistry",
     "quantity": "0.30000000000000004", "unit_text": "mg/dL", "low": "0.1", "high": "0.9",
     "effective_at": "2026-10-30T08:00:00.123456Z", "clinical_status": "final"

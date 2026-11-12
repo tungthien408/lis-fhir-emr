@@ -1,0 +1,58 @@
+[
+  {
+    "name": "lis-09-error-list",
+    "label": "desktop",
+    "file": "lis-09-error-list-desktop.png",
+    "title": "LIS – Kết quả xét nghiệm",
+    "h1": "Hệ thống thông tin xét nghiệm – LIS",
+    "scrollW": 1440,
+    "clientW": 1440,
+    "lang": "vi",
+    "favicon": true,
+    "bodyText": "Hệ thống thông tin xét nghiệm – LIS\n\nDanh sách kết quả xét nghiệm từ hệ thống LIS\n\nDanh sách kết quả xét nghiệm\nMã bệnh nhân\nMã kết quả xét nghiệm\nMã loại xét nghiệm\nTrạng thái kết quả\nTất cả\nREADY\nFINAL\nTìm kiếm\nXóa bộ lọc\n\nKhông thể tải kết quả xét nghiệm. (HTTP 502)\n\nThử tải lại\n\nTrang 1\n\nTrang trước\nTrang sau",
+    "overflowX": false,
+    "consoleErrors": []
+  },
+  {
+    "name": "lis-09-error-list",
+    "label": "mobile",
+    "file": "lis-09-error-list-mobile.png",
+    "title": "LIS – Kết quả xét nghiệm",
+    "h1": "Hệ thống thông tin xét nghiệm – LIS",
+    "scrollW": 390,
+    "clientW": 390,
+    "lang": "vi",
+    "favicon": true,
+    "bodyText": "Hệ thống thông tin xét nghiệm – LIS\n\nDanh sách kết quả xét nghiệm từ hệ thống LIS\n\nDanh sách kết quả xét nghiệm\nMã bệnh nhân\nMã kết quả xét nghiệm\nMã loại xét nghiệm\nTrạng thái kết quả\nTất cả\nREADY\nFINAL\nTìm kiếm\nXóa bộ lọc\n\nKhông thể tải kết quả xét nghiệm. (HTTP 502)\n\nThử tải lại\n\nTrang 1\n\nTrang trước\nTrang sau",
+    "overflowX": false,
+    "consoleErrors": []
+  },
+  {
+    "name": "lis-10-error-detail",
+    "label": "desktop",
+    "file": "lis-10-error-detail-desktop.png",
+    "title": "LIS – Kết quả xét nghiệm",
+    "h1": "Hệ thống thông tin xét nghiệm – LIS",
+    "scrollW": 1440,
+    "clientW": 1440,
+    "lang": "vi",
+    "favicon": true,
+    "bodyText": "Hệ thống thông tin xét nghiệm – LIS\n\nChi tiết kết quả xét nghiệm từ hệ thống LIS\n\nChi tiết kết quả xét nghiệm\n\nKết quả MIMIC-LAB-100142\n\nQuay lại danh sách\n\nKhông thể tải chi tiết do lỗi cổng kết nối LIS. (HTTP 502)\n\nThử tải lại",
+    "overflowX": false,
+    "consoleErrors": []
+  },
+  {
+    "name": "lis-10-error-detail",
+    "label": "mobile",
+    "file": "lis-10-error-detail-mobile.png",
+    "title": "LIS – Kết quả xét nghiệm",
+    "h1": "Hệ thống thông tin xét nghiệm – LIS",
+    "scrollW": 390,
+    "clientW": 390,
+    "lang": "vi",
+    "favicon": true,
+    "bodyText": "Hệ thống thông tin xét nghiệm – LIS\n\nChi tiết kết quả xét nghiệm từ hệ thống LIS\n\nChi tiết kết quả xét nghiệm\n\nKết quả MIMIC-LAB-100142\n\nQuay lại danh sách\n\nKhông thể tải chi tiết do lỗi cổng kết nối LIS. (HTTP 502)\n\nThử tải lại",
+    "overflowX": false,
+    "consoleErrors": []
+  }
+]

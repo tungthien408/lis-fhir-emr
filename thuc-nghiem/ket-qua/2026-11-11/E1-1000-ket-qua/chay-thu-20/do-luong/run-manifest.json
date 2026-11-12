@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "run_id": "64e5f2dd-9be1-44a6-b8f4-149d99e17c5b",
+  "scenario": "E1-chay-thu",
+  "simulated": false,
+  "result_ids": [
+    "MIMIC-LAB-100142",
+    "MIMIC-LAB-100145",
+    "MIMIC-LAB-100151",
+    "MIMIC-LAB-100177",
+    "MIMIC-LAB-100190",
+    "MIMIC-LAB-100214",
+    "MIMIC-LAB-100218",
+    "MIMIC-LAB-100275",
+    "MIMIC-LAB-100310",
+    "MIMIC-LAB-100317",
+    "MIMIC-LAB-101859",
+    "MIMIC-LAB-101871",
+    "MIMIC-LAB-101875",
+    "MIMIC-LAB-101879",
+    "MIMIC-LAB-101897",
+    "MIMIC-LAB-101901",
+    "MIMIC-LAB-101905",
+    "MIMIC-LAB-101914",
+    "MIMIC-LAB-102",
+    "MIMIC-LAB-102431"
+  ],
+  "manifest_hash": null,
+  "selection_hash": "f36744f24f7513ea93bbe67b17619cc2a2e5585a812e939112ef41beed2ac9f5",
+  "concurrency": 1,
+  "concurrency_semantics": "publish_http_in_flight",
+  "observer_concurrency": 10,
+  "worker_counts": {
+    "dispatcher": null,
+    "middleware": null
+  },
+  "service_configuration": {
+    "dispatcher_http_timeout_ms": null,
+    "dispatcher_max_attempts": null,
+    "dispatcher_retry_delays_ms": null,
+    "worker_http_timeout_ms": null,
+    "worker_max_send_attempts": null,
+    "worker_max_verify_attempts": null,
+    "worker_retry_delays_ms": null
+  },
+  "http_timeout_ms": 10000,
+  "polling_interval_ms": 1000,
+  "run_timeout_ms": 3600000,
+  "git_commit": "9924105ca4de54b33663e91bfb03bca0e388d7b5",
+  "started": {
+    "utc": "2026-11-11T16:51:14.364Z",
+    "elapsed_ms": 1.609041999999988
+  },
+  "ended": {
+    "utc": "2026-11-11T16:51:36.047Z",
+    "elapsed_ms": 21684.844444000002
+  },
+  "stop_reason": "completed"
+}

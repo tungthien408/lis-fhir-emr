@@ -1,0 +1,2 @@
+{"error":{"code":"VALIDATION_ERROR","message":"A nonempty string is required"}}
+HTTP 422

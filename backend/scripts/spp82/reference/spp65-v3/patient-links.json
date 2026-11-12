@@ -1,0 +1,502 @@
+[
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10000032",
+    "patient_key": "7c17a3a0-aed9-5a6a-85bc-18059b24de20"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10001217",
+    "patient_key": "bf28bcca-ad45-5f21-acdf-cb454e064ba2"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10001725",
+    "patient_key": "8c82d6f7-7f23-5043-b990-ae1357882725"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10002428",
+    "patient_key": "67bbb5d7-9f2e-52d4-b842-bc6f6d09dda2"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10002495",
+    "patient_key": "97cde82e-3b1a-52f7-b698-6e43cae66e03"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10002930",
+    "patient_key": "cb20ed2a-31f7-5b96-a4a4-da57ba8ff323"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10003046",
+    "patient_key": "78e0a2f1-8593-5839-8345-a6bd5d65ebf4"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10003400",
+    "patient_key": "c73bf94f-8e24-553f-8b04-eed164f3d382"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10004235",
+    "patient_key": "37d1904a-ddc3-5769-afdd-77f550cb4df6"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10004422",
+    "patient_key": "56755e5b-d1d2-5005-952f-f61e772e1ee1"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10004457",
+    "patient_key": "6f5cf90a-e1ef-5b3d-9bcf-484be3721d19"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10004720",
+    "patient_key": "da7a7575-d7ca-517c-bd23-0a3511ea5898"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10004733",
+    "patient_key": "fc3914b9-f10f-5cef-8161-e8ff4816e9c3"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10005348",
+    "patient_key": "abbb6149-60a5-55bd-be53-fc52f2561c96"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10005817",
+    "patient_key": "65b0915c-f832-5716-ac08-c969ab806e93"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10005866",
+    "patient_key": "e4c4a5d5-b536-55b7-acac-edec5d713ff5"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10005909",
+    "patient_key": "5028c140-4555-5239-b156-16cabb4b9b1a"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10006053",
+    "patient_key": "dd699fbc-39ae-5977-9a18-caee8b42d086"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10006580",
+    "patient_key": "2e50d3c6-3148-5c5e-a936-3752b9933c93"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10007058",
+    "patient_key": "006202aa-1b90-545f-936b-6d41288a325c"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10007795",
+    "patient_key": "aa02d32c-3a93-54ca-94cd-084151bb5832"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10007818",
+    "patient_key": "37043ef4-4652-535f-bb0e-d3d90afaf9e8"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10007928",
+    "patient_key": "6eac20d5-c71c-50a6-8adb-17bd7b5677de"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10008287",
+    "patient_key": "7857cc0c-696b-59c1-9965-30c323f2287f"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10008454",
+    "patient_key": "8ad30a0d-0b6a-5332-b452-948c2ea55473"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10009035",
+    "patient_key": "25c1d89e-1373-5fd0-aa06-c6f51af5fd90"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10009049",
+    "patient_key": "be338c8f-065a-5cd6-b709-72c342d88ac8"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10009628",
+    "patient_key": "5bfa4e8e-3b77-5e8b-aa03-afb174ca25b7"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10010471",
+    "patient_key": "4a7ef9b8-c6c5-53ae-bd21-6fc4dd4586d6"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10010867",
+    "patient_key": "60cbb9ce-3be3-5f63-8693-1cb6a0c31cca"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10011398",
+    "patient_key": "3a74b80e-a4c4-5c78-9a66-baa0017c30d4"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10012552",
+    "patient_key": "99cb56ab-b87a-5f48-b105-f3b0800938d3"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10012853",
+    "patient_key": "cec5f9b7-a246-53c6-84f2-d993c5876a51"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10013049",
+    "patient_key": "f30337fe-0678-51be-a8ea-c7f96a59cf6a"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10014078",
+    "patient_key": "048d871b-8b8d-576f-a60d-07225d0a2cc7"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10014354",
+    "patient_key": "d369d84b-cf9b-5a18-80b6-4dd97ce2dedb"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10014729",
+    "patient_key": "54e82370-1a88-5f7d-89d8-07b233f699ba"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10015272",
+    "patient_key": "80b9bc29-7fd1-5c52-b352-ee077c05d9cd"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10015860",
+    "patient_key": "abf763e2-f651-5bdd-bec5-1d6c416efd2d"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10015931",
+    "patient_key": "0df7b79d-08db-5227-923b-4e44ae71c1b1"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10016150",
+    "patient_key": "d05a1e23-c5bc-50fe-9e96-aa8b0e0c417d"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10016742",
+    "patient_key": "9c921b45-39e4-5c1c-b684-7b7b12b94888"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10016810",
+    "patient_key": "2d6be32f-c85b-52d9-8394-cbf794839c95"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10017492",
+    "patient_key": "74a551e5-69bb-5cde-8efa-14f32955fd5d"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10018081",
+    "patient_key": "9e893d77-dfc5-5645-beb6-4a81041baa5f"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10018328",
+    "patient_key": "d3565a19-8de0-5876-9bfb-5475bdb6d3bf"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10018423",
+    "patient_key": "020aef22-38b0-5e3c-b1d5-297e9a076757"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10018501",
+    "patient_key": "510107e2-1e85-5082-8499-231399687905"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10018845",
+    "patient_key": "17ccfdb7-b7be-5b46-8121-0a7a4a902b45"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10019003",
+    "patient_key": "413c8ab6-6c11-5d5e-851a-fb942dd35f63"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10019172",
+    "patient_key": "e74909c1-186d-5fc3-98e8-f11368cf2b8e"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10019385",
+    "patient_key": "6425df22-db99-5a57-965e-d6e5f790ebe5"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10019568",
+    "patient_key": "a9fe9a26-267d-5ba0-83a7-c943f7d98789"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10019777",
+    "patient_key": "e859448e-27c5-5d9f-a00b-448bd6b9e8d5"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10019917",
+    "patient_key": "b0283974-5733-5a90-a69c-f24c5839d3e1"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10020187",
+    "patient_key": "a0ebd7f4-0e4f-52e3-bc9c-52cfe6660272"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10020306",
+    "patient_key": "a6715ea3-8d32-53be-a554-b4dade804844"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10020640",
+    "patient_key": "c7105fb5-5836-5d39-ad0d-879f83f354a9"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10020740",
+    "patient_key": "63000bb4-e8bb-5eed-ba64-edd4e8d38310"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10020786",
+    "patient_key": "7c0f2912-152d-5c46-953c-9a78d9ff315e"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10020944",
+    "patient_key": "78ce1a40-0e2f-5267-8bf5-762aabe436c4"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10021118",
+    "patient_key": "10b28d97-ea2c-5afb-82c2-1273eab4dc22"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10021312",
+    "patient_key": "ebbd53bf-e6d2-5fc2-bbeb-f612fe00ec59"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10021487",
+    "patient_key": "35768c21-8603-5ff1-906c-139246ae34ca"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10021666",
+    "patient_key": "7fbad06e-502e-5d40-801f-75127ab5de7d"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10021938",
+    "patient_key": "41ce897b-3124-54b8-ac13-a91d298aa697"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10022017",
+    "patient_key": "d21abc64-04b8-5df5-8098-36d1970ed5e6"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10022041",
+    "patient_key": "7b659109-ecf8-5522-8751-eee4adc8a50b"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10022281",
+    "patient_key": "2b26699c-7fc0-5115-b523-63b3ed6a7082"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10022880",
+    "patient_key": "df725c1e-2ccc-5d53-89de-ffff92125fa2"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10023117",
+    "patient_key": "bbd17874-5a77-5c4c-bd9c-236ecd9ce5a6"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10023239",
+    "patient_key": "68f11d0d-22e0-59f2-a88d-bfb14fbe5b8a"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10023771",
+    "patient_key": "f8bd6894-f4ab-547e-96b9-ffea860ef44e"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10024043",
+    "patient_key": "2ffc6738-85af-5b47-b053-3126ba217f2e"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10025463",
+    "patient_key": "fee4504c-53c3-5823-936b-ee502f8c72c1"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10025612",
+    "patient_key": "4d6cb17e-6c53-57d1-9fda-e654828b8d25"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10026255",
+    "patient_key": "1bb18782-0bb1-5968-9c17-eb6c9b5dc2c1"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10026354",
+    "patient_key": "d703559d-5460-5e96-b766-7696b1f62563"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10026406",
+    "patient_key": "4cade85d-ab7e-5561-b322-a385397095a2"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10027445",
+    "patient_key": "02d5123a-3d23-58b5-8212-abdd604b463c"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10027602",
+    "patient_key": "932297eb-3c32-5436-8306-661a6df4faf0"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10029291",
+    "patient_key": "cc2c7ced-d1c0-5cc0-a263-e151f0d8407f"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10029484",
+    "patient_key": "b164b797-fd9f-55b0-aacd-11c183d4414c"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10031404",
+    "patient_key": "5488d0a8-bb87-558c-883e-d5237c3329bb"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10031757",
+    "patient_key": "aec36580-1ec1-5ed1-a66e-04884d8e9493"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10032725",
+    "patient_key": "e95d04d1-7cbc-513e-b7e5-9c239874906f"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10035185",
+    "patient_key": "b6f0d571-e5a1-56c8-a0dd-b0285e35a064"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10035631",
+    "patient_key": "3ca62e25-148e-5995-b548-63c05b5c18cb"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10036156",
+    "patient_key": "51bb3f82-ed95-5ea5-9439-20470d679171"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10037861",
+    "patient_key": "75320d79-45ac-5f7d-994f-6ff4876fa6f9"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10037928",
+    "patient_key": "8d7ff806-5e41-59a4-8891-936030b88cc4"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10037975",
+    "patient_key": "8582e339-65bf-509f-838c-d8c6d4cc975c"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10038081",
+    "patient_key": "cdf18086-ebe6-57f5-b545-7448c6097b0d"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10038933",
+    "patient_key": "5eac0b5f-9877-5f81-92bb-3b6187834cb6"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10038992",
+    "patient_key": "3f50cf4d-5a63-5807-a82c-d6e712e94129"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10038999",
+    "patient_key": "cadfee80-44f7-5a77-a73f-8551e65e9b0b"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10039708",
+    "patient_key": "b37de7ad-bf98-5a9b-aa56-4da997062693"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10039831",
+    "patient_key": "57cde6fa-20db-53a3-9a77-f92337c9fb57"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10039997",
+    "patient_key": "7805278a-916f-5bba-a559-b4604317b17c"
+  },
+  {
+    "identifier_system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4",
+    "identifier_value": "MIMIC-P-10040025",
+    "patient_key": "a5ac0b0f-89b5-5f0c-a61f-47becae514e8"
+  }
+]

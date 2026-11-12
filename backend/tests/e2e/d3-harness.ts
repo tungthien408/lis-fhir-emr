@@ -120,7 +120,7 @@ export async function createHarness(t: TestContext) {
       for (const table of ["exchange_events", "exchange_attempts"]) await pools.middleware.query(`delete from integration.${table}
         where exchange_id in (select exchange_id from integration.exchange_transactions where source_system='lis-demo' and source_result_id=$1)`, [resultId]);
       await pools.middleware.query("delete from integration.exchange_transactions where source_system='lis-demo' and source_result_id=$1", [resultId]);
-      await pools.emr.query("delete from emr.lab_results where external_system='https://example.org/lis/result' and external_id=$1", [resultId]);
+      await pools.emr.query("delete from emr.lab_results where external_system='urn:uuid:05934370-0df0-5666-8eff-bd5181906b62' and external_id=$1", [resultId]);
       await pools.emr.query("delete from emr.patient_links where patient_key=any($1::uuid[])", [[patientKey, decoyKey]]);
       await pools.emr.query("delete from emr.patients where patient_key=any($1::uuid[])", [[patientKey, decoyKey]]);
       await pools.lis.query("delete from lis.dispatch_attempts where event_id in (select event_id from lis.publish_events where result_id=$1)", [resultId]);
@@ -138,9 +138,9 @@ export async function createHarness(t: TestContext) {
     await pools.emr.query("insert into emr.patients(patient_key,display_label) values ($1,$2),($3,'D3-SYNTHETIC-DECOY')",
       [patientKey, fixture.expectedPatientLabel, decoyKey]);
     await pools.emr.query("insert into emr.patient_links(identifier_system,identifier_value,patient_key) values ($1,$2,$3),($4,$5,$3)",
-      ["urn:d3:wrong-patient-namespace", patientId, decoyKey, "https://example.org/lis/patient", `${patientId}-OTHER`]);
+      ["urn:d3:wrong-patient-namespace", patientId, decoyKey, "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4", `${patientId}-OTHER`]);
     if (options.linked !== false) await pools.emr.query("insert into emr.patient_links(identifier_system,identifier_value,patient_key) values ($1,$2,$3)",
-      ["https://example.org/lis/patient", patientId, patientKey]);
+      ["urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4", patientId, patientKey]);
     const originalSource = one(await rows("lis.results", "result_id=$1", [resultId]), "synthetic source result");
     assert.deepEqual(originalSource, { ...source, effective_at: fixture.columns.effective_at });
     const publishHttp: { method: string; path: string; status: number; body: unknown }[] = [];
@@ -166,7 +166,7 @@ export async function createHarness(t: TestContext) {
         eventRows(), rows("lis.dispatch_attempts", "event_id=$1", [eventId], "attempt_no"), exchangeRows(),
         rows("integration.exchange_attempts", "exchange_id in (select exchange_id from integration.exchange_transactions where source_system='lis-demo' and source_result_id=$1)", [resultId], "started_at,attempt_id"),
         rows("integration.exchange_events", "exchange_id in (select exchange_id from integration.exchange_transactions where source_system='lis-demo' and source_result_id=$1)", [resultId], "occurred_at,log_event_id"),
-        rows("emr.lab_results", "external_system='https://example.org/lis/result' and external_id=$1", [resultId]),
+        rows("emr.lab_results", "external_system='urn:uuid:05934370-0df0-5666-8eff-bd5181906b62' and external_id=$1", [resultId]),
         rows("emr.patients", "patient_key=any($1::uuid[])", [[patientKey, decoyKey]], "patient_key"),
         rows("emr.patient_links", "patient_key=any($1::uuid[])", [[patientKey, decoyKey]], "identifier_system,identifier_value"),
       ]);

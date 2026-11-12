@@ -37,7 +37,7 @@ export function createFixture(name = "both") {
   const variant = golden.variants.find((candidate) => candidate.name === name);
   if (!variant) throw new Error("Unknown D3 fixture variant");
   const id = randomUUID(); const resultId = `D3-SYNTHETIC-R-${id}`; const patientId = `D3-SYNTHETIC-P-${id}`;
-  const catalog = { ...structuredClone(golden.catalog), test_code: `${golden.catalog.test_code}-${id}` };
+  const catalog = { ...structuredClone(golden.catalog), test_code: golden.catalog.test_code };
   const columns = { ...structuredClone(golden.columns), ...variant.expected, external_id: resultId, analyte_code: catalog.test_code };
   // Number conversion is only for pre-authored expected JSON. Actual NUMERIC values stay strings.
   const snapshot: SourceSnapshot = { ...structuredClone(golden.snapshot), result_id: resultId, patient_id: patientId,

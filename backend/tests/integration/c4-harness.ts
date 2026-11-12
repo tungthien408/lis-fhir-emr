@@ -121,7 +121,7 @@ export async function createHarness(t: TestContext) {
     await emrPool.query("insert into emr.patient_links(identifier_system,identifier_value,patient_key) values ($1,$2,$3)",
       ["urn:c4:wrong-patient-namespace", envelope.source_snapshot.patient_id, decoyPatientKey]);
     if (options.linked !== false) await emrPool.query("insert into emr.patient_links(identifier_system,identifier_value,patient_key) values ($1,$2,$3)",
-      ["https://example.org/lis/patient", envelope.source_snapshot.patient_id, patientKey]);
+      ["urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4", envelope.source_snapshot.patient_id, patientKey]);
     const accepted = await postExchange(envelope);
     assert.equal(accepted.status, 202); assert.ok(isRecord(accepted.body));
     assert.equal(accepted.body.source_hash, envelope.source_hash);

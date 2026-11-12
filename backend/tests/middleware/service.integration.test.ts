@@ -208,7 +208,7 @@ test("Middleware acceptExchange integration (PostgreSQL)", {
         await lisDb.transaction(async (tx) => {
           await tx.delete(publishEvents).where(eq(publishEvents.resultId, id));
           await tx.delete(results).where(eq(results.resultId, id));
-          await tx.delete(testCatalog).where(eq(testCatalog.testCode, id));
+          await tx.delete(testCatalog).where(eq(testCatalog.testCode, "50912"));
           await tx.delete(patients).where(eq(patients.patientId, id));
         });
       } finally { await Promise.all([lisPool.end(), lisDatabase.close()]); }
@@ -220,8 +220,8 @@ test("Middleware acceptExchange integration (PostgreSQL)", {
     }
     await lisDb.transaction(async (tx) => {
       await tx.insert(patients).values({ patientId: id, sourceSubjectId: id, displayLabel: "Synthetic B2" });
-      await tx.insert(testCatalog).values({ testCode: id, testName: "Synthetic analyte", acceptedUnits: ["mg/dL"], catalogVersion: "b2-test" });
-      await tx.insert(results).values({ resultId: id, patientId: id, testCode: id, valueNum: "3.4000",
+      await tx.insert(testCatalog).values({ testCode: "50912", testName: "Synthetic analyte", acceptedUnits: ["mg/dL"], catalogVersion: "b2-test" });
+      await tx.insert(results).values({ resultId: id, patientId: id, testCode: "50912", valueNum: "3.4000",
         unit: "mg/dL", effectiveAt: sql`'2180-06-03T12:00:00.123456Z'::timestamptz`, resultStatus: "FINAL" });
     });
     const published = await lisService.publishResult(id); assert.ok(published.kind === "created");

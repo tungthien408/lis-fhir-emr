@@ -1,7 +1,7 @@
 {
   "resourceType": "Observation",
   "identifier": [
-    { "system": "https://example.org/lis/result", "value": "B4A-SYNTHETIC-R1" }
+    { "system": "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62", "value": "B4A-SYNTHETIC-R1" }
   ],
   "status": "final",
   "category": [
@@ -13,13 +13,13 @@
   ],
   "code": {
     "coding": [
-      { "system": "https://example.org/lis/test-code", "code": "50971", "display": "Potassium" }
+      { "system": "urn:uuid:cb8ffc71-ef38-58d2-ba65-0bf0232d5d02", "code": "50971", "display": "Potassium" }
     ],
     "text": "Potassium / Blood / Chemistry"
   },
   "subject": {
     "type": "Patient",
-    "identifier": { "system": "https://example.org/lis/patient", "value": "B4A-SYNTHETIC-P1" }
+    "identifier": { "system": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4", "value": "B4A-SYNTHETIC-P1" }
   },
   "effectiveDateTime": "2180-06-03T12:00:00.123456Z",
   "valueQuantity": { "value": 3.4, "unit": "mEq/L" },

@@ -1,0 +1,59 @@
+{
+  "dataset": "SPP-65-MIMIC-IV-demo-2.2",
+  "files": {
+    "expected.jsonl": "a421c3c2facb4d45946d44d533365339fe4d4375b2d61a9551326130311fe772",
+    "patient-links.json": "86dcc8abe0c09a5c86e7f89350740b97d540b335ab54273c8e673c319d8c40cb",
+    "rules.json": "4df705614a44106723fc0a32205b30129ead5ac6084ab7878d50516c5b61bd59",
+    "upstream-answers.csv": "5ea932ab5964d7f76aec7a1dbcd2b99a6c1cab29fd430a306e6b4a2e649a15d6"
+  },
+  "population": 1000,
+  "provenance": {
+    "crosscheck_script_sha256": "4d44adf7fd75f6325247db097f60404619e2491916387ba48cd002aaea256817",
+    "derived_from": {
+      "manifest_sha256": "55cb4256c77d731bff7e8ea1c1ad7f9788df889b4833d9a6b501282c169c7267",
+      "reference": "spp65-v2",
+      "upstream_sha256": "8e93c46edcab5a6d4e5d2e06fb8260958590a2b55c2242118fe89525e2fc318a"
+    },
+    "kind": "handoff-oracle-crosschecked-against-raw-csv-and-versioned-seed",
+    "limitations": [
+      "Original manifest_1000.csv and upstream lock checksum were not found in available handoff.",
+      "This is a local reference freeze, not SPP-65 owner sign-off.",
+      "Raw charttime has no timezone: UTC and FINAL are declared project assumptions.",
+      "V3 changes only five namespace columns; clinical answers and source identities are inherited from v2 and rechecked against raw CSV."
+    ],
+    "namespace_migration": {
+      "MR01_identifier_system": {
+        "from": "https://example.org/lis/result",
+        "to": "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62"
+      },
+      "MR02_subject_system": {
+        "from": "https://example.org/lis/patient",
+        "to": "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4"
+      },
+      "MR03_code_system": {
+        "from": "https://example.org/lis/test-code",
+        "to": "urn:uuid:cb8ffc71-ef38-58d2-ba65-0bf0232d5d02"
+      },
+      "expected_emr_analyte_system": {
+        "from": "https://example.org/lis/test-code",
+        "to": "urn:uuid:cb8ffc71-ef38-58d2-ba65-0bf0232d5d02"
+      },
+      "expected_emr_external_system": {
+        "from": "https://example.org/lis/result",
+        "to": "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62"
+      }
+    },
+    "patient_links_crosschecked": 100,
+    "preparation_script_sha256": "a88af60789134e7b1aa1dbe37700e12e5039f1288a2f4b65a6d7bb21a9784b2a",
+    "source_rows_crosschecked": 1000,
+    "sources": {
+      "database/seed/01_reference_data.sql": "4bb269a13fc9c92dbcfda765526b4236c6a05c456195121fb59a81407db9b0c4",
+      "database/seed/02_lis_results.sql": "28b21b4e19f1df9b79d8ee10944e33e1f1fe20c0045abfd5b5d3fbcd89644fe7",
+      "datasets/hosp/d_labitems.csv.gz": "72ea5f020469fd24543bd98ab3bd0a4f645a5a4b7802d9d52af20d736f9d76db",
+      "datasets/hosp/labevents.csv.gz": "d51a4cf1ea63245abe7d544b0d50a928e9ee2ec5eb9a5ce85500aed0bd6c6dfc"
+    },
+    "upstream_filename": "DAP_AN_DOC_LAP_1000_NAMESPACE_V3.csv",
+    "upstream_sha256": "5ea932ab5964d7f76aec7a1dbcd2b99a6c1cab29fd430a306e6b4a2e649a15d6"
+  },
+  "schema_version": 1
+}

@@ -8,7 +8,7 @@ export function newExchange(): NewExchange {
     sourceEnvelope: {
       event_id: randomUUID(), source_system: "b1-synthetic-lis", source_result_id: resultId,
       source_snapshot: {
-        result_id: resultId, patient_id: "B1-SYNTHETIC-PATIENT", test_code: "B1-TEST",
+        result_id: resultId, patient_id: "B1-SYNTHETIC-PATIENT", test_code: "50912",
         test_name: "Synthetic analyte", fluid: "Blood", category: "Chemistry",
         value_num: 3.4, unit: "mg/dL", reference_low: null, reference_high: 5.1,
         effective_at: "2026-10-22T08:00:00.123456Z", result_status: "FINAL",

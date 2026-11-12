@@ -1,0 +1,54 @@
+[
+  {
+    "boundary": "middleware",
+    "test_code": "99999",
+    "unit": "mg/dL",
+    "kind": "invalid",
+    "error": {
+      "code": "INVALID_TEST_CODE",
+      "field": "source_snapshot.test_code",
+      "message": "The test code and unit must belong to the supported catalog"
+    }
+  },
+  {
+    "boundary": "middleware",
+    "test_code": "50912",
+    "unit": "kg",
+    "kind": "invalid",
+    "error": {
+      "code": "INVALID_UNIT",
+      "field": "source_snapshot.unit",
+      "message": "The test code and unit must belong to the supported catalog"
+    }
+  },
+  {
+    "boundary": "emr",
+    "mode": "unknown-code",
+    "kind": "invalid",
+    "error": {
+      "code": "VALIDATION_ERROR",
+      "field": "code.coding[0].code",
+      "message": "The test code and unit must belong to the supported catalog"
+    }
+  },
+  {
+    "boundary": "emr",
+    "mode": "all-kg",
+    "kind": "invalid",
+    "error": {
+      "code": "VALIDATION_ERROR",
+      "field": "valueQuantity.unit",
+      "message": "The test code and unit must belong to the supported catalog"
+    }
+  },
+  {
+    "boundary": "emr",
+    "mode": "kg-without-range",
+    "kind": "invalid",
+    "error": {
+      "code": "VALIDATION_ERROR",
+      "field": "valueQuantity.unit",
+      "message": "The test code and unit must belong to the supported catalog"
+    }
+  }
+]

@@ -1,0 +1,2 @@
+{"error":{"code":"RESULT_NOT_READY","message":"Only FINAL results can be accepted"}}
+HTTP 422

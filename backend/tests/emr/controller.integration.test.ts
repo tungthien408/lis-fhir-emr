@@ -40,7 +40,7 @@ test("EMR Controller C3 (real HTTP + disposable PostgreSQL)", {
     assert.equal((await db.select({ total: count() }).from(table))[0].total, 0, "Use empty disposable EMR tables only");
   }
   await db.insert(patients).values({ patientKey, displayLabel: "C3 synthetic only" });
-  await db.insert(patientLinks).values({ identifierSystem: "https://example.org/lis/patient", identifierValue: patientId, patientKey });
+  await db.insert(patientLinks).values({ identifierSystem: "urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4", identifierValue: patientId, patientKey });
   const app = express(); app.use(emrJsonParser()); registerEmrRoutes(app);
   const server = await startHttpServer(app); t.after(server.close);
   const request = (path: string, options?: RequestInit) => requestJson(server.baseUrl, path, options);
@@ -64,7 +64,7 @@ test("EMR Controller C3 (real HTTP + disposable PostgreSQL)", {
     await db.insert(patients).values({ patientKey: other, displayLabel: "C3 synthetic only" });
     await db.insert(patientLinks).values({ identifierSystem: "urn:synthetic:other", identifierValue: patientId, patientKey: other });
     t.after(async () => { await db.delete(patientLinks).where(eq(patientLinks.patientKey, other)); await db.delete(patients).where(eq(patients.patientKey, other)); });
-    for (const [system, key] of [["https://example.org/lis/patient", patientKey], ["urn:synthetic:other", other]]) {
+    for (const [system, key] of [["urn:uuid:b954f2c4-cfe0-575f-86c0-c1cba88052a4", patientKey], ["urn:synthetic:other", other]]) {
       const response = await request("/api/patients?" + new URLSearchParams({ identifier_system: system, identifier_value: patientId }));
       assert.equal(response.status, 200); const body = response.body as { patient: { patient_key: string; display_label: string; identifiers: unknown[] } };
       assert.equal(body.patient.patient_key, key); assert.equal(body.patient.display_label, "C3 synthetic only");

@@ -1,0 +1,260 @@
+{
+  "spp82": {
+    "tests": 114,
+    "pass": 114,
+    "fail": 0,
+    "skipped": 0
+  },
+  "ops": {
+    "tests": 13,
+    "pass": 13,
+    "fail": 0,
+    "skipped": 0
+  },
+  "frontend": {
+    "tests": 92,
+    "pass": 92,
+    "fail": 0,
+    "skipped": 0
+  },
+  "final_postgres": {
+    "tests": 522,
+    "pass": 522,
+    "fail": 0,
+    "skipped": 0
+  },
+  "typecheck": "PASS",
+  "frontend_check": "PASS",
+  "frontend_build": "PASS",
+  "shell_checks": [
+    "checks-store: PASS",
+    "TAP/spec and failed/empty guard: PASS"
+  ],
+  "browser": [
+    {
+      "app": "lis",
+      "outcome": "PASS",
+      "checks": [
+        "DELIVERED",
+        "9 field matches",
+        "linked EMR patient",
+        "patient search",
+        "STORED receipt",
+        "GET only"
+      ],
+      "requests": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4173/api/lis/results/MIMIC-LAB-96458",
+          "query": {}
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4173/api/lis/results/MIMIC-LAB-96458/publish-event",
+          "query": {}
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4173/api/lis/results?limit=11&offset=0&result_status=FINAL",
+          "query": {
+            "limit": "11",
+            "offset": "0",
+            "result_status": "FINAL"
+          }
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4173/api/middleware/exchanges/24665553-8811-414f-b207-2cebc9ff0e30",
+          "query": {}
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4173/api/middleware/exchanges/24665553-8811-414f-b207-2cebc9ff0e30/attempts",
+          "query": {}
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4173/api/emr/lab-results?external_system=urn%3Auuid%3A05934370-0df0-5666-8eff-bd5181906b62&external_id=MIMIC-LAB-96458",
+          "query": {
+            "external_system": "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62",
+            "external_id": "MIMIC-LAB-96458"
+          }
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4173/api/emr/patients?patient_key=37043ef4-4652-535f-bb0e-d3d90afaf9e8",
+          "query": {
+            "patient_key": "37043ef4-4652-535f-bb0e-d3d90afaf9e8"
+          }
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4173/api/lis/results?limit=11&offset=0&search=MIMIC-P-10007818&result_status=FINAL",
+          "query": {
+            "limit": "11",
+            "offset": "0",
+            "search": "MIMIC-P-10007818",
+            "result_status": "FINAL"
+          }
+        }
+      ],
+      "chrome": {
+        "protocolVersion": "1.3",
+        "product": "Chrome/149.0.7827.53",
+        "revision": "@9d2c8156a72129edca4785abb98866fad60ea338",
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.0.0 Safari/537.36",
+        "jsVersion": "14.9.207.21"
+      }
+    },
+    {
+      "app": "emr",
+      "outcome": "PASS",
+      "checks": [
+        "DELIVERED",
+        "9 field matches",
+        "linked EMR patient",
+        "patient search",
+        "STORED receipt",
+        "GET only"
+      ],
+      "requests": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4175/api/lis/results/MIMIC-LAB-96458",
+          "query": {}
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4175/api/lis/results/MIMIC-LAB-96458/publish-event",
+          "query": {}
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4175/api/lis/results?limit=11&offset=0&result_status=FINAL",
+          "query": {
+            "limit": "11",
+            "offset": "0",
+            "result_status": "FINAL"
+          }
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4175/api/middleware/exchanges/24665553-8811-414f-b207-2cebc9ff0e30",
+          "query": {}
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4175/api/middleware/exchanges/24665553-8811-414f-b207-2cebc9ff0e30/attempts",
+          "query": {}
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4175/api/emr/lab-results?external_system=urn%3Auuid%3A05934370-0df0-5666-8eff-bd5181906b62&external_id=MIMIC-LAB-96458",
+          "query": {
+            "external_system": "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62",
+            "external_id": "MIMIC-LAB-96458"
+          }
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4175/api/emr/patients?patient_key=37043ef4-4652-535f-bb0e-d3d90afaf9e8",
+          "query": {
+            "patient_key": "37043ef4-4652-535f-bb0e-d3d90afaf9e8"
+          }
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4175/api/lis/results?limit=11&offset=0&search=MIMIC-P-10007818&result_status=FINAL",
+          "query": {
+            "limit": "11",
+            "offset": "0",
+            "search": "MIMIC-P-10007818",
+            "result_status": "FINAL"
+          }
+        }
+      ],
+      "chrome": {
+        "protocolVersion": "1.3",
+        "product": "Chrome/149.0.7827.53",
+        "revision": "@9d2c8156a72129edca4785abb98866fad60ea338",
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.0.0 Safari/537.36",
+        "jsVersion": "14.9.207.21"
+      }
+    },
+    {
+      "app": "middleware-monitor",
+      "outcome": "PASS",
+      "checks": [
+        "DELIVERED",
+        "9 field matches",
+        "linked EMR patient",
+        "patient search",
+        "STORED receipt",
+        "GET only"
+      ],
+      "requests": [
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/api/lis/results/MIMIC-LAB-96458",
+          "query": {}
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/api/lis/results/MIMIC-LAB-96458/publish-event",
+          "query": {}
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/api/lis/results?limit=11&offset=0&result_status=FINAL",
+          "query": {
+            "limit": "11",
+            "offset": "0",
+            "result_status": "FINAL"
+          }
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/api/middleware/exchanges/24665553-8811-414f-b207-2cebc9ff0e30",
+          "query": {}
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/api/middleware/exchanges/24665553-8811-414f-b207-2cebc9ff0e30/attempts",
+          "query": {}
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/api/emr/lab-results?external_system=urn%3Auuid%3A05934370-0df0-5666-8eff-bd5181906b62&external_id=MIMIC-LAB-96458",
+          "query": {
+            "external_system": "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62",
+            "external_id": "MIMIC-LAB-96458"
+          }
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/api/emr/patients?patient_key=37043ef4-4652-535f-bb0e-d3d90afaf9e8",
+          "query": {
+            "patient_key": "37043ef4-4652-535f-bb0e-d3d90afaf9e8"
+          }
+        },
+        {
+          "method": "GET",
+          "url": "http://127.0.0.1:4174/api/lis/results?limit=11&offset=0&search=MIMIC-P-10007818&result_status=FINAL",
+          "query": {
+            "limit": "11",
+            "offset": "0",
+            "search": "MIMIC-P-10007818",
+            "result_status": "FINAL"
+          }
+        }
+      ],
+      "chrome": {
+        "protocolVersion": "1.3",
+        "product": "Chrome/149.0.7827.53",
+        "revision": "@9d2c8156a72129edca4785abb98866fad60ea338",
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.0.0 Safari/537.36",
+        "jsVersion": "14.9.207.21"
+      }
+    }
+  ]
+}

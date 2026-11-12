@@ -4,7 +4,7 @@ import express from "express";
 import type { MiddlewareRouteDependencies } from "../../src/middleware/controller.js";
 import type { ExchangeEvent, ListExchangesOptions } from "../../src/middleware/repository.js";
 import { acceptedId, assertError, isRecord, requestJson, startHttpServer } from "./http-test-helpers.js";
-import { syntheticTransaction, validEnvelope } from "./service-fixtures.js";
+import { rehash, syntheticTransaction, validEnvelope } from "./service-fixtures.js";
 
 delete process.env.MIDDLEWARE_DATABASE_URL;
 const { registerMiddlewareRoutes } = await import("../../src/middleware/controller.js");
@@ -80,6 +80,14 @@ test("Middleware Controller HTTP (isolated dependencies)", async (t) => {
         kind, error: { code, field: "source_snapshot", message: "Synthetic failure" },
       }));
       assertError(await post(envelope), status, code); failure.mock.restore();
+    }
+  });
+
+  await t.test("real B2 rejects unknown test codes and unsupported units over HTTP", async (t) => {
+    t.mock.method(dependencies, "acceptExchange", acceptExchange);
+    for (const [code, unit, expected] of [["99999", "mg/dL", "INVALID_TEST_CODE"], ["50912", "kg", "INVALID_UNIT"]] as const) {
+      const input = structuredClone(envelope); input.source_snapshot.test_code = code; input.source_snapshot.unit = unit; rehash(input);
+      assertError(await post(input), 422, expected);
     }
   });
 
@@ -191,11 +199,11 @@ test("Middleware Controller HTTP (isolated dependencies)", async (t) => {
 
   await t.test("Monitor attempts: stable read-only DTO, receipt allowlist and pre-HTTP diagnostics", async (t) => {
     const at = new Date("2026-11-04T10:00:00Z");
-    const original = { ...row, fhirPayload: { identifier: [{ system: "https://example.org/lis/result", value: row.sourceResultId }] } };
+    const original = { ...row, fhirPayload: { identifier: [{ system: "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62", value: row.sourceResultId }] } };
     t.mock.method(dependencies, "getExchangeById", async () => original);
     const attempt = { attemptId: "00000000-0000-4000-8000-000000000010", exchangeId: row.exchangeId,
       phase: "SEND", attemptNo: 2, startedAt: at, sentAt: at, responseAt: at, endedAt: at, httpStatus: 201,
-      errorCode: null, errorMessage: "SELECT secret", responseBody: { result: "STORED", external_system: "https://example.org/lis/result",
+      errorCode: null, errorMessage: "SELECT secret", responseBody: { result: "STORED", external_system: "urn:uuid:05934370-0df0-5666-8eff-bd5181906b62",
         external_id: row.sourceResultId, target_id: "00000000-0000-4000-8000-000000000011", patient_key: "00000000-0000-4000-8000-000000000012", secret: "private-stack-marker" } };
     t.mock.method(dependencies, "getExchangeAttempts", async () => [attempt]);
     t.mock.method(dependencies, "getExchangeEvents", async () => [{ ...event, detail: { code: "INVALID_SOURCE", sql: "SELECT secret" } }]);

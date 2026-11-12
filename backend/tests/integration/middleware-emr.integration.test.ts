@@ -8,7 +8,7 @@ import { hashCanonicalJson } from "../../src/middleware/canonical-json.js";
 import { storageReceipt, verifyReadBack } from "../../src/middleware/worker-verification.js";
 import { assertError, requestJson } from "../emr/http-test-helpers.js";
 import { createHarness, type C4Harness, type C4Scenario } from "./c4-harness.js";
-import { variants } from "./c4-fixtures.js";
+import { createFixture, variants } from "./c4-fixtures.js";
 
 const configured = process.env.C4_DATABASE_ISOLATION_TOKEN !== undefined;
 const successEvents = ["RECEIVED", "CLAIMED", "VALIDATED", "TRANSFORMED", "SENT", "TARGET_STORED", "VERIFY_STARTED", "DELIVERED"];
@@ -42,7 +42,7 @@ async function assertAudit(h: C4Harness, c: C4Scenario, status: string, expected
   const row = await c.row(); const attempts = await c.attempts(); const events = await c.events();
   assert.equal(row.status, status); assert.deepEqual(row.sourcePayload, c.envelope);
   assert.equal(row.sourceHash, c.envelope.source_hash); assert.deepEqual(row.fhirPayload, c.observation);
-  assert.equal(row.payloadHash, hashCanonicalJson(c.observation)); assert.equal(row.mappingVersion, "lis-observation-v1");
+  assert.equal(row.payloadHash, hashCanonicalJson(c.observation)); assert.equal(row.mappingVersion, "lis-observation-v2");
   assert.deepEqual(row.patientIdentifier, c.observation.subject.identifier);
   assert.equal(row.sendAttemptCount, expected.filter(([phase]) => phase === "SEND").length);
   assert.equal(row.verifyAttemptCount, expected.filter(([phase]) => phase === "VERIFY").length);
@@ -115,6 +115,27 @@ test("C4: real Middleware → HTTP → real EMR → PostgreSQL → read-back", {
         new_status: item.newStatus, attempt_id: item.attemptId, detail: item.detail })), ...extra });
     t.diagnostic(`${caseId}: ${row.status}; HTTP ${c.workerHttp.map((item) => `${item.method} ${item.status}`).join(" → ")}`);
   }
+
+  await t.test("C4-CATALOG: invalid codes/units are rejected by real APIs without storing or delivering", async () => {
+    for (const mode of ["unknown", "all-kg", "no-range"]) {
+      const fixture = createFixture(); const input = fixture.envelope;
+      input.source_snapshot.test_code = mode === "unknown" ? "99999" : "50912";
+      input.source_snapshot.unit = mode === "unknown" ? "mg/dL" : "kg";
+      input.source_hash = hashCanonicalJson(input.source_snapshot);
+      assert.equal((await h.postExchange(input)).status, 422);
+      const observation = fixture.observation;
+      observation.code.coding[0].code = input.source_snapshot.test_code;
+      observation.valueQuantity.unit = input.source_snapshot.unit;
+      for (const range of observation.referenceRange ?? []) for (const key of ["low", "high"] as const) {
+        if (range[key]) range[key].unit = observation.valueQuantity.unit;
+      }
+      if (mode === "no-range") delete observation.referenceRange;
+      assert.equal((await h.postObservation(observation)).status, 422);
+      const exchanges = await h.middlewarePool.query("select count(*)::int as n from integration.exchange_transactions where source_result_id=$1", [input.source_result_id]);
+      const results = await h.emrPool.query("select count(*)::int as n from emr.lab_results where external_id=$1", [input.source_result_id]);
+      assert.equal(exchanges.rows[0].n, 0); assert.equal(results.rows[0].n, 0);
+    }
+  });
 
   await t.test("C4-ENV: real /ready endpoints validate three isolated service roles and schema access", async () => {
     const ready: Record<string, unknown> = {};

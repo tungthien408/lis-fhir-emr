@@ -1,0 +1,28 @@
+FHIR Validation tool Version 7.0.5 (Git# 17db3661806b). Built 2026-11-05T23:27:05.236Z (6 days old)
+  Java:   27.0.1.0.3 from /usr/lib/jvm/java-27-openjdk on amd64 (64bit). 3072MB available
+  Paths:  Current = /home/thien408/Projects/2026-2027/dacn/lis-fhir-emr, Package Cache = /home/thien408/.fhir/packages
+  Params: /home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/thuc-nghiem/ket-qua/2026-11-12-sau-sua-01/fhir-1000/MIMIC-LAB-199306.json -version 4.0.1 -output /home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/thuc-nghiem/ket-qua/2026-11-12-sau-sua-01/kiem-tra-fhir/chay-thu-1/ket-qua-validator.json
+  Locale: /
+  Jurisdiction: None specified (locale = )
+  Note that exceptions and validation failures may happen in the absence of a locale
+Loading
+  Loading FHIR v4.0.1 from hl7.fhir.r4.core#4.0.1
+  Load hl7.terminology.r4#6.2.0 - 4288 resources (00:06.054)
+  Load hl7.fhir.uv.extensions.r4#5.2.0 - 759 resources (00:01.224)
+  Loaded FHIR - 8265 resources (00:00.000)
+  Terminology Cache at /tmp/default-tx-cache/r4
+  Terminology server https://tx.fhir.org - Version Connected to Terminology Server at https://tx.fhir.org (00:02.000)
+  Load hl7.terminology#7.5.0 - 4190 resources (00:01.605)
+  Load hl7.terminology.r5#7.5.0 - 4190 resources (00:00.374)
+  Load hl7.fhir.uv.extensions#5.4.0 - 885 resources (00:00.451)
+  Package Summary: [hl7.fhir.r4.core#4.0.1, hl7.fhir.xver-extensions#0.1.0, hl7.terminology.r4#6.2.0, hl7.fhir.uv.extensions.r4#5.2.0, hl7.terminology#7.5.0, hl7.terminology.r5#7.5.0, hl7.fhir.uv.extensions#5.4.0]
+  Get set... 
+  ...go! (00:01.127)
+Cached new session. Cache size = 1
+Sources to validate: /home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/thuc-nghiem/ket-qua/2026-11-12-sau-sua-01/fhir-1000/MIMIC-LAB-199306.json
+Validating
+  Validate /home/thien408/Projects/2026-2027/dacn/lis-fhir-emr/thuc-nghiem/ket-qua/2026-11-12-sau-sua-01/fhir-1000/MIMIC-LAB-199306.json
+ 00:01.600
+Done. Times: Loading: 00:12.868, validation: 00:01.600. Memory = 614Mb
+
+Done. Times: Loading: 00:12.868, validation: 00:01.600. Max Memory = 3Gb

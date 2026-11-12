@@ -1,0 +1,2 @@
+{"result":"ALREADY_EXISTS","external_system":"urn:uuid:05934370-0df0-5666-8eff-bd5181906b62","external_id":"MIMIC-LAB-102","target_id":"af213c15-8347-440c-a0da-07e54e5a0f70","patient_key":"7c17a3a0-aed9-5a6a-85bc-18059b24de20"}
+HTTP 200

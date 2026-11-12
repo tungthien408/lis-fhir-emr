@@ -1,0 +1,8 @@
+MUT-EMR-thieu-benh-nhan | Thiếu thông tin bệnh nhân | HTTP 422 | bản ghi EMR: 0
+MUT-EMR-benh-nhan-khong-lien-ket | Bệnh nhân không có liên kết ở EMR | HTTP 422 | bản ghi EMR: 0
+MUT-EMR-gia-tri-khong-phai-so | Giá trị không phải là số | HTTP 422 | bản ghi EMR: 0
+MUT-EMR-can-duoi-lon-hon-can-tren | Cận dưới lớn hơn cận trên | HTTP 422 | bản ghi EMR: 0
+MUT-EMR-thieu-thoi-diem | Thiếu thời điểm xét nghiệm | HTTP 422 | bản ghi EMR: 0
+MUT-EMR-sai-loai-tai-nguyen | Không phải tài nguyên Observation | HTTP 422 | bản ghi EMR: 0
+MUT-EMR-ma-xn-ngoai-danh-muc | Mã xét nghiệm không có trong danh mục | HTTP 201 | bản ghi EMR: 1
+MUT-EMR-don-vi-khong-duoc-duyet | Đơn vị đo không thuộc danh sách được chấp nhận | HTTP 422 | bản ghi EMR: 0
